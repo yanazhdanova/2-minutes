@@ -1,0 +1,33 @@
+import 'package:flutter/material.dart';
+import '../../app/navigation.dart';
+import 'catalog_main_screen.dart';
+import 'mental_exercises.dart';
+
+class MentalGroupsScreen extends StatelessWidget {
+  const MentalGroupsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Mental groups'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => goToReplace(
+            context,
+            const CatalogMainScreen(),
+          ),
+        ),
+      ),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () => goToReplace(
+            context,
+            const MentalExercisesScreen(),
+          ),
+          child: const Text('Группа 1'),
+        ),
+      ),
+    );
+  }
+}
