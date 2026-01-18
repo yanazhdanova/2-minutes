@@ -14,10 +14,7 @@ class HomePhysMentalScreen extends StatelessWidget {
         title: const Text('Physical or Mental'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => goToReplace(
-            context,
-            const ExercisesChoiceScreen(),
-          ),
+          onPressed: () => Navigator.pop(context),
         ),
       ),
       body: Center(
@@ -25,7 +22,7 @@ class HomePhysMentalScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             ElevatedButton(
-              onPressed: () => goToReplace(
+              onPressed: () => goTo(
                 context,
                 const HomeCatalogPhysScreen(),
               ),
@@ -33,7 +30,7 @@ class HomePhysMentalScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             ElevatedButton(
-              onPressed: () => goToReplace(
+              onPressed: () => goTo(
                 context,
                 const HomeCatalogMentalScreen(),
               ),
@@ -41,7 +38,7 @@ class HomePhysMentalScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             ElevatedButton(
-              onPressed: () => goToReplace(
+              onPressed: () => goToAndClear(
                 context,
                 const ExercisesChoiceScreen(),
               ),

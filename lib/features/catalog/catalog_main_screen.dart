@@ -17,7 +17,7 @@ class CatalogMainScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             ElevatedButton(
-              onPressed: () => goToReplace(
+              onPressed: () => goToAndClear(
                 context,
                 const HomeMainScreen(),
               ),
@@ -25,7 +25,7 @@ class CatalogMainScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             ElevatedButton(
-              onPressed: () => goToReplace(
+              onPressed: () => goToAndClear(
                 context,
                 const SettingsMainScreen(),
               ),
@@ -33,7 +33,7 @@ class CatalogMainScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             ElevatedButton(
-              onPressed: () => goToReplace(
+              onPressed: () => goTo(
                 context,
                 const PhysicalGroupsScreen(),
               ),
@@ -41,7 +41,7 @@ class CatalogMainScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             ElevatedButton(
-              onPressed: () => goToReplace(
+              onPressed: () => goTo(
                 context,
                 const MentalGroupsScreen(),
               ),

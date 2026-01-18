@@ -13,15 +13,12 @@ class PhysicalGroupsScreen extends StatelessWidget {
         title: const Text('Physical groups'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => goToReplace(
-            context,
-            const CatalogMainScreen(),
-          ),
+          onPressed: () => Navigator.pop(context),
         ),
       ),
       body: Center(
         child: ElevatedButton(
-          onPressed: () => goToReplace(
+          onPressed: () => goTo(
             context,
             const PhysicalExercisesScreen(),
           ),

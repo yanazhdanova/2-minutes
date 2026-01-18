@@ -13,15 +13,12 @@ class ResetPasswordCodeScreen extends StatelessWidget {
         title: const Text('Enter code'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => goToReplace(
-            context,
-            const ResetPasswordScreen(),
-          ),
+          onPressed: () => Navigator.pop(context),
         ),
       ),
       body: Center(
         child: ElevatedButton(
-          onPressed: () => goToReplace(
+          onPressed: () => goToAndClear(
             context,
             const SetNewPasswordScreen(),
           ),

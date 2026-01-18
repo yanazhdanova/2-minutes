@@ -12,7 +12,7 @@ class AppearanceSettingsScreen extends StatelessWidget {
         title: const Text('Внешний вид'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => goToReplace(context, const SettingsMainScreen()),
+          onPressed: () => Navigator.pop(context),
         ),
       ),
       body: const Center(child: Text('AppearanceSettingsScreen')),

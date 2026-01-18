@@ -22,7 +22,7 @@ class ResetPasswordScreen extends StatelessWidget {
       ),
       body: Center(
         child: ElevatedButton(
-          onPressed: () => goToReplace(
+          onPressed: () => goTo(
             context,
             const ResetPasswordCodeScreen(),
           ),

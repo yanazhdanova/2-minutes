@@ -12,10 +12,8 @@ class MentalExercisesScreen extends StatelessWidget {
         title: const Text('Mental exercises'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => goToReplace(
-            context,
-            const MentalGroupsScreen(),
-          ),
+          onPressed: () => Navigator.pop(context),
+
         ),
       ),
       body: const Center(

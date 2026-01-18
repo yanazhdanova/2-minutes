@@ -21,7 +21,7 @@ class SettingsMainScreen extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               ElevatedButton(
-                onPressed: () => goToReplace(
+                onPressed: () => goToAndClear(
                   context,
                   const HomeMainScreen(),
                 ),
@@ -29,7 +29,7 @@ class SettingsMainScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               ElevatedButton(
-                onPressed: () => goToReplace(
+                onPressed: () => goToAndClear(
                   context,
                   const CatalogMainScreen(),
                 ),
@@ -37,7 +37,7 @@ class SettingsMainScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               ElevatedButton(
-                onPressed: () => goToReplace(
+                onPressed: () => goTo(
                   context,
                   const ProgramSettingsScreen(),
                 ),
@@ -45,7 +45,7 @@ class SettingsMainScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               ElevatedButton(
-                onPressed: () => goToReplace(
+                onPressed: () => goTo(
                   context,
                   const NotifSettingsScreen(),
                 ),
@@ -53,7 +53,7 @@ class SettingsMainScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               ElevatedButton(
-                onPressed: () => goToReplace(
+                onPressed: () => goTo(
                   context,
                   const LanguageSettingsScreen(),
                 ),
@@ -61,7 +61,7 @@ class SettingsMainScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               ElevatedButton(
-                onPressed: () => goToReplace(
+                onPressed: () => goTo(
                   context,
                   const AppearanceSettingsScreen(),
                 ),
@@ -69,7 +69,7 @@ class SettingsMainScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               ElevatedButton(
-                onPressed: () => goToReplace(
+                onPressed: () => goTo(
                   context,
                   const PremiumSettingsScreen(),
                 ),

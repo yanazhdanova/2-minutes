@@ -12,10 +12,8 @@ class PhysicalExercisesScreen extends StatelessWidget {
         title: const Text('Physical exercises'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => goToReplace(
-            context,
-            const PhysicalGroupsScreen(),
-          ),
+          onPressed: () => Navigator.pop(context),
+
         ),
       ),
       body: const Center(

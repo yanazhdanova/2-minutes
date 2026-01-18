@@ -12,10 +12,7 @@ class BuyPremiumScreen extends StatelessWidget {
         title: const Text('Premium'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => goToReplace(
-            context,
-            const HomeMainScreen(),
-          ),
+          onPressed: () => Navigator.pop(context),
         ),
       ),
       body: const Center(

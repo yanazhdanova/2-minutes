@@ -13,18 +13,18 @@ class RandOrNotChoiceScreen extends StatelessWidget {
         title: const Text('Workout choice'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => goToReplace(
-            context,
-            const HomeMainScreen(),
+          onPressed: () => goToAndClear(
+          context,
+          const HomeMainScreen(),
           ),
-        ),
+      ),
       ),
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ElevatedButton(
-              onPressed: () => goToReplace(
+              onPressed: () => goTo(
                 context,
                 const ExercisesChoiceScreen(),
               ),
@@ -32,7 +32,7 @@ class RandOrNotChoiceScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             ElevatedButton(
-              onPressed: () => goToReplace(
+              onPressed: () => goTo(
                 context,
                 const ExercisesChoiceScreen(),
               ),

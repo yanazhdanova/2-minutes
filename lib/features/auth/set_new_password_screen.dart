@@ -11,13 +11,6 @@ class SetNewPasswordScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('New password'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => goToReplace(
-            context,
-            const ResetPasswordCodeScreen(),
-          ),
-        ),
       ),
       body: Center(
         child: ElevatedButton(
