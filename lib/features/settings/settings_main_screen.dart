@@ -20,21 +20,6 @@ class SettingsMainScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              ElevatedButton(
-                onPressed: () => goToAndClear(
-                  context,
-                  const HomeMainScreen(),
-                ),
-                child: const Text('Главная'),
-              ),
-              const SizedBox(height: 12),
-              ElevatedButton(
-                onPressed: () => goToAndClear(
-                  context,
-                  const CatalogMainScreen(),
-                ),
-                child: const Text('Каталог'),
-              ),
               const SizedBox(height: 12),
               ElevatedButton(
                 onPressed: () => goTo(

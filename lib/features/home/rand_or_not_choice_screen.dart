@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:two_mins/app/main_tab_screen.dart';
 import '../../app/navigation.dart';
 import 'home_main_screen.dart';
 import 'exercises_choice.dart';
@@ -15,7 +16,7 @@ class RandOrNotChoiceScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => goToAndClear(
           context,
-          const HomeMainScreen(),
+          const MainTabScreen(),
           ),
       ),
       ),

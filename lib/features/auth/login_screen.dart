@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../app/navigation.dart';
 import 'register_screen.dart';
 import 'reset_password_screen.dart';
-import '../home/home_main_screen.dart';
+import '../../app/main_tab_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -26,7 +26,7 @@ class LoginScreen extends StatelessWidget {
             ElevatedButton(
               onPressed: () => goToAndClear(
                 context,
-                const HomeMainScreen(),
+                const MainTabScreen(),
               ),
               child: const Text('Войти'),
             ),

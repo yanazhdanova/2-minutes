@@ -32,21 +32,6 @@ class HomeMainScreen extends StatelessWidget {
               child: const Text('Начать тренировку'),
             ),
             const SizedBox(height: 12),
-            ElevatedButton(
-              onPressed: () => goToAndClear(
-                context,
-                const CatalogMainScreen(),
-              ),
-              child: const Text('Каталог'),
-            ),
-            const SizedBox(height: 12),
-            ElevatedButton(
-              onPressed: () => goToAndClear(
-                context,
-                const SettingsMainScreen(),
-              ),
-              child: const Text('Настройки'),
-            ),
           ],
         ),
       ),
