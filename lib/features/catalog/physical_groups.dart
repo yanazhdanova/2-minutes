@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../app/navigation.dart';
 import 'catalog_main_screen.dart';
-import 'physical_exercises.dart';
+
 
 class PhysicalGroupsScreen extends StatelessWidget {
   const PhysicalGroupsScreen({super.key});
@@ -18,10 +18,13 @@ class PhysicalGroupsScreen extends StatelessWidget {
       ),
       body: Center(
         child: ElevatedButton(
+            onPressed: () =>(),
+          /*
           onPressed: () => goTo(
             context,
             const PhysicalExercisesScreen(),
           ),
+          */
           child: const Text('Группа 1'),
         ),
       ),
