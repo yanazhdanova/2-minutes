@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:two_mins/app/main_tab_screen.dart';
 import '../../app/navigation.dart';
 import 'home_main_screen.dart';
 import 'exercises_choice.dart';
@@ -13,18 +14,18 @@ class RandOrNotChoiceScreen extends StatelessWidget {
         title: const Text('Workout choice'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => goToReplace(
-            context,
-            const HomeMainScreen(),
+          onPressed: () => goToAndClear(
+          context,
+          const MainTabScreen(),
           ),
-        ),
+      ),
       ),
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ElevatedButton(
-              onPressed: () => goToReplace(
+              onPressed: () => goTo(
                 context,
                 const ExercisesChoiceScreen(),
               ),
@@ -32,7 +33,7 @@ class RandOrNotChoiceScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             ElevatedButton(
-              onPressed: () => goToReplace(
+              onPressed: () => goTo(
                 context,
                 const ExercisesChoiceScreen(),
               ),

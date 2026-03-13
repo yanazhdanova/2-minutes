@@ -14,18 +14,18 @@ class ExercisesChoiceScreen extends StatelessWidget {
         title: const Text('Exercises choice'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => goToReplace(
-            context,
-            const RandOrNotChoiceScreen(),
+          onPressed: () => goToAndClear(
+          context,
+          const RandOrNotChoiceScreen(),
           ),
-        ),
+      ),
       ),
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ElevatedButton(
-              onPressed: () => goToReplace(
+              onPressed: () => goToAndClear(
                 context,
                 const ExerciseScreen(),
               ),
@@ -33,7 +33,7 @@ class ExercisesChoiceScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             ElevatedButton(
-              onPressed: () => goToReplace(
+              onPressed: () => goTo(
                 context,
                 const HomePhysMentalScreen(),
               ),
@@ -41,7 +41,7 @@ class ExercisesChoiceScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             ElevatedButton(
-              onPressed: () => goToReplace(
+              onPressed: () => goTo(
                 context,
                 const HomePhysMentalScreen(),
               ),
@@ -49,7 +49,7 @@ class ExercisesChoiceScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             ElevatedButton(
-              onPressed: () => goToReplace(
+              onPressed: () => goTo(
                 context,
                 const HomePhysMentalScreen(),
               ),

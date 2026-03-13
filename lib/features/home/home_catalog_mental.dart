@@ -13,15 +13,12 @@ class HomeCatalogMentalScreen extends StatelessWidget {
         title: const Text('Mental catalog'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => goToReplace(
-            context,
-            const HomePhysMentalScreen(),
-          ),
+          onPressed: () => Navigator.pop(context),
         ),
       ),
       body: Center(
         child: ElevatedButton(
-          onPressed: () => goToReplace(
+          onPressed: () => goToAndClear(
             context,
             const ExercisesChoiceScreen(),
           ),

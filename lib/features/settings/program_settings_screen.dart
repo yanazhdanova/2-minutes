@@ -12,7 +12,7 @@ class ProgramSettingsScreen extends StatelessWidget {
         title: const Text('Моя программа'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => goToReplace(context, const SettingsMainScreen()),
+          onPressed: () => Navigator.pop(context),
         ),
       ),
       body: const Center(child: Text('ProgramSettingsScreen')),
