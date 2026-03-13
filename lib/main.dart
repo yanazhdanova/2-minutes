@@ -1,35 +1,33 @@
 import 'package:flutter/material.dart';
-import 'features/auth/login_screen.dart';
-import 'features/exercises/data/db/app_db.dart';
-import 'features/exercises/data/exercise_sqlite_repository.dart';
-import 'features/exercises/data/exercise_catalog.dart';
-import 'app/app_scope.dart';
+import 'features/onboarding/name_screen.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  final repo = ExerciseSqliteRepository(AppDb.instance);
-
-  if (await repo.isEmpty()) {
-    await repo.seed(categories: exerciseCategories, exercises: exercises);
-  }
-
-  runApp(MyApp(exerciseRepo: repo));
+void main() {
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final ExerciseSqliteRepository exerciseRepo;
-
-  const MyApp({super.key, required this.exerciseRepo});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return AppScope(
-      exerciseRepo: exerciseRepo,
-      child: const MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: LoginScreen(),
-      ),
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      // Для отладки: всегда показываем онбординг
+      // Когда отладка завершена, заменить на SplashScreen
+      home: NameScreen(),
     );
   }
 }
+
+// TODO: Когда отладка завершена, использовать этот вариант:
+// class MyApp extends StatelessWidget {
+//   const MyApp({super.key});
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return const MaterialApp(
+//       debugShowCheckedModeBanner: false,
+//       home: SplashScreen(),
+//     );
+//   }
+// }

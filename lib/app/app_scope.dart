@@ -1,12 +1,15 @@
 import 'package:flutter/widgets.dart';
 import '../features/exercises/data/exercise_sqlite_repository.dart';
+import '../features/exercises/data/prefs_service.dart';
 
 class AppScope extends InheritedWidget {
   final ExerciseSqliteRepository exerciseRepo;
+  final PrefsService prefs;
 
   const AppScope({
     super.key,
     required this.exerciseRepo,
+    required this.prefs,
     required super.child,
   });
 
@@ -18,5 +21,6 @@ class AppScope extends InheritedWidget {
 
   @override
   bool updateShouldNotify(AppScope oldWidget) =>
-      oldWidget.exerciseRepo != exerciseRepo;
+      oldWidget.exerciseRepo != exerciseRepo ||
+          oldWidget.prefs != prefs;
 }
