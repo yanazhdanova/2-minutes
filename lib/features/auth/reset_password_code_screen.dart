@@ -1,98 +1,45 @@
 import 'package:flutter/material.dart';
-
+import '../../app/app_theme.dart';
 import '../../app/navigation.dart';
+import '../../shared/widgets.dart';
 import 'set_new_password_screen.dart';
 
 class ResetPasswordCodeScreen extends StatelessWidget {
   const ResetPasswordCodeScreen({super.key});
 
-  InputDecoration _fieldDecoration() {
-    return InputDecoration(
-      filled: true,
-      fillColor: Colors.grey.shade300,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
-        borderSide: BorderSide.none,
-      ),
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: 18,
-        vertical: 16,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 28),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenHorizontal),
           child: Column(
             children: [
-              const SizedBox(height: 18),
-
-              Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  const Expanded(
-                    child: Center(
-                      child: Text(
-                        '2 минуты',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 48),
-                ],
-              ),
+              AppHeader(onBack: () => Navigator.pop(context)),
 
               const Spacer(flex: 2),
 
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: Text(
-                    'На вашу почту был\nотправлен код',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 36,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
+              Text(
+                'На вашу почту был\nотправлен код',
+                textAlign: TextAlign.center,
+                style: AppTextStyles.heading2,
               ),
 
               const SizedBox(height: 36),
 
-              TextField(
-                decoration: _fieldDecoration(),
+              const AppTextField(
+                hintText: 'Код',
                 textAlign: TextAlign.center,
+                keyboardType: TextInputType.number,
               ),
 
-              const SizedBox(height: 28),
+              const SizedBox(height: 32),
 
-              SizedBox(
+              OutlineButton(
+                label: 'Далее',
                 width: 260,
-                height: 56,
-                child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    shape: const StadiumBorder(),
-                    side: const BorderSide(width: 1),
-                  ),
-                  onPressed: () => goToAndClear(
-                    context,
-                    const SetNewPasswordScreen(),
-                  ),
-                  child: const Text('Далее'),
-                ),
+                onPressed: () => goToAndClear(context, const SetNewPasswordScreen()),
               ),
 
               const Spacer(flex: 4),

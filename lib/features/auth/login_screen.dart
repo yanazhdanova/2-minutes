@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import '../../app/app_theme.dart';
 import '../../app/navigation.dart';
+import '../../shared/widgets.dart';
 import 'register_screen.dart';
 import 'reset_password_screen.dart';
 import '../../app/main_tab_screen.dart';
@@ -22,117 +24,73 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  InputDecoration _fieldDecoration(String hint) {
-    return InputDecoration(
-      hintText: hint,
-      filled: true,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
-        borderSide: BorderSide.none,
-      ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 28),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenHorizontal),
           child: Column(
             children: [
-              const SizedBox(height: 18),
-              const Text(
-                '2 минуты',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
+              const AppHeader(),
 
               const Spacer(flex: 2),
 
-              const Text(
-                'Логин',
-                style: TextStyle(
-                  fontSize: 54,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
+              Text('Логин', style: AppTextStyles.heading1),
 
-              const SizedBox(height: 28),
+              const SizedBox(height: 32),
 
-              TextField(
+              AppTextField(
                 controller: _loginCtrl,
-                decoration: _fieldDecoration(''),
+                hintText: 'Email',
+                keyboardType: TextInputType.emailAddress,
               ),
-              const SizedBox(height: 18),
-              TextField(
+              const SizedBox(height: 16),
+              AppTextField(
                 controller: _passCtrl,
+                hintText: 'Пароль',
                 obscureText: true,
-                decoration: _fieldDecoration(''),
               ),
 
-              const SizedBox(height: 10),
+              const SizedBox(height: 12),
 
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.black,
-                    padding: EdgeInsets.zero,
-                  ),
                   onPressed: () => goTo(context, const ResetPasswordScreen()),
-                  child: const Text(
+                  child: Text(
                     'Забыли пароль?',
-                    style: TextStyle(
-                      fontSize: 16,
+                    style: AppTextStyles.label.copyWith(
+                      color: AppColors.accent,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
               ),
 
-              const SizedBox(height: 22),
+              const SizedBox(height: 24),
 
-              SizedBox(
+              PrimaryButton(
+                label: 'Войти',
                 width: 260,
-                height: 56,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.black,
-                    elevation: 0,
-                    shape: const StadiumBorder(),
-                    textStyle: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-
-                    ),
-                  ),
-                  onPressed: () => goToAndClear(context, const MainTabScreen()),
-                  child: const Text('Войти'),
-                ),
+                onPressed: () => goToAndClear(context, const MainTabScreen()),
               ),
 
               const Spacer(flex: 3),
 
               TextButton(
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.black,
-                ),
                 onPressed: () => goToAndClear(context, const RegisterScreen()),
-                child: const Text(
+                child: Text(
                   'Регистрация',
-                  style: TextStyle(
-                    fontSize: 22,
+                  style: AppTextStyles.bodyLarge.copyWith(
+                    color: AppColors.accent,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
 
-              const SizedBox(height: 18),
+              const SizedBox(height: 24),
             ],
           ),
         ),

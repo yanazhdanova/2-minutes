@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../app/app_theme.dart';
 import '../../app/navigation.dart';
 import '../../app/user_preferences.dart';
+import '../../shared/widgets.dart';
 import 'categories_screen.dart';
 
 class NameScreen extends StatefulWidget {
@@ -37,61 +39,65 @@ class _NameScreenState extends State<NameScreen> {
     await UserPreferences.setName(name);
 
     if (mounted) {
-      goToReplace(context, const CategoriesScreen());
+      goTo(context, const CategoriesScreen());
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Как вас зовут?'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            const Spacer(),
+      backgroundColor: AppColors.background,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenHorizontal),
+          child: Column(
+            children: [
+              const AppHeader(),
 
-            // Поле ввода имени
-            TextField(
-              controller: _controller,
-              autofocus: true,
-              textCapitalization: TextCapitalization.words,
-              style: const TextStyle(fontSize: 24),
-              textAlign: TextAlign.center,
-              decoration: InputDecoration(
-                hintText: 'Введите имя',
-                hintStyle: TextStyle(
-                  color: Colors.grey.shade400,
-                  fontSize: 24,
-                ),
-                border: InputBorder.none,
+              const Spacer(flex: 2),
+
+              Text(
+                'Как вас зовут?',
+                style: AppTextStyles.heading2,
+                textAlign: TextAlign.center,
               ),
-            ),
 
-            const Spacer(),
+              const SizedBox(height: 40),
 
-            // Кнопка "Далее"
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton(
-                onPressed: _isValid ? _continue : null,
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
+              TextField(
+                controller: _controller,
+                autofocus: true,
+                textCapitalization: TextCapitalization.words,
+                textAlign: TextAlign.center,
+                style: AppTextStyles.heading3,
+                decoration: InputDecoration(
+                  hintText: 'Введите имя',
+                  hintStyle: AppTextStyles.heading3.copyWith(color: AppColors.textHint),
+                  filled: true,
+                  fillColor: AppColors.surface,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppRadius.medium),
+                    borderSide: BorderSide.none,
                   ),
-                ),
-                child: const Text(
-                  'Далее',
-                  style: TextStyle(fontSize: 18),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppRadius.medium),
+                    borderSide: const BorderSide(color: AppColors.accent, width: 1.5),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
                 ),
               ),
-            ),
 
-            const SizedBox(height: 24),
-          ],
+              const Spacer(flex: 2),
+
+              PrimaryButton(
+                label: 'Далее',
+                width: double.infinity,
+                onPressed: _isValid ? _continue : null,
+              ),
+
+              const SizedBox(height: 32),
+            ],
+          ),
         ),
       ),
     );

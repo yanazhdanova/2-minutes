@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../app/main_tab_screen.dart';
+import '../../app/app_theme.dart';
 import '../../app/navigation.dart';
-
+import '../../app/main_tab_screen.dart';
+import '../../shared/widgets.dart';
 
 class EndOfTheWorkoutScreen extends StatelessWidget {
   const EndOfTheWorkoutScreen({super.key});
@@ -9,76 +10,60 @@ class EndOfTheWorkoutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 28),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenHorizontal),
           child: Column(
             children: [
               const SizedBox(height: 18),
 
-              const Text(
-                '2 минуты',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w400,
+              const Text('2 минуты', style: AppTextStyles.logo),
+
+              const Spacer(flex: 3),
+
+              Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  color: AppColors.accentSurface,
+                  borderRadius: BorderRadius.circular(25),
                 ),
-              ),
-
-              const Spacer(flex: 4),
-
-
-              const Text(
-                'Тренировка\nзакончена!',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 44,
-                  fontWeight: FontWeight.w500,
-                  height: 1.05,
-                ),
-              ),
-
-              const SizedBox(height: 22),
-
-
-              const Text(
-                'Все упражнения выполнены!\nВы восхитительны',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w400,
-                  height: 1.25,
+                child: const Icon(
+                  Icons.check_circle,
+                  color: AppColors.accent,
+                  size: 56,
                 ),
               ),
 
               const SizedBox(height: 40),
 
-              SizedBox(
-                width: double.infinity,
-                height: 64,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  onPressed: () => goToAndClear(
-                    context,
-                    const MainTabScreen(),
-                  ),
-                  child: const Text(
-                    'На главную',
-                    style: TextStyle(
-                      fontSize: 34,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black,
-                    ),
-                  ),
+              Text(
+                'Отлично!',
+                style: AppTextStyles.heading1,
+              ),
+
+              const SizedBox(height: 16),
+
+              Text(
+                'Тренировка завершена.\nТак держать!',
+                textAlign: TextAlign.center,
+                style: AppTextStyles.body.copyWith(
+                  color: AppColors.textSecondary,
+                  height: 1.5,
                 ),
               ),
 
-              const Spacer(flex: 7),
+              const Spacer(flex: 2),
+
+              PrimaryButton(
+                label: 'На главную',
+                width: double.infinity,
+                height: 64,
+                onPressed: () => goToAndClear(context, const MainTabScreen()),
+              ),
+
+              const SizedBox(height: 32),
             ],
           ),
         ),

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import '../../app/app_theme.dart';
 import '../../app/navigation.dart';
 import '../../app/user_preferences.dart';
 import '../../app/main_tab_screen.dart';
+import '../../shared/widgets.dart';
 
 class FinalScreen extends StatelessWidget {
   const FinalScreen({super.key});
 
   Future<void> _finish(BuildContext context) async {
-    // Помечаем онбординг как пройденный
     await UserPreferences.setOnboardingComplete(true);
 
     if (context.mounted) {
@@ -18,64 +19,47 @@ class FinalScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 28),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenHorizontal),
           child: Column(
             children: [
-              const SizedBox(height: 18),
-
-              const Text(
-                '2 минуты',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
+              const AppHeader(),
 
               const Spacer(flex: 3),
 
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 6),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: Text(
-                    'Вы всегда можете\n'
-                        'поменять\n'
-                        'параметры в\n'
-                        'разделе\n'
-                        '"Настройки"',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 38,
-                      fontWeight: FontWeight.w700,
-                      height: 1.15,
-                    ),
-                  ),
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: AppColors.accentSurface,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Icon(
+                  Icons.check_circle_outline,
+                  color: AppColors.accent,
+                  size: 44,
                 ),
               ),
 
-              const SizedBox(height: 46),
+              const SizedBox(height: 32),
 
-              SizedBox(
+              Text(
+                'Вы всегда можете\nпоменять параметры\nв разделе\n"Настройки"',
+                textAlign: TextAlign.center,
+                style: AppTextStyles.heading2,
+              ),
+
+              const SizedBox(height: 48),
+
+              PrimaryButton(
+                label: 'Отлично',
                 width: 260,
-                height: 56,
-                child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    shape: const StadiumBorder(),
-                    side: const BorderSide(width: 1),
-                    textStyle: const TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  onPressed: () => _finish(context),
-                  child: const Text('Отлично'),
-                ),
+                onPressed: () => _finish(context),
               ),
 
-              const Spacer(flex: 6),
+              const Spacer(flex: 5),
             ],
           ),
         ),

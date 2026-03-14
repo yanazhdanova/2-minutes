@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../app/app_scope.dart';
+import '../../app/app_theme.dart';
+import '../../shared/widgets.dart';
 import '../exercises/domain/exercise_models.dart';
 
 class CategoryExercisesScreen extends StatefulWidget {
@@ -25,164 +27,176 @@ class _CategoryExercisesScreenState extends State<CategoryExercisesScreen> {
     });
   }
 
-  void _snack(String text) {
-    final messenger = ScaffoldMessenger.of(context);
-    messenger.clearSnackBars();
-    messenger.showSnackBar(SnackBar(content: Text(text)));
-  }
-
   @override
   Widget build(BuildContext context) {
     final repo = AppScope.of(context).exerciseRepo;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
+      backgroundColor: AppColors.background,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenHorizontal),
+              child: AppHeader(onBack: () => Navigator.pop(context)),
+            ),
+
+            const SizedBox(height: 16),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenHorizontal),
+              child: Text(widget.title, style: AppTextStyles.heading2),
+            ),
+
+            const SizedBox(height: 24),
+
+            Expanded(
+              child: FutureBuilder<List<Exercise>>(
+                future: repo.exercisesByCategory(widget.categoryId),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState != ConnectionState.done) {
+                    return const Center(
+                      child: CircularProgressIndicator(color: AppColors.accent),
+                    );
+                  }
+
+                  final items = snapshot.data ?? [];
+
+                  if (items.isEmpty) {
+                    return Center(
+                      child: Text(
+                        'Нет упражнений в этой категории',
+                        style: AppTextStyles.bodySmall,
+                      ),
+                    );
+                  }
+
+                  return ListView.separated(
+                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenHorizontal),
+                    itemCount: items.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    itemBuilder: (context, i) {
+                      final e = items[i];
+                      final isExpanded = _expandedExerciseId == e.id;
+
+                      return _ExerciseCard(
+                        exercise: e,
+                        isExpanded: isExpanded,
+                        onTap: () => _toggle(e.id),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
         ),
-      ),
-      body: FutureBuilder<List<Exercise>>(
-        future: repo.exercisesByCategory(widget.categoryId),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          final items = snapshot.data ?? const <Exercise>[];
-          if (items.isEmpty) {
-            return const Center(child: Text('Нет упражнений в этой категории'));
-          }
-
-          return ListView.separated(
-            padding: const EdgeInsets.all(16),
-            itemCount: items.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 12),
-            itemBuilder: (context, i) {
-              final e = items[i];
-              final isExpanded = _expandedExerciseId == e.id;
-
-              return _ExerciseExpandableCard(
-                title: e.title,
-                description: e.description,
-                isExpanded: isExpanded,
-                onTap: () => _toggle(e.id),
-                onDo: () => _snack('Пока без перехода'),
-                onFav: () => _snack('Избранное пока не реализовано'),
-              );
-            },
-          );
-        },
       ),
     );
   }
 }
 
-class _ExerciseExpandableCard extends StatelessWidget {
-  final String title;
-  final String description;
+class _ExerciseCard extends StatelessWidget {
+  final Exercise exercise;
   final bool isExpanded;
   final VoidCallback onTap;
-  final VoidCallback onDo;
-  final VoidCallback onFav;
 
-  const _ExerciseExpandableCard({
-    required this.title,
-    required this.description,
+  const _ExerciseCard({
+    required this.exercise,
     required this.isExpanded,
     required this.onTap,
-    required this.onDo,
-    required this.onFav,
   });
 
   @override
   Widget build(BuildContext context) {
-    final borderRadius = BorderRadius.circular(14);
-
-    return Material(
-      color: Colors.grey.shade100,
-      borderRadius: borderRadius,
-      child: InkWell(
-        borderRadius: borderRadius,
-        onTap: onTap,
-        child: AnimatedPadding(
-          duration: const Duration(milliseconds: 180),
-          curve: Curves.easeOut,
-          padding: EdgeInsets.all(isExpanded ? 16 : 14),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      title,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                      ),
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppRadius.medium),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: isExpanded ? AppColors.accentSurface : AppColors.surface,
+          borderRadius: BorderRadius.circular(AppRadius.medium),
+          border: isExpanded
+              ? Border.all(color: AppColors.accent, width: 1.5)
+              : null,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    exercise.title,
+                    style: AppTextStyles.bodyLarge.copyWith(
+                      color: isExpanded ? AppColors.accent : AppColors.textPrimary,
                     ),
                   ),
-                  AnimatedRotation(
-                    turns: isExpanded ? 0.5 : 0.0,
-                    duration: const Duration(milliseconds: 180),
-                    child: const Icon(Icons.keyboard_arrow_down),
+                ),
+                AnimatedRotation(
+                  turns: isExpanded ? 0.5 : 0.0,
+                  duration: const Duration(milliseconds: 200),
+                  child: Icon(
+                    Icons.keyboard_arrow_down,
+                    color: isExpanded ? AppColors.accent : AppColors.textSecondary,
                   ),
-                ],
-              ),
-              AnimatedCrossFade(
-                firstChild: const SizedBox.shrink(),
-                secondChild: Padding(
-                  padding: const EdgeInsets.only(top: 14),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Плейсхолдер под видео
-                      Container(
-                        height: 170,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade400,
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        alignment: Alignment.center,
-                        child: const Text(
-                          'Видео (добавишь позже)',
-                          style: TextStyle(color: Colors.black54),
-                        ),
+                ),
+              ],
+            ),
+            AnimatedCrossFade(
+              firstChild: const SizedBox.shrink(),
+              secondChild: Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: 160,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: AppColors.border,
+                        borderRadius: BorderRadius.circular(AppRadius.small),
                       ),
-                      const SizedBox(height: 12),
-                      Text(
-                        description,
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                      const SizedBox(height: 12),
-                      Row(
+                      alignment: Alignment.center,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          ElevatedButton(
-                            onPressed: onDo,
-                            child: const Text('Выполнить'),
+                          Icon(
+                            Icons.play_circle_outline,
+                            color: AppColors.textSecondary,
+                            size: 48,
                           ),
-                          const Spacer(),
-                          IconButton(
-                            onPressed: onFav,
-                            icon: const Icon(Icons.favorite_border),
-                            tooltip: 'Избранное',
+                          const SizedBox(height: 8),
+                          Text(
+                            'Видео',
+                            style: AppTextStyles.bodySmall,
                           ),
                         ],
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      exercise.description,
+                      style: AppTextStyles.body,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Длительность: ${exercise.defaultDurationSec} сек',
+                      style: AppTextStyles.bodySmall,
+                    ),
+                  ],
                 ),
-                crossFadeState: isExpanded
-                    ? CrossFadeState.showSecond
-                    : CrossFadeState.showFirst,
-                duration: const Duration(milliseconds: 180),
-                sizeCurve: Curves.easeOut,
               ),
-            ],
-          ),
+              crossFadeState: isExpanded
+                  ? CrossFadeState.showSecond
+                  : CrossFadeState.showFirst,
+              duration: const Duration(milliseconds: 200),
+              sizeCurve: Curves.easeOut,
+            ),
+          ],
         ),
       ),
     );

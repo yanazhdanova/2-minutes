@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../app/app_theme.dart';
+import '../../shared/widgets.dart';
 
 class BuyPremiumScreen extends StatelessWidget {
   const BuyPremiumScreen({super.key});
@@ -6,97 +8,66 @@ class BuyPremiumScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 28),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenHorizontal),
           child: Column(
             children: [
-              const SizedBox(height: 18),
+              AppHeader(onBack: () => Navigator.pop(context)),
 
+              const Spacer(flex: 2),
 
-              Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  const Expanded(
-                    child: Center(
-                      child: Text(
-                        '2 минуты',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 48),
-                ],
-              ),
-
-              const Spacer(flex: 3),
-
-              const Align(
-                alignment: Alignment.center,
-                child: Text(
-                  'Купить премиум',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 44,
-                    fontWeight: FontWeight.w500,
-                  ),
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: AppColors.accentSurface,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Icon(
+                  Icons.workspace_premium,
+                  color: AppColors.accent,
+                  size: 44,
                 ),
               ),
 
-              const SizedBox(height: 26),
+              const SizedBox(height: 32),
 
+              Text(
+                'Премиум',
+                style: AppTextStyles.heading1,
+              ),
 
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: Text(
-                    'Всего за \$1 в месяц вы можете\nубрать рекламу!',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w400,
-                      height: 1.2,
-                    ),
-                  ),
+              const SizedBox(height: 16),
+
+              Text(
+                'Всего за \$1 в месяц вы можете\nубрать рекламу и получить\nдоступ ко всем упражнениям',
+                textAlign: TextAlign.center,
+                style: AppTextStyles.body.copyWith(
+                  color: AppColors.textSecondary,
+                  height: 1.5,
                 ),
               ),
 
               const SizedBox(height: 40),
 
-              SizedBox(
+              PrimaryButton(
+                label: 'Купить',
                 width: double.infinity,
-                height: 70,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(18),
+                height: 64,
+                onPressed: () {
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text('Скоро будет доступно'),
+                      backgroundColor: AppColors.accent,
                     ),
-                  ),
-                  onPressed: () {
-                    // TODO: покупка премиума
-                  },
-                  child: const Text(
-                    'КУПИТЬ',
-                    style: TextStyle(
-                      fontSize: 34,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
-                      letterSpacing: 1.0,
-                    ),
-                  ),
-                ),
+                  );
+                },
               ),
 
-              const Spacer(flex: 6),
+              const Spacer(flex: 3),
             ],
           ),
         ),

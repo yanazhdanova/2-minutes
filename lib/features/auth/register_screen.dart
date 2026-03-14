@@ -1,108 +1,58 @@
 import 'package:flutter/material.dart';
+import '../../app/app_theme.dart';
 import '../../app/navigation.dart';
+import '../../shared/widgets.dart';
 import '../onboarding/name_screen.dart';
 import 'login_screen.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
 
-  InputDecoration _fieldDecoration() {
-    return InputDecoration(
-      filled: true,
-      fillColor: Colors.grey.shade300,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
-        borderSide: BorderSide.none,
-      ),
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: 18,
-        vertical: 16,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 28),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenHorizontal),
           child: Column(
             children: [
-              const SizedBox(height: 18),
-
-
-              const Text(
-                '2 минуты',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
+              const AppHeader(),
 
               const Spacer(flex: 2),
 
+              Text('Регистрация', style: AppTextStyles.heading1.copyWith(fontSize: 38)),
 
-              const Align(
+              const SizedBox(height: 32),
 
-                child: Text(
-                  'Регистрация',
-                  style: TextStyle(
-                    fontSize: 48,
-                    fontWeight: FontWeight.w400,
+              const AppTextField(hintText: 'Email', keyboardType: TextInputType.emailAddress),
+              const SizedBox(height: 16),
+              const AppTextField(hintText: 'Пароль', obscureText: true),
+              const SizedBox(height: 16),
+              const AppTextField(hintText: 'Повторите пароль', obscureText: true),
 
-                  ),
-                ),
-              ),
+              const SizedBox(height: 32),
 
-              const SizedBox(height: 28),
-
-              /// поля
-              TextField(decoration: _fieldDecoration()),
-              const SizedBox(height: 18),
-              TextField(decoration: _fieldDecoration()),
-              const SizedBox(height: 18),
-              TextField(decoration: _fieldDecoration()),
-
-              const SizedBox(height: 26),
-
-
-              SizedBox(
-                width: 260,
-                height: 56,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.black,
-                    elevation: 0,
-                    shape: const StadiumBorder(),
-                  ),
-                  onPressed: () => goToReplace(
-                    context,
-                    const NameScreen(),
-                  ),
-                  child: const Text('Зарегистрироваться'),
-                ),
+              PrimaryButton(
+                label: 'Зарегистрироваться',
+                width: 280,
+                onPressed: () => goToReplace(context, const NameScreen()),
               ),
 
               const Spacer(flex: 3),
 
-
               TextButton(
-                onPressed: () => goToAndClear(
-                  context,
-                  const LoginScreen(),
-                ),
-                child: const Text(
+                onPressed: () => goToAndClear(context, const LoginScreen()),
+                child: Text(
                   'Уже есть аккаунт',
-                  style: TextStyle(
-                    fontSize: 20,
+                  style: AppTextStyles.bodyLarge.copyWith(
+                    color: AppColors.accent,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
 
-              const SizedBox(height: 18),
+              const SizedBox(height: 24),
             ],
           ),
         ),

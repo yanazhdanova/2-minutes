@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../app/app_theme.dart';
 import '../../app/navigation.dart';
 import '../../app/user_preferences.dart';
+import '../../shared/widgets.dart';
 import '../premium/buy_premium_screen.dart';
 import 'exercises_choice.dart';
 
@@ -42,95 +44,52 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
     final greeting = _getGreeting();
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenHorizontal),
           child: Column(
             children: [
-              const SizedBox(height: 16),
+              const SizedBox(height: 18),
 
-              // Шапка: корона слева, "2 минуты" по центру
               Row(
                 children: [
-                  // Кнопка премиума (корона)
-                  GestureDetector(
+                  PremiumIcon(
                     onTap: () => goTo(context, const BuyPremiumScreen()),
-                    child: Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: Colors.amber.shade100,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Icon(
-                        Icons.workspace_premium,
-                        color: Colors.amber,
-                        size: 28,
-                      ),
-                    ),
                   ),
-
-                  // "2 минуты" по центру
                   const Expanded(
                     child: Text(
                       '2 минуты',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: AppTextStyles.logo,
                     ),
                   ),
-
-                  // Пустой контейнер для симметрии
                   const SizedBox(width: 48),
                 ],
               ),
 
-              const Spacer(),
+              const Spacer(flex: 2),
 
-              // Приветствие с именем
               Text(
-                '$greeting,\n$_userName',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w600,
-                  height: 1.3,
-                ),
+                '$greeting,',
+                style: AppTextStyles.heading3,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                _userName,
+                style: AppTextStyles.heading2,
               ),
 
-              const SizedBox(height: 32),
+              const Spacer(flex: 1),
 
-              // Кнопка "Начать тренировку"
-              SizedBox(
+              PrimaryButton(
+                label: 'Начать тренировку',
                 width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: () => goTo(
-                    context,
-                    const ExercisesChoiceScreen(),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey.shade200,
-                    foregroundColor: Colors.black87,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(28),
-                    ),
-                  ),
-                  child: const Text(
-                    'Начать тренировку',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
+                height: 64,
+                onPressed: () => goTo(context, const ExercisesChoiceScreen()),
               ),
 
-              const Spacer(),
+              const Spacer(flex: 2),
             ],
           ),
         ),

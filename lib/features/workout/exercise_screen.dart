@@ -1,11 +1,11 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../app/app_theme.dart';
 import '../../app/navigation.dart';
 import '../exercises/domain/exercise_models.dart';
 import 'end_of_the_workout_screen.dart';
 
-/// Экран выполнения упражнения с таймером обратного отсчёта.
 class ExerciseScreen extends StatefulWidget {
   final List<Exercise> exercises;
 
@@ -58,19 +58,13 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     });
   }
 
-  /// Отматывает таймер на delta секунд.
-  /// delta > 0: добавить время (отмотать назад)
-  /// delta < 0: убрать время (перемотать вперёд)
   void _adjustTime(int delta) {
     setState(() {
       final currentRemaining = _remainingSeconds;
       final newRemaining = (currentRemaining + delta).clamp(1, _totalSeconds);
 
       _controller.stop();
-
-      // Пересчитываем progress на основе нового оставшегося времени
       final progress = 1.0 - (newRemaining / _totalSeconds);
-
       _controller.value = progress.clamp(0.0, 1.0);
 
       if (!_isPaused) _controller.forward();
@@ -118,58 +112,47 @@ class _ExerciseScreenState extends State<ExerciseScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: AnimatedBuilder(
           animation: _controller,
           builder: (context, _) {
             return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 28),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenHorizontal),
               child: Column(
                 children: [
                   const SizedBox(height: 18),
 
-                  // Шапка
-                  const Text(
-                    '2 минуты',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
+                  const Text('2 минуты', style: AppTextStyles.logo),
 
                   const Spacer(flex: 2),
 
-                  // Таймер
+
                   Text(
                     _timeString,
                     style: const TextStyle(
                       fontSize: 72,
                       fontWeight: FontWeight.w300,
+                      color: AppColors.textPrimary,
                       fontFeatures: [FontFeature.tabularFigures()],
                     ),
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 32),
 
-                  // Круговой индикатор
+
                   SizedBox(
                     width: 200,
                     height: 200,
                     child: CustomPaint(
-                      painter: _TimerPainter(
-                        progress: _controller.value,
-                      ),
+                      painter: _TimerPainter(progress: _controller.value),
                       child: Center(
                         child: Padding(
-                          padding: const EdgeInsets.all(20),
+                          padding: const EdgeInsets.all(24),
                           child: Text(
                             _exercise.title,
                             textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
+                            style: AppTextStyles.bodyLarge,
                           ),
                         ),
                       ),
@@ -178,17 +161,14 @@ class _ExerciseScreenState extends State<ExerciseScreen>
 
                   const Spacer(flex: 1),
 
-                  // Описание
+
                   if (!_isPaused)
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: Text(
                         _exercise.description,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.black54,
-                        ),
+                        style: AppTextStyles.bodySmall,
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -196,49 +176,50 @@ class _ExerciseScreenState extends State<ExerciseScreen>
 
                   const Spacer(flex: 1),
 
-                  // ── Кнопки: активное состояние ──
+
                   if (!_isPaused) ...[
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         _RoundButton(
-                          label: '-15 сек',
-                          onTap: () => _adjustTime(15), // Отмотать назад = добавить время
+                          label: '-15',
+                          onTap: () => _adjustTime(15),
                         ),
                         _RoundButton(
                           label: 'пауза',
                           onTap: _togglePause,
+                          isPrimary: true,
                         ),
                         _RoundButton(
-                          label: '+15 сек',
-                          onTap: () => _adjustTime(-15), // Перемотать вперёд = убрать время
+                          label: '+15',
+                          onTap: () => _adjustTime(-15),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 20),
                     _RoundButton(
-                      label: 'избр',
-                      onTap: () =>
-                          setState(() => _isFavorite = !_isFavorite),
+                      label: '♡',
+                      onTap: () => setState(() => _isFavorite = !_isFavorite),
                       isSmall: true,
                       filled: _isFavorite,
                     ),
                   ],
 
-                  // ── Кнопки: состояние паузы ──
+
                   if (_isPaused) ...[
                     _PauseButton(
-                      label: 'продолжить',
+                      label: 'Продолжить',
                       onTap: _togglePause,
+                      isPrimary: true,
                     ),
                     const SizedBox(height: 12),
                     _PauseButton(
-                      label: 'пропустить упражнение',
+                      label: 'Пропустить упражнение',
                       onTap: _skipExercise,
                     ),
                     const SizedBox(height: 12),
                     _PauseButton(
-                      label: 'закончить тренировку',
+                      label: 'Закончить тренировку',
                       onTap: _endWorkout,
                       isDestructive: true,
                     ),
@@ -255,24 +236,24 @@ class _ExerciseScreenState extends State<ExerciseScreen>
   }
 }
 
-// ── Круглая кнопка ──
-
 class _RoundButton extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
   final bool isSmall;
   final bool filled;
+  final bool isPrimary;
 
   const _RoundButton({
     required this.label,
     required this.onTap,
     this.isSmall = false,
     this.filled = false,
+    this.isPrimary = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final size = isSmall ? 56.0 : 70.0;
+    final size = isSmall ? 48.0 : 64.0;
 
     return GestureDetector(
       onTap: onTap,
@@ -281,16 +262,18 @@ class _RoundButton extends StatelessWidget {
         height: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: filled ? Colors.grey.shade500 : Colors.grey.shade300,
+          color: isPrimary
+              ? AppColors.accent
+              : (filled ? AppColors.accent : AppColors.surface),
         ),
         alignment: Alignment.center,
         child: Text(
           label,
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: isSmall ? 11 : 12,
+            fontSize: isSmall ? 18 : 13,
             fontWeight: FontWeight.w500,
-            color: filled ? Colors.white : Colors.black87,
+            color: (isPrimary || filled) ? AppColors.white : AppColors.textPrimary,
           ),
         ),
       ),
@@ -298,16 +281,16 @@ class _RoundButton extends StatelessWidget {
   }
 }
 
-// ── Кнопка в состоянии паузы ──
-
 class _PauseButton extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
+  final bool isPrimary;
   final bool isDestructive;
 
   const _PauseButton({
     required this.label,
     required this.onTap,
+    this.isPrimary = false,
     this.isDestructive = false,
   });
 
@@ -315,31 +298,42 @@ class _PauseButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      height: 52,
-      child: OutlinedButton(
-        style: OutlinedButton.styleFrom(
+      height: 56,
+      child: isPrimary
+          ? ElevatedButton(
+        onPressed: onTap,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.accent,
+          foregroundColor: AppColors.white,
+          elevation: 0,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
-          side: BorderSide(
-            color: isDestructive ? Colors.red.shade300 : Colors.grey.shade400,
+            borderRadius: BorderRadius.circular(AppRadius.medium),
           ),
         ),
+        child: Text(label, style: AppTextStyles.buttonLarge.copyWith(color: AppColors.white)),
+      )
+          : OutlinedButton(
         onPressed: onTap,
+        style: OutlinedButton.styleFrom(
+          foregroundColor: isDestructive ? AppColors.error : AppColors.textPrimary,
+          side: BorderSide(
+            color: isDestructive ? AppColors.error : AppColors.border,
+            width: 1.5,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadius.medium),
+          ),
+        ),
         child: Text(
           label,
-          style: TextStyle(
-            fontSize: 17,
-            fontWeight: FontWeight.w500,
-            color: isDestructive ? Colors.red : Colors.black87,
+          style: AppTextStyles.button.copyWith(
+            color: isDestructive ? AppColors.error : AppColors.textPrimary,
           ),
         ),
       ),
     );
   }
 }
-
-// ── CustomPainter для кругового таймера ──
 
 class _TimerPainter extends CustomPainter {
   final double progress;
@@ -352,17 +346,17 @@ class _TimerPainter extends CustomPainter {
     final radius = size.width / 2 - 8;
     const strokeWidth = 8.0;
 
-    // Фон
+
     final bgPaint = Paint()
-      ..color = Colors.grey.shade200
+      ..color = AppColors.surface
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeWidth
       ..strokeCap = StrokeCap.round;
     canvas.drawCircle(center, radius, bgPaint);
 
-    // Прогресс (оставшееся время)
+
     final progressPaint = Paint()
-      ..color = Colors.black87
+      ..color = AppColors.accent
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeWidth
       ..strokeCap = StrokeCap.round;

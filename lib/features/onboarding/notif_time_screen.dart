@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../../app/app_theme.dart';
 import '../../app/navigation.dart';
 import '../../app/user_preferences.dart';
+import '../../shared/widgets.dart';
 import 'notif_freq_screen.dart';
 
 class NotifTimeScreen extends StatefulWidget {
@@ -15,20 +17,6 @@ class _NotifTimeScreenState extends State<NotifTimeScreen> {
   DateTime _fromTime = DateTime(2024, 1, 1, 9, 0);
   DateTime _toTime = DateTime(2024, 1, 1, 21, 0);
 
-  void _showFromPicker() {
-    _showTimePicker(
-      initialTime: _fromTime,
-      onChanged: (time) => setState(() => _fromTime = time),
-    );
-  }
-
-  void _showToPicker() {
-    _showTimePicker(
-      initialTime: _toTime,
-      onChanged: (time) => setState(() => _toTime = time),
-    );
-  }
-
   void _showTimePicker({
     required DateTime initialTime,
     required ValueChanged<DateTime> onChanged,
@@ -40,42 +28,54 @@ class _NotifTimeScreenState extends State<NotifTimeScreen> {
         DateTime tempTime = initialTime;
         return Container(
           height: 300,
-          decoration: const BoxDecoration(
-            color: Color(0xFF2C2C2E),
-            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           ),
           child: Column(
             children: [
-              // Кнопки отмена/готово
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    CupertinoButton(
-                      padding: EdgeInsets.zero,
-                      child: const Text('Отмена'),
+                    TextButton(
                       onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        'Отмена',
+                        style: AppTextStyles.button.copyWith(color: AppColors.textSecondary),
+                      ),
                     ),
-                    CupertinoButton(
-                      padding: EdgeInsets.zero,
-                      child: const Text('Готово'),
+                    TextButton(
                       onPressed: () {
                         onChanged(tempTime);
                         Navigator.pop(context);
                       },
+                      child: Text(
+                        'Готово',
+                        style: AppTextStyles.button.copyWith(color: AppColors.accent),
+                      ),
                     ),
                   ],
                 ),
               ),
-              // Пикер
               Expanded(
-                child: CupertinoDatePicker(
-                  mode: CupertinoDatePickerMode.time,
-                  initialDateTime: initialTime,
-                  use24hFormat: true,
-                  minuteInterval: 5,
-                  onDateTimeChanged: (time) => tempTime = time,
+                child: CupertinoTheme(
+                  data: const CupertinoThemeData(
+                    textTheme: CupertinoTextThemeData(
+                      dateTimePickerTextStyle: TextStyle(
+                        fontSize: 22,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ),
+                  child: CupertinoDatePicker(
+                    mode: CupertinoDatePickerMode.time,
+                    initialDateTime: initialTime,
+                    use24hFormat: true,
+                    minuteInterval: 5,
+                    onDateTimeChanged: (time) => tempTime = time,
+                  ),
                 ),
               ),
             ],
@@ -107,132 +107,97 @@ class _NotifTimeScreenState extends State<NotifTimeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Время уведомлений'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            const Spacer(),
+      backgroundColor: AppColors.background,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenHorizontal),
+          child: Column(
+            children: [
+              AppHeader(onBack: () => Navigator.pop(context)),
 
-            const Text(
-              'В какое время напоминать о тренировке?',
-              style: TextStyle(fontSize: 18),
-              textAlign: TextAlign.center,
-            ),
+              const Spacer(flex: 2),
 
-            const SizedBox(height: 40),
-
-            // От - До
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // От
-                Column(
-                  children: [
-                    Text(
-                      'От',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    GestureDetector(
-                      onTap: _showFromPicker,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 16,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade200,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          _formatTime(_fromTime),
-                          style: const TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.w300,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(width: 24),
-
-                const Text(
-                  '—',
-                  style: TextStyle(fontSize: 24),
-                ),
-
-                const SizedBox(width: 24),
-
-                // До
-                Column(
-                  children: [
-                    Text(
-                      'До',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    GestureDetector(
-                      onTap: _showToPicker,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 16,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade200,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          _formatTime(_toTime),
-                          style: const TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.w300,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-
-            const Spacer(),
-
-            // Кнопка "Далее"
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton(
-                onPressed: _next,
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-                child: const Text(
-                  'Далее',
-                  style: TextStyle(fontSize: 18),
-                ),
+              Text(
+                'В какое время\nнапоминать о\nтренировке?',
+                textAlign: TextAlign.center,
+                style: AppTextStyles.heading2,
               ),
-            ),
 
-            const SizedBox(height: 24),
-          ],
+              const SizedBox(height: 48),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Column(
+                    children: [
+                      Text('От', style: AppTextStyles.label),
+                      const SizedBox(height: 12),
+                      GestureDetector(
+                        onTap: () => _showTimePicker(
+                          initialTime: _fromTime,
+                          onChanged: (time) => setState(() => _fromTime = time),
+                        ),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 16,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.surface,
+                            borderRadius: BorderRadius.circular(AppRadius.medium),
+                          ),
+                          child: Text(
+                            _formatTime(_fromTime),
+                            style: AppTextStyles.heading3,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Text('—', style: AppTextStyles.heading3),
+                  ),
+                  Column(
+                    children: [
+                      Text('До', style: AppTextStyles.label),
+                      const SizedBox(height: 12),
+                      GestureDetector(
+                        onTap: () => _showTimePicker(
+                          initialTime: _toTime,
+                          onChanged: (time) => setState(() => _toTime = time),
+                        ),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 16,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.surface,
+                            borderRadius: BorderRadius.circular(AppRadius.medium),
+                          ),
+                          child: Text(
+                            _formatTime(_toTime),
+                            style: AppTextStyles.heading3,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+
+              const Spacer(flex: 3),
+
+              OutlineButton(
+                label: 'Далее',
+                width: 260,
+                onPressed: _next,
+              ),
+
+              const SizedBox(height: 32),
+            ],
+          ),
         ),
       ),
     );

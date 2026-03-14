@@ -21,6 +21,5 @@ class AppScope extends InheritedWidget {
 
   @override
   bool updateShouldNotify(AppScope oldWidget) =>
-      oldWidget.exerciseRepo != exerciseRepo ||
-          oldWidget.prefs != prefs;
+      oldWidget.exerciseRepo != exerciseRepo || oldWidget.prefs != prefs;
 }

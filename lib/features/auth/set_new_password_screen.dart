@@ -1,100 +1,49 @@
 import 'package:flutter/material.dart';
-
+import '../../app/app_theme.dart';
 import '../../app/navigation.dart';
+import '../../shared/widgets.dart';
 import 'login_screen.dart';
 
 class SetNewPasswordScreen extends StatelessWidget {
   const SetNewPasswordScreen({super.key});
 
-  InputDecoration _fieldDecoration() {
-    return InputDecoration(
-      filled: true,
-      fillColor: Colors.grey.shade300,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
-        borderSide: BorderSide.none,
-      ),
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: 18,
-        vertical: 16,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 28),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenHorizontal),
           child: Column(
             children: [
-              const SizedBox(height: 18),
-
-              Row(
-                children: [
-                  const Expanded(
-                    child: Center(
-                      child: Text(
-                        '2 минуты',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 48),
-                ],
-              ),
+              const AppHeader(),
 
               const Spacer(flex: 2),
 
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: Text(
-                    'Придумайте\nновый пароль',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 36,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
+              Text(
+                'Придумайте\nновый пароль',
+                textAlign: TextAlign.center,
+                style: AppTextStyles.heading2,
               ),
 
               const SizedBox(height: 36),
 
-
-              TextField(
-                decoration: _fieldDecoration(),
+              const AppTextField(
+                hintText: 'Новый пароль',
                 obscureText: true,
               ),
-              const SizedBox(height: 18),
-              TextField(
-                decoration: _fieldDecoration(),
+              const SizedBox(height: 16),
+              const AppTextField(
+                hintText: 'Повторите пароль',
                 obscureText: true,
               ),
 
-              const SizedBox(height: 34),
+              const SizedBox(height: 32),
 
-              SizedBox(
+              OutlineButton(
+                label: 'Поменять пароль',
                 width: 260,
-                height: 56,
-                child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    shape: const StadiumBorder(),
-                    side: const BorderSide(width: 1),
-                  ),
-                  onPressed: () => goToAndClear(
-                    context,
-                    const LoginScreen(),
-                  ),
-                  child: const Text('Поменять пароль'),
-                ),
+                onPressed: () => goToAndClear(context, const LoginScreen()),
               ),
 
               const Spacer(flex: 4),
@@ -105,4 +54,3 @@ class SetNewPasswordScreen extends StatelessWidget {
     );
   }
 }
-

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../app/app_theme.dart';
 import '../../app/navigation.dart';
 import '../../app/user_preferences.dart';
+import '../../shared/widgets.dart';
 import 'final_screen.dart';
 
 class NotifFreqScreen extends StatefulWidget {
@@ -13,7 +15,12 @@ class NotifFreqScreen extends StatefulWidget {
 class _NotifFreqScreenState extends State<NotifFreqScreen> {
   String _selected = '01:00';
 
-  final _options = ['00:30', '01:00', '02:00', '04:00'];
+  final _options = [
+    ('00:30', 'Каждые 30 минут'),
+    ('01:00', 'Каждый час'),
+    ('02:00', 'Каждые 2 часа'),
+    ('04:00', 'Каждые 4 часа'),
+  ];
 
   Future<void> _next() async {
     await UserPreferences.setNotifFrequency(_selected);
@@ -26,114 +33,82 @@ class _NotifFreqScreenState extends State<NotifFreqScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 28),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenHorizontal),
           child: Column(
             children: [
-              const SizedBox(height: 18),
-
-              Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  const Expanded(
-                    child: Center(
-                      child: Text(
-                        '2 минуты',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 48),
-                ],
-              ),
+              AppHeader(onBack: () => Navigator.pop(context)),
 
               const Spacer(flex: 2),
 
-              const Text(
-                'Как часто\nприсылать\nуведомления',
+              Text(
+                'Как часто\nприсылать\nуведомления?',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 36,
-                  fontWeight: FontWeight.w700,
-                  height: 1.15,
-                ),
+                style: AppTextStyles.heading2,
               ),
 
-              const SizedBox(height: 32),
+              const SizedBox(height: 36),
 
-              // Выбор частоты
-              GestureDetector(
-                onTap: () => _showPicker(),
-                child: Container(
-                  width: 180,
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    _selected,
-                    style: const TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.w500,
+              ...List.generate(_options.length, (i) {
+                final opt = _options[i];
+                final isSelected = _selected == opt.$1;
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(AppRadius.medium),
+                    onTap: () => setState(() => _selected = opt.$1),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 16,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isSelected ? AppColors.accentSurface : AppColors.surface,
+                        borderRadius: BorderRadius.circular(AppRadius.medium),
+                        border: isSelected
+                            ? Border.all(color: AppColors.accent, width: 1.5)
+                            : null,
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              opt.$2,
+                              style: AppTextStyles.bodyLarge.copyWith(
+                                color: isSelected
+                                    ? AppColors.accent
+                                    : AppColors.textPrimary,
+                              ),
+                            ),
+                          ),
+                          if (isSelected)
+                            const Icon(
+                              Icons.check_circle,
+                              color: AppColors.accent,
+                              size: 24,
+                            ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ),
+                );
+              }),
 
               const Spacer(flex: 3),
 
-              SizedBox(
+              OutlineButton(
+                label: 'Далее',
                 width: 260,
-                height: 56,
-                child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    shape: const StadiumBorder(),
-                    side: const BorderSide(width: 1),
-                  ),
-                  onPressed: _next,
-                  child: const Text('Далее'),
-                ),
+                onPressed: _next,
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  void _showPicker() {
-    showModalBottomSheet(
-      context: context,
-      builder: (_) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: _options.map((opt) {
-            return ListTile(
-              title: Text(
-                'Каждые $opt',
-                style: const TextStyle(fontSize: 18),
-              ),
-              trailing:
-              _selected == opt ? const Icon(Icons.check) : null,
-              onTap: () {
-                setState(() => _selected = opt);
-                Navigator.pop(context);
-              },
-            );
-          }).toList(),
         ),
       ),
     );

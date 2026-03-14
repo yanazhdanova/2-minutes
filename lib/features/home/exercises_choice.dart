@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../app/navigation.dart';
-import '../../app/main_tab_screen.dart';
-import '../exercises/domain/exercise_models.dart';
-import '../workout/exercise_screen.dart';
-import 'home_phys_mental_screen.dart';
+import 'package:two_mins/app/app_theme.dart';
+import 'package:two_mins/app/navigation.dart';
+import 'package:two_mins/app/main_tab_screen.dart';
+import 'package:two_mins/shared/widgets.dart';
+import 'package:two_mins/features/exercises/domain/exercise_models.dart';
+import 'package:two_mins/features/workout/exercise_screen.dart';
+import 'package:two_mins/features/home/home_phys_mental_screen.dart';
 
 class ExercisesChoiceScreen extends StatefulWidget {
   const ExercisesChoiceScreen({super.key});
@@ -13,13 +15,11 @@ class ExercisesChoiceScreen extends StatefulWidget {
 }
 
 class _ExercisesChoiceScreenState extends State<ExercisesChoiceScreen> {
-
   final List<Exercise?> _slots = [null, null, null];
 
   bool get _allSelected => _slots.every((e) => e != null);
 
   Future<void> _pickExercise(int slotIndex) async {
-    // Открываем экран выбора типа, ждём результат (Exercise)
     final Exercise? result = await Navigator.push<Exercise>(
       context,
       MaterialPageRoute(builder: (_) => const HomePhysMentalScreen()),
@@ -43,41 +43,26 @@ class _ExercisesChoiceScreenState extends State<ExercisesChoiceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 28),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenHorizontal),
           child: Column(
             children: [
-              const SizedBox(height: 18),
+              AppHeader(
+                onBack: () => goToAndClear(context, const MainTabScreen()),
+              ),
 
-              Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back),
-                    onPressed: () => goToAndClear(
-                      context,
-                      const MainTabScreen(),
-                    ),
-                  ),
-                  const Expanded(
-                    child: Center(
-                      child: Text(
-                        '2 минуты',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 48),
-                ],
+              const SizedBox(height: 24),
+
+              Text(
+                'Выберите\nупражнения',
+                textAlign: TextAlign.center,
+                style: AppTextStyles.heading2,
               ),
 
               const SizedBox(height: 32),
 
-              // Три слота
               for (int i = 0; i < 3; i++) ...[
                 _ExerciseSlot(
                   index: i + 1,
@@ -89,23 +74,10 @@ class _ExercisesChoiceScreenState extends State<ExercisesChoiceScreen> {
 
               const Spacer(),
 
-              // Кнопка "Начать"
-              SizedBox(
-                width: 260,
-                height: 56,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.black,
-                    elevation: 0,
-                    shape: const StadiumBorder(),
-                    textStyle: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  onPressed: _allSelected ? _startWorkout : null,
-                  child: const Text('Начать'),
-                ),
+              PrimaryButton(
+                label: 'Начать',
+                width: double.infinity,
+                onPressed: _allSelected ? _startWorkout : null,
               ),
 
               const SizedBox(height: 32),
@@ -134,24 +106,51 @@ class _ExerciseSlot extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(18),
+      borderRadius: BorderRadius.circular(AppRadius.medium),
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.grey.shade300 : Colors.grey.shade200,
-          borderRadius: BorderRadius.circular(18),
+          color: isSelected ? AppColors.accentSurface : AppColors.surface,
+          borderRadius: BorderRadius.circular(AppRadius.medium),
           border: isSelected
-              ? Border.all(color: Colors.black54, width: 1.5)
+              ? Border.all(color: AppColors.accent, width: 1.5)
               : null,
         ),
-        child: Text(
-          isSelected ? exercise!.title : '$index упражнение',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-            color: isSelected ? Colors.black : Colors.grey.shade600,
-          ),
+        child: Row(
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: isSelected ? AppColors.accent : AppColors.border,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                '$index',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: isSelected ? AppColors.white : AppColors.textSecondary,
+                ),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                isSelected ? exercise!.title : 'Выбрать упражнение',
+                style: AppTextStyles.bodyLarge.copyWith(
+                  color: isSelected ? AppColors.accent : AppColors.textSecondary,
+                ),
+              ),
+            ),
+            Icon(
+              isSelected ? Icons.check_circle : Icons.add_circle_outline,
+              color: isSelected ? AppColors.accent : AppColors.textHint,
+              size: 24,
+            ),
+          ],
         ),
       ),
     );

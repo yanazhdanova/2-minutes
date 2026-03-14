@@ -10,8 +10,6 @@ class UserPreferences {
   static const _keyNotifToMinute = 'notif_to_minute';
   static const _keyNotifFrequency = 'notif_frequency';
 
-  // ── Имя пользователя ──
-
   static Future<void> setName(String name) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_keyName, name);
@@ -21,8 +19,6 @@ class UserPreferences {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_keyName);
   }
-
-  // ── Онбординг ──
 
   static Future<void> setOnboardingComplete(bool complete) async {
     final prefs = await SharedPreferences.getInstance();
@@ -34,8 +30,6 @@ class UserPreferences {
     return prefs.getBool(_keyOnboardingComplete) ?? false;
   }
 
-  // ── Выбранные категории ──
-
   static Future<void> setSelectedCategories(List<String> categories) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList(_keyCategories, categories);
@@ -45,8 +39,6 @@ class UserPreferences {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getStringList(_keyCategories) ?? [];
   }
-
-  // ── Диапазон времени уведомлений ──
 
   static Future<void> setNotifTimeRange({
     required int fromHour,
@@ -71,8 +63,6 @@ class UserPreferences {
     };
   }
 
-  // ── Частота уведомлений ──
-
   static Future<void> setNotifFrequency(String frequency) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_keyNotifFrequency, frequency);
@@ -82,8 +72,6 @@ class UserPreferences {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_keyNotifFrequency) ?? 'daily';
   }
-
-  // ── Для отладки: сбросить все настройки ──
 
   static Future<void> clear() async {
     final prefs = await SharedPreferences.getInstance();

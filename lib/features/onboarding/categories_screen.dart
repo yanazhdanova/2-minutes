@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../app/app_theme.dart';
 import '../../app/navigation.dart';
 import '../../app/user_preferences.dart';
+import '../../shared/widgets.dart';
 import 'notif_time_screen.dart';
 
 class CategoriesScreen extends StatefulWidget {
@@ -37,7 +39,10 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   Future<void> _next() async {
     if (_selected.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Выберите хотя бы одну категорию')),
+        SnackBar(
+          content: const Text('Выберите хотя бы одну категорию'),
+          backgroundColor: AppColors.accent,
+        ),
       );
       return;
     }
@@ -52,53 +57,26 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 28),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenHorizontal),
           child: Column(
             children: [
-              const SizedBox(height: 18),
+              AppHeader(onBack: () => Navigator.pop(context)),
 
-              // Шапка
-              Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  const Expanded(
-                    child: Center(
-                      child: Text(
-                        '2 минуты',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 48),
-                ],
-              ),
-
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
 
               const Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'Выберите, какие\nпроблемы хотите\nисправить',
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.w700,
-                    height: 1.15,
-                  ),
+                  style: AppTextStyles.heading2,
                 ),
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
 
-              // Список с чекбоксами
               Expanded(
                 child: ListView.builder(
                   itemCount: _problems.length,
@@ -107,39 +85,48 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                     final isSelected = _selected.contains(p.id);
 
                     return Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
+                      padding: const EdgeInsets.only(bottom: 12),
                       child: InkWell(
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(AppRadius.medium),
                         onTap: () => _toggle(p.id),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
+                            horizontal: 20,
+                            vertical: 16,
                           ),
                           decoration: BoxDecoration(
-                            color: isSelected
-                                ? Colors.grey.shade400
-                                : Colors.grey.shade200,
-                            borderRadius: BorderRadius.circular(14),
+                            color: isSelected ? AppColors.accentSurface : AppColors.surface,
+                            borderRadius: BorderRadius.circular(AppRadius.medium),
+                            border: isSelected
+                                ? Border.all(color: AppColors.accent, width: 1.5)
+                                : null,
                           ),
                           child: Row(
                             children: [
                               Expanded(
                                 child: Text(
                                   p.label,
-                                  style: TextStyle(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.w500,
+                                  style: AppTextStyles.bodyLarge.copyWith(
                                     color: isSelected
-                                        ? Colors.white
-                                        : Colors.black,
+                                        ? AppColors.accent
+                                        : AppColors.textPrimary,
                                   ),
                                 ),
                               ),
-                              Checkbox(
-                                value: isSelected,
-                                onChanged: (_) => _toggle(p.id),
-                                activeColor: Colors.black,
+                              Container(
+                                width: 24,
+                                height: 24,
+                                decoration: BoxDecoration(
+                                  color: isSelected ? AppColors.accent : AppColors.border,
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: isSelected
+                                    ? const Icon(
+                                  Icons.check,
+                                  size: 16,
+                                  color: AppColors.white,
+                                )
+                                    : null,
                               ),
                             ],
                           ),
@@ -150,30 +137,10 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                 ),
               ),
 
-              // Текст «список категорий»
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Text(
-                  'список категорий',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey.shade500,
-                  ),
-                ),
-              ),
-
-              // Кнопка далее
-              SizedBox(
+              OutlineButton(
+                label: 'Далее',
                 width: 260,
-                height: 56,
-                child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    shape: const StadiumBorder(),
-                    side: const BorderSide(width: 1),
-                  ),
-                  onPressed: _next,
-                  child: const Text('Далее'),
-                ),
+                onPressed: _next,
               ),
 
               const SizedBox(height: 24),
