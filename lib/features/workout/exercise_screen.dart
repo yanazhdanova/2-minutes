@@ -3,20 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../app/app_theme.dart';
 import '../../app/navigation.dart';
+import '../../app/l10n/app_localizations.dart';
 import '../exercises/domain/exercise_models.dart';
 import 'end_of_the_workout_screen.dart';
 
 class ExerciseScreen extends StatefulWidget {
   final List<Exercise> exercises;
-
   const ExerciseScreen({super.key, required this.exercises});
-
   @override
   State<ExerciseScreen> createState() => _ExerciseScreenState();
 }
 
-class _ExerciseScreenState extends State<ExerciseScreen>
-    with TickerProviderStateMixin {
+class _ExerciseScreenState extends State<ExerciseScreen> with TickerProviderStateMixin {
   late AnimationController _controller;
   late int _totalSeconds;
   int _currentIndex = 0;
@@ -26,254 +24,83 @@ class _ExerciseScreenState extends State<ExerciseScreen>
   Exercise get _exercise => widget.exercises[_currentIndex];
 
   @override
-  void initState() {
-    super.initState();
-    _totalSeconds = _exercise.defaultDurationSec;
-    _initTimer();
-  }
+  void initState() { super.initState(); _totalSeconds = _exercise.defaultDurationSec; _initTimer(); }
 
   void _initTimer() {
-    _controller = AnimationController(
-      vsync: this,
-      duration: Duration(seconds: _totalSeconds),
-    );
-    _controller.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        HapticFeedback.heavyImpact();
-        _onExerciseDone();
-      }
-    });
-    _controller.forward();
-    _isPaused = false;
+    _controller = AnimationController(vsync: this, duration: Duration(seconds: _totalSeconds));
+    _controller.addStatusListener((s) { if (s == AnimationStatus.completed) { HapticFeedback.heavyImpact(); _onDone(); } });
+    _controller.forward(); _isPaused = false;
   }
 
-  void _togglePause() {
-    setState(() {
-      if (_isPaused) {
-        _controller.forward();
-      } else {
-        _controller.stop();
-      }
-      _isPaused = !_isPaused;
-    });
-  }
+  void _togglePause() { setState(() { _isPaused ? _controller.forward() : _controller.stop(); _isPaused = !_isPaused; }); }
 
   void _adjustTime(int delta) {
     setState(() {
-      final currentRemaining = _remainingSeconds;
-      final newRemaining = (currentRemaining + delta).clamp(1, _totalSeconds);
-
+      final rem = (_totalSeconds * (1.0 - _controller.value)).ceil();
+      final nr = (rem + delta).clamp(1, _totalSeconds);
       _controller.stop();
-      final progress = 1.0 - (newRemaining / _totalSeconds);
-      _controller.value = progress.clamp(0.0, 1.0);
-
+      _controller.value = (1.0 - (nr / _totalSeconds)).clamp(0.0, 1.0);
       if (!_isPaused) _controller.forward();
     });
   }
 
-  int get _remainingSeconds =>
-      (_totalSeconds * (1.0 - _controller.value)).ceil();
+  int get _remaining => (_totalSeconds * (1.0 - _controller.value)).ceil();
+  String get _timeStr => '${(_remaining ~/ 60).toString().padLeft(2, '0')}:${(_remaining % 60).toString().padLeft(2, '0')}';
 
-  String get _timeString {
-    final s = _remainingSeconds;
-    final m = s ~/ 60;
-    final sec = s % 60;
-    return '${m.toString().padLeft(2, '0')}:${sec.toString().padLeft(2, '0')}';
+  void _onDone() {
+    if (_currentIndex >= widget.exercises.length - 1) { goToAndClear(context, const EndOfTheWorkoutScreen()); }
+    else { _controller.dispose(); _currentIndex++; _totalSeconds = _exercise.defaultDurationSec; _initTimer(); setState(() {}); }
   }
 
-  void _onExerciseDone() {
-    if (_currentIndex >= widget.exercises.length - 1) {
-      goToAndClear(context, const EndOfTheWorkoutScreen());
-    } else {
-      _controller.dispose();
-      _currentIndex++;
-      _totalSeconds = _exercise.defaultDurationSec;
-      _initTimer();
-      setState(() {});
-    }
-  }
-
-  void _skipExercise() {
-    _controller.stop();
-    _onExerciseDone();
-  }
-
-  void _endWorkout() {
-    _controller.stop();
-    goToAndClear(context, const EndOfTheWorkoutScreen());
-  }
+  void _skip() { _controller.stop(); _onDone(); }
+  void _end() { _controller.stop(); goToAndClear(context, const EndOfTheWorkoutScreen()); }
 
   @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+  void dispose() { _controller.dispose(); super.dispose(); }
 
   @override
   Widget build(BuildContext context) {
+    final c = C(context);
+    final t = Tr.of(context);
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: c.background,
       body: SafeArea(
         child: AnimatedBuilder(
           animation: _controller,
-          builder: (context, _) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenHorizontal),
-              child: Column(
-                children: [
-                  const SizedBox(height: 18),
-
-                  const Text('2 минуты', style: AppTextStyles.logo),
-
-                  const Spacer(flex: 2),
-
-
-                  Text(
-                    _timeString,
-                    style: const TextStyle(
-                      fontSize: 72,
-                      fontWeight: FontWeight.w300,
-                      color: AppColors.textPrimary,
-                      fontFeatures: [FontFeature.tabularFigures()],
-                    ),
-                  ),
-
-                  const SizedBox(height: 32),
-
-
-                  SizedBox(
-                    width: 200,
-                    height: 200,
-                    child: CustomPaint(
-                      painter: _TimerPainter(progress: _controller.value),
-                      child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(24),
-                          child: Text(
-                            _exercise.title,
-                            textAlign: TextAlign.center,
-                            style: AppTextStyles.bodyLarge,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const Spacer(flex: 1),
-
-
-                  if (!_isPaused)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: Text(
-                        _exercise.description,
-                        textAlign: TextAlign.center,
-                        style: AppTextStyles.bodySmall,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-
-                  const Spacer(flex: 1),
-
-
-                  if (!_isPaused) ...[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        _RoundButton(
-                          label: '-15',
-                          onTap: () => _adjustTime(15),
-                        ),
-                        _RoundButton(
-                          label: 'пауза',
-                          onTap: _togglePause,
-                          isPrimary: true,
-                        ),
-                        _RoundButton(
-                          label: '+15',
-                          onTap: () => _adjustTime(-15),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    _RoundButton(
-                      label: '♡',
-                      onTap: () => setState(() => _isFavorite = !_isFavorite),
-                      isSmall: true,
-                      filled: _isFavorite,
-                    ),
-                  ],
-
-
-                  if (_isPaused) ...[
-                    _PauseButton(
-                      label: 'Продолжить',
-                      onTap: _togglePause,
-                      isPrimary: true,
-                    ),
-                    const SizedBox(height: 12),
-                    _PauseButton(
-                      label: 'Пропустить упражнение',
-                      onTap: _skipExercise,
-                    ),
-                    const SizedBox(height: 12),
-                    _PauseButton(
-                      label: 'Закончить тренировку',
-                      onTap: _endWorkout,
-                      isDestructive: true,
-                    ),
-                  ],
-
-                  const SizedBox(height: 32),
-                ],
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
-
-class _RoundButton extends StatelessWidget {
-  final String label;
-  final VoidCallback onTap;
-  final bool isSmall;
-  final bool filled;
-  final bool isPrimary;
-
-  const _RoundButton({
-    required this.label,
-    required this.onTap,
-    this.isSmall = false,
-    this.filled = false,
-    this.isPrimary = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final size = isSmall ? 48.0 : 64.0;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: isPrimary
-              ? AppColors.accent
-              : (filled ? AppColors.accent : AppColors.surface),
-        ),
-        alignment: Alignment.center,
-        child: Text(
-          label,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: isSmall ? 18 : 13,
-            fontWeight: FontWeight.w500,
-            color: (isPrimary || filled) ? AppColors.white : AppColors.textPrimary,
+          builder: (context, _) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenHorizontal),
+            child: Column(children: [
+              const SizedBox(height: 18),
+              Text(t.appName, style: AppTextStyles.logo.copyWith(color: c.textPrimary)),
+              const Spacer(flex: 2),
+              Text(_timeStr, style: TextStyle(fontSize: 72, fontWeight: FontWeight.w300, color: c.textPrimary, fontFeatures: const [FontFeature.tabularFigures()])),
+              const SizedBox(height: 32),
+              SizedBox(width: 200, height: 200, child: CustomPaint(
+                painter: _TimerPainter(progress: _controller.value, trackColor: c.surface, progressColor: c.accentLight),
+                child: Center(child: Padding(padding: const EdgeInsets.all(24), child: Text(_exercise.title, textAlign: TextAlign.center, style: AppTextStyles.bodyLarge.copyWith(color: c.textPrimary)))),
+              )),
+              const Spacer(flex: 1),
+              if (!_isPaused) Padding(padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Text(_exercise.description, textAlign: TextAlign.center, style: AppTextStyles.bodySmall.copyWith(color: c.textSecondary), maxLines: 3, overflow: TextOverflow.ellipsis)),
+              const Spacer(flex: 1),
+              if (!_isPaused) ...[
+                Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+                  _Round(label: '-15', onTap: () => _adjustTime(15), bg: c.surface, fg: c.textPrimary),
+                  _Round(label: t.pause, onTap: _togglePause, bg: c.accent, fg: c.white),
+                  _Round(label: '+15', onTap: () => _adjustTime(-15), bg: c.surface, fg: c.textPrimary),
+                ]),
+                const SizedBox(height: 20),
+                _Round(label: '♡', onTap: () => setState(() => _isFavorite = !_isFavorite), bg: _isFavorite ? c.accent : c.surface, fg: _isFavorite ? c.white : c.textPrimary, small: true),
+              ],
+              if (_isPaused) ...[
+                _PauseBtn(label: t.continueWorkout, onTap: _togglePause, bg: c.accent, fg: c.white),
+                const SizedBox(height: 12),
+                _PauseBtn(label: t.skipExercise, onTap: _skip, borderColor: c.border, fg: c.textPrimary),
+                const SizedBox(height: 12),
+                _PauseBtn(label: t.endWorkout, onTap: _end, borderColor: c.error, fg: c.error),
+              ],
+              const SizedBox(height: 32),
+            ]),
           ),
         ),
       ),
@@ -281,96 +108,41 @@ class _RoundButton extends StatelessWidget {
   }
 }
 
-class _PauseButton extends StatelessWidget {
-  final String label;
-  final VoidCallback onTap;
-  final bool isPrimary;
-  final bool isDestructive;
-
-  const _PauseButton({
-    required this.label,
-    required this.onTap,
-    this.isPrimary = false,
-    this.isDestructive = false,
-  });
-
+class _Round extends StatelessWidget {
+  final String label; final VoidCallback onTap; final Color bg; final Color fg; final bool small;
+  const _Round({required this.label, required this.onTap, required this.bg, required this.fg, this.small = false});
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 56,
-      child: isPrimary
-          ? ElevatedButton(
-        onPressed: onTap,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.accent,
-          foregroundColor: AppColors.white,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.medium),
-          ),
-        ),
-        child: Text(label, style: AppTextStyles.buttonLarge.copyWith(color: AppColors.white)),
-      )
-          : OutlinedButton(
-        onPressed: onTap,
-        style: OutlinedButton.styleFrom(
-          foregroundColor: isDestructive ? AppColors.error : AppColors.textPrimary,
-          side: BorderSide(
-            color: isDestructive ? AppColors.error : AppColors.border,
-            width: 1.5,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.medium),
-          ),
-        ),
-        child: Text(
-          label,
-          style: AppTextStyles.button.copyWith(
-            color: isDestructive ? AppColors.error : AppColors.textPrimary,
-          ),
-        ),
-      ),
-    );
+    final sz = small ? 48.0 : 64.0;
+    return GestureDetector(onTap: onTap, child: Container(width: sz, height: sz, decoration: BoxDecoration(shape: BoxShape.circle, color: bg),
+        alignment: Alignment.center, child: Text(label, textAlign: TextAlign.center, style: TextStyle(fontSize: small ? 18 : 13, fontWeight: FontWeight.w500, color: fg))));
+  }
+}
+
+class _PauseBtn extends StatelessWidget {
+  final String label; final VoidCallback onTap; final Color? bg; final Color fg; final Color? borderColor;
+  const _PauseBtn({required this.label, required this.onTap, this.bg, required this.fg, this.borderColor});
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(width: double.infinity, height: 56, child: bg != null
+        ? ElevatedButton(onPressed: onTap, style: ElevatedButton.styleFrom(backgroundColor: bg, foregroundColor: fg, elevation: 0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.medium))),
+        child: Text(label, style: AppTextStyles.buttonLarge.copyWith(color: fg)))
+        : OutlinedButton(onPressed: onTap, style: OutlinedButton.styleFrom(foregroundColor: fg, side: BorderSide(color: borderColor ?? fg, width: 1.5), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.medium))),
+        child: Text(label, style: AppTextStyles.button.copyWith(color: fg))));
   }
 }
 
 class _TimerPainter extends CustomPainter {
-  final double progress;
-
-  _TimerPainter({required this.progress});
-
+  final double progress; final Color trackColor; final Color progressColor;
+  _TimerPainter({required this.progress, required this.trackColor, required this.progressColor});
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2 - 8;
-    const strokeWidth = 8.0;
-
-
-    final bgPaint = Paint()
-      ..color = AppColors.surface
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.round;
-    canvas.drawCircle(center, radius, bgPaint);
-
-
-    final progressPaint = Paint()
-      ..color = AppColors.accent
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.round;
-
-    final sweepAngle = 2 * pi * (1.0 - progress);
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      -pi / 2,
-      sweepAngle,
-      false,
-      progressPaint,
-    );
+    canvas.drawCircle(center, radius, Paint()..color = trackColor..style = PaintingStyle.stroke..strokeWidth = 8..strokeCap = StrokeCap.round);
+    canvas.drawArc(Rect.fromCircle(center: center, radius: radius), -pi / 2, 2 * pi * (1.0 - progress), false,
+        Paint()..color = progressColor..style = PaintingStyle.stroke..strokeWidth = 8..strokeCap = StrokeCap.round);
   }
-
   @override
-  bool shouldRepaint(_TimerPainter old) => old.progress != progress;
+  bool shouldRepaint(_TimerPainter old) => old.progress != progress || old.trackColor != trackColor || old.progressColor != progressColor;
 }

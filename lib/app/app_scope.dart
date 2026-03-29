@@ -6,20 +6,14 @@ class AppScope extends InheritedWidget {
   final ExerciseSqliteRepository exerciseRepo;
   final PrefsService prefs;
 
-  const AppScope({
-    super.key,
-    required this.exerciseRepo,
-    required this.prefs,
-    required super.child,
-  });
+  const AppScope({super.key, required this.exerciseRepo, required this.prefs, required super.child});
 
   static AppScope of(BuildContext context) {
     final scope = context.dependOnInheritedWidgetOfExactType<AppScope>();
-    assert(scope != null, 'AppScope not found in widget tree');
+    assert(scope != null, 'AppScope not found');
     return scope!;
   }
 
   @override
-  bool updateShouldNotify(AppScope oldWidget) =>
-      oldWidget.exerciseRepo != exerciseRepo || oldWidget.prefs != prefs;
+  bool updateShouldNotify(AppScope old) => old.exerciseRepo != exerciseRepo || old.prefs != prefs;
 }

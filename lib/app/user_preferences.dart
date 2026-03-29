@@ -10,71 +10,17 @@ class UserPreferences {
   static const _keyNotifToMinute = 'notif_to_minute';
   static const _keyNotifFrequency = 'notif_frequency';
 
-  static Future<void> setName(String name) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_keyName, name);
+  static Future<void> setName(String name) async { (await SharedPreferences.getInstance()).setString(_keyName, name); }
+  static Future<String?> getName() async => (await SharedPreferences.getInstance()).getString(_keyName);
+  static Future<void> setOnboardingComplete(bool c) async { (await SharedPreferences.getInstance()).setBool(_keyOnboardingComplete, c); }
+  static Future<bool> isOnboardingComplete() async => (await SharedPreferences.getInstance()).getBool(_keyOnboardingComplete) ?? false;
+  static Future<void> setSelectedCategories(List<String> c) async { (await SharedPreferences.getInstance()).setStringList(_keyCategories, c); }
+  static Future<List<String>> getSelectedCategories() async => (await SharedPreferences.getInstance()).getStringList(_keyCategories) ?? [];
+  static Future<void> setNotifTimeRange({required int fromHour, required int fromMinute, required int toHour, required int toMinute}) async {
+    final p = await SharedPreferences.getInstance();
+    await p.setInt(_keyNotifFromHour, fromHour); await p.setInt(_keyNotifFromMinute, fromMinute);
+    await p.setInt(_keyNotifToHour, toHour); await p.setInt(_keyNotifToMinute, toMinute);
   }
-
-  static Future<String?> getName() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_keyName);
-  }
-
-  static Future<void> setOnboardingComplete(bool complete) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_keyOnboardingComplete, complete);
-  }
-
-  static Future<bool> isOnboardingComplete() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_keyOnboardingComplete) ?? false;
-  }
-
-  static Future<void> setSelectedCategories(List<String> categories) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList(_keyCategories, categories);
-  }
-
-  static Future<List<String>> getSelectedCategories() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getStringList(_keyCategories) ?? [];
-  }
-
-  static Future<void> setNotifTimeRange({
-    required int fromHour,
-    required int fromMinute,
-    required int toHour,
-    required int toMinute,
-  }) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(_keyNotifFromHour, fromHour);
-    await prefs.setInt(_keyNotifFromMinute, fromMinute);
-    await prefs.setInt(_keyNotifToHour, toHour);
-    await prefs.setInt(_keyNotifToMinute, toMinute);
-  }
-
-  static Future<Map<String, int>> getNotifTimeRange() async {
-    final prefs = await SharedPreferences.getInstance();
-    return {
-      'fromHour': prefs.getInt(_keyNotifFromHour) ?? 9,
-      'fromMinute': prefs.getInt(_keyNotifFromMinute) ?? 0,
-      'toHour': prefs.getInt(_keyNotifToHour) ?? 21,
-      'toMinute': prefs.getInt(_keyNotifToMinute) ?? 0,
-    };
-  }
-
-  static Future<void> setNotifFrequency(String frequency) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_keyNotifFrequency, frequency);
-  }
-
-  static Future<String> getNotifFrequency() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_keyNotifFrequency) ?? 'daily';
-  }
-
-  static Future<void> clear() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
-  }
+  static Future<void> setNotifFrequency(String f) async { (await SharedPreferences.getInstance()).setString(_keyNotifFrequency, f); }
+  static Future<void> clear() async { (await SharedPreferences.getInstance()).clear(); }
 }

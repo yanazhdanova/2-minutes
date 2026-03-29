@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "1069372312379",
+    "project_id": "two-minutes-b2438",
+    "storage_bucket": "two-minutes-b2438.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1069372312379:android:f975f96067550a9733851e",
+        "android_client_info": {
+          "package_name": "com.example.two_mins"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1069372312379-skjv464heg5tpsr20b8e66ls0bvap0h1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBuUUmR-P7gW2_A7hOXrDu80V4bJYIExFo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1069372312379-skjv464heg5tpsr20b8e66ls0bvap0h1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1069372312379-cqrrtp5liiesauj817r59oiootdnrnsn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.yanazhd.twoMins"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1069372312379:android:68c3520080cd5f4d33851e",
+        "android_client_info": {
+          "package_name": "com.yanazhd.twoMins"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1069372312379-skjv464heg5tpsr20b8e66ls0bvap0h1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBuUUmR-P7gW2_A7hOXrDu80V4bJYIExFo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1069372312379-skjv464heg5tpsr20b8e66ls0bvap0h1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1069372312379-cqrrtp5liiesauj817r59oiootdnrnsn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.yanazhd.twoMins"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,122 +1,80 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'app/app_theme.dart';
 import 'app/app_scope.dart';
+import 'app/locale_controller.dart';
+import 'app/theme_controller.dart';
+import 'app/l10n/app_localizations.dart';
 import 'features/exercises/data/db/app_db.dart';
 import 'features/exercises/data/exercise_catalog.dart';
 import 'features/exercises/data/exercise_sqlite_repository.dart';
 import 'features/exercises/data/prefs_service.dart';
 import 'features/auth/login_screen.dart';
-import 'app/main_tab_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
-  runApp(const MyApp());
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  final prefs = PrefsService();
+  await prefs.init();
+  final exerciseRepo = ExerciseSqliteRepository(AppDb.instance);
+  if (await exerciseRepo.isEmpty()) {
+    await exerciseRepo.seed(categories: exerciseCategories, exercises: exercises);
+  }
+  runApp(MyApp(exerciseRepo: exerciseRepo, prefs: prefs, localeCtrl: LocaleController(prefs), themeCtrl: ThemeController(prefs)));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: buildAppTheme(),
-      home: const _InitScreen(),
-    );
-  }
-}
-
-class _InitScreen extends StatefulWidget {
-  const _InitScreen();
-
-  @override
-  State<_InitScreen> createState() => _InitScreenState();
-}
-
-class _InitScreenState extends State<_InitScreen> {
-  late Future<_AppDependencies> _initFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _initFuture = _initApp();
-  }
-
-  Future<_AppDependencies> _initApp() async {
-    final prefs = PrefsService();
-    await prefs.init();
-
-    final exerciseRepo = ExerciseSqliteRepository(AppDb.instance);
-
-    if (await exerciseRepo.isEmpty()) {
-      await exerciseRepo.seed(
-        categories: exerciseCategories,
-        exercises: exercises,
-      );
-    }
-
-    return _AppDependencies(exerciseRepo: exerciseRepo, prefs: prefs);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<_AppDependencies>(
-      future: _initFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
-          return Scaffold(
-            backgroundColor: AppColors.background,
-            body: const Center(
-              child: Text(
-                '2 минуты',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-            ),
-          );
-        }
-
-        if (snapshot.hasError) {
-          return Scaffold(
-            backgroundColor: AppColors.background,
-            body: Center(
-              child: Text(
-                'Ошибка: ${snapshot.error}',
-                style: AppTextStyles.body,
-              ),
-            ),
-          );
-        }
-
-        final deps = snapshot.data!;
-
-        return AppScope(
-          exerciseRepo: deps.exerciseRepo,
-          prefs: deps.prefs,
-          child: Navigator(
-            onGenerateRoute: (_) => MaterialPageRoute(
-              builder: (_) {
-                // Для отладки: начинаем с логина
-                return const LoginScreen();
-                // Для продакшена:
-                // if (deps.prefs.isOnboardingDone) {
-                //   return const MainTabScreen();
-                // }
-                // return const LoginScreen();
-              },
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _AppDependencies {
   final ExerciseSqliteRepository exerciseRepo;
   final PrefsService prefs;
+  final LocaleController localeCtrl;
+  final ThemeController themeCtrl;
 
-  _AppDependencies({required this.exerciseRepo, required this.prefs});
+  const MyApp({super.key, required this.exerciseRepo, required this.prefs, required this.localeCtrl, required this.themeCtrl});
+
+  @override
+  Widget build(BuildContext context) {
+    return ThemeProvider(
+      controller: themeCtrl,
+      child: LocaleProvider(
+        controller: localeCtrl,
+        child: AppScope(
+          exerciseRepo: exerciseRepo,
+          prefs: prefs,
+          child: ListenableBuilder(
+            listenable: Listenable.merge([themeCtrl, localeCtrl]),
+            builder: (context, _) {
+              final accent = themeCtrl.accentColor;
+              return MaterialApp(
+                debugShowCheckedModeBanner: false,
+                themeMode: themeCtrl.themeMode,
+                theme: buildAppTheme(isDark: false, accentColor: accent),
+                darkTheme: buildAppTheme(isDark: true, accentColor: accent),
+                locale: localeCtrl.locale,
+                supportedLocales: Tr.supportedLocales,
+                localizationsDelegates: const [
+                  Tr.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                builder: (context, child) {
+                  final isDark = Theme.of(context).brightness == Brightness.dark;
+                  return AppColorsProvider(
+                    colors: ResolvedColors.from(isDark: isDark, accentColor: accent),
+                    child: child!,
+                  );
+                },
+                home: const LoginScreen(),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
 }
