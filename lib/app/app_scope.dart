@@ -6,7 +6,12 @@ class AppScope extends InheritedWidget {
   final ExerciseSqliteRepository exerciseRepo;
   final PrefsService prefs;
 
-  const AppScope({super.key, required this.exerciseRepo, required this.prefs, required super.child});
+  const AppScope({
+    super.key,
+    required this.exerciseRepo,
+    required this.prefs,
+    required super.child,
+  });
 
   static AppScope of(BuildContext context) {
     final scope = context.dependOnInheritedWidgetOfExactType<AppScope>();
@@ -15,5 +20,6 @@ class AppScope extends InheritedWidget {
   }
 
   @override
-  bool updateShouldNotify(AppScope old) => old.exerciseRepo != exerciseRepo || old.prefs != prefs;
+  bool updateShouldNotify(AppScope old) =>
+      old.exerciseRepo != exerciseRepo || old.prefs != prefs;
 }

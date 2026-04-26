@@ -11,6 +11,12 @@ class ExerciseRepository {
     return list;
   }
 
-  List<Exercise> exercisesByCategory(String categoryId) => exercises.where((e) => e.categoryId == categoryId).toList();
-  Exercise? exerciseById(String id) { for (final e in exercises) { if (e.id == id) return e; } return null; }
+  List<Exercise> exercisesByCategory(String categoryId) =>
+      exercises.where((e) => e.categoryId == categoryId).toList();
+  Exercise? exerciseById(String id) {
+    for (final e in exercises) {
+      if (e.id == id) return e;
+    }
+    return null;
+  }
 }

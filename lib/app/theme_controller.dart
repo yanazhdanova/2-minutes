@@ -36,10 +36,20 @@ class ThemeController extends ChangeNotifier {
     notifyListeners();
   }
 
-  static ThemeMode _parseMode(String s) => switch (s) { 'dark' => ThemeMode.dark, 'light' => ThemeMode.light, _ => ThemeMode.system };
-  static String _modeToStr(ThemeMode m) => switch (m) { ThemeMode.dark => 'dark', ThemeMode.light => 'light', _ => 'system' };
-  static AccentColor _parseAccent(String s) => s == 'pink' ? AccentColor.pink : AccentColor.green;
-  static String _accentToStr(AccentColor c) => c == AccentColor.pink ? 'pink' : 'green';
+  static ThemeMode _parseMode(String s) => switch (s) {
+    'dark' => ThemeMode.dark,
+    'light' => ThemeMode.light,
+    _ => ThemeMode.system,
+  };
+  static String _modeToStr(ThemeMode m) => switch (m) {
+    ThemeMode.dark => 'dark',
+    ThemeMode.light => 'light',
+    _ => 'system',
+  };
+  static AccentColor _parseAccent(String s) =>
+      s == 'pink' ? AccentColor.pink : AccentColor.green;
+  static String _accentToStr(AccentColor c) =>
+      c == AccentColor.pink ? 'pink' : 'green';
 
   static ThemeController of(BuildContext context) {
     final p = context.dependOnInheritedWidgetOfExactType<ThemeProvider>();
@@ -50,5 +60,9 @@ class ThemeController extends ChangeNotifier {
 
 class ThemeProvider extends InheritedNotifier<ThemeController> {
   final ThemeController controller;
-  const ThemeProvider({super.key, required this.controller, required super.child}) : super(notifier: controller);
+  const ThemeProvider({
+    super.key,
+    required this.controller,
+    required super.child,
+  }) : super(notifier: controller);
 }

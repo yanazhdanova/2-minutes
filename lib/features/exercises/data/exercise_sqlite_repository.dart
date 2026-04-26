@@ -9,19 +9,34 @@ class ExerciseSqliteRepository {
 
   Future<List<ExerciseCategory>> categoriesByType(HealthType type) async {
     final Database d = await _db.db;
-    final rows = await d.query('exercise_categories', where: 'type = ?', whereArgs: [healthTypeToDb(type)], orderBy: 'ord ASC');
+    final rows = await d.query(
+      'exercise_categories',
+      where: 'type = ?',
+      whereArgs: [healthTypeToDb(type)],
+      orderBy: 'ord ASC',
+    );
     return rows.map(categoryFromMap).toList();
   }
 
   Future<List<Exercise>> exercisesByCategory(String categoryId) async {
     final Database d = await _db.db;
-    final rows = await d.query('exercises', where: 'category_id = ?', whereArgs: [categoryId], orderBy: 'title ASC');
+    final rows = await d.query(
+      'exercises',
+      where: 'category_id = ?',
+      whereArgs: [categoryId],
+      orderBy: 'title ASC',
+    );
     return rows.map(exerciseFromMap).toList();
   }
 
   Future<Exercise?> exerciseById(String id) async {
     final Database d = await _db.db;
-    final rows = await d.query('exercises', where: 'id = ?', whereArgs: [id], limit: 1);
+    final rows = await d.query(
+      'exercises',
+      where: 'id = ?',
+      whereArgs: [id],
+      limit: 1,
+    );
     if (rows.isEmpty) return null;
     return exerciseFromMap(rows.first);
   }
@@ -32,11 +47,26 @@ class ExerciseSqliteRepository {
     return ((res.first['cnt'] as int?) ?? 0) == 0;
   }
 
-  Future<void> seed({required List<ExerciseCategory> categories, required List<Exercise> exercises}) async {
+  Future<void> seed({
+    required List<ExerciseCategory> categories,
+    required List<Exercise> exercises,
+  }) async {
     final Database d = await _db.db;
     await d.transaction((txn) async {
-      for (final c in categories) { await txn.insert('exercise_categories', categoryToMap(c), conflictAlgorithm: ConflictAlgorithm.replace); }
-      for (final e in exercises) { await txn.insert('exercises', exerciseToMap(e), conflictAlgorithm: ConflictAlgorithm.replace); }
+      for (final c in categories) {
+        await txn.insert(
+          'exercise_categories',
+          categoryToMap(c),
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+      }
+      for (final e in exercises) {
+        await txn.insert(
+          'exercises',
+          exerciseToMap(e),
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+      }
     });
   }
 }

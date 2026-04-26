@@ -13,7 +13,11 @@ class MainTabScreen extends StatefulWidget {
 
 class _MainTabScreenState extends State<MainTabScreen> {
   int _currentIndex = 0;
-  final _tabs = [const HomeMainScreen(), const CatalogMainScreen(), const SettingsMainScreen()];
+  final _tabs = [
+    const HomeMainScreen(),
+    const CatalogMainScreen(),
+    const SettingsMainScreen(),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +26,10 @@ class _MainTabScreenState extends State<MainTabScreen> {
     return Scaffold(
       body: IndexedStack(index: _currentIndex, children: _tabs),
       bottomNavigationBar: Container(
-        decoration: BoxDecoration(border: Border(top: BorderSide(color: c.border, width: 1))),
+        decoration: BoxDecoration(
+          border: Border(top: BorderSide(color: c.border, width: 1)),
+        ),
+
         child: BottomNavigationBar(
           currentIndex: _currentIndex,
           onTap: (i) => setState(() => _currentIndex = i),
@@ -31,12 +38,35 @@ class _MainTabScreenState extends State<MainTabScreen> {
           unselectedItemColor: c.textSecondary,
           type: BottomNavigationBarType.fixed,
           elevation: 0,
-          selectedLabelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-          unselectedLabelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
+          selectedLabelStyle: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
+
+          unselectedLabelStyle: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w400,
+          ),
+
           items: [
-            BottomNavigationBarItem(icon: const Icon(Icons.home_outlined), activeIcon: const Icon(Icons.home), label: t.navHome),
-            BottomNavigationBarItem(icon: const Icon(Icons.grid_view_outlined), activeIcon: const Icon(Icons.grid_view), label: t.navCatalog),
-            BottomNavigationBarItem(icon: const Icon(Icons.settings_outlined), activeIcon: const Icon(Icons.settings), label: t.navSettings),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.home_outlined),
+              activeIcon: const Icon(Icons.home),
+              label: t.navHome,
+            ),
+
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.grid_view_outlined),
+              activeIcon: const Icon(Icons.grid_view),
+              label: t.navCatalog,
+            ),
+
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.settings_outlined),
+              activeIcon: const Icon(Icons.settings),
+              label: t.navSettings,
+
+            ),
           ],
         ),
       ),

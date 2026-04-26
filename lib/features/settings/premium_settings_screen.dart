@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../app/navigation.dart';
-import 'settings_main_screen.dart';
 
 class PremiumSettingsScreen extends StatelessWidget {
   const PremiumSettingsScreen({super.key});

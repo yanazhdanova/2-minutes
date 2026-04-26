@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
-// ─── Accent enum ───
 enum AccentColor { green, pink }
 
-// ─── Resolved color set ───
+
 class ResolvedColors {
   final Color background;
   final Color surface;
@@ -12,8 +11,8 @@ class ResolvedColors {
   final Color textPrimary;
   final Color textSecondary;
   final Color textHint;
-  final Color accent;      // filled buttons, strong indicators
-  final Color accentLight;  // text, outlines, nav labels, icons
+  final Color accent;
+  final Color accentLight;
   final Color accentSurface;
   final Color error;
   final Color white;
@@ -33,7 +32,10 @@ class ResolvedColors {
     required this.white,
   });
 
-  factory ResolvedColors.from({required bool isDark, required AccentColor accentColor}) {
+  factory ResolvedColors.from({
+    required bool isDark,
+    required AccentColor accentColor,
+  }) {
     if (isDark) {
       switch (accentColor) {
         case AccentColor.green:
@@ -104,11 +106,14 @@ class ResolvedColors {
   }
 }
 
-// ─── InheritedWidget для доступа к цветам ───
 class AppColorsProvider extends InheritedWidget {
   final ResolvedColors colors;
 
-  const AppColorsProvider({super.key, required this.colors, required super.child});
+  const AppColorsProvider({
+    super.key,
+    required this.colors,
+    required super.child,
+  });
 
   static ResolvedColors of(BuildContext context) {
     final p = context.dependOnInheritedWidgetOfExactType<AppColorsProvider>();
@@ -120,21 +125,66 @@ class AppColorsProvider extends InheritedWidget {
   bool updateShouldNotify(AppColorsProvider old) => true;
 }
 
-// ─── Короткий доступ ───
+
 ResolvedColors C(BuildContext context) => AppColorsProvider.of(context);
 
-// ─── Text styles (без цветов — цвет ставится через ResolvedColors) ───
+
 class AppTextStyles {
   AppTextStyles._();
-  static const heading1 = TextStyle(fontSize: 44, fontWeight: FontWeight.w600, height: 1.1);
-  static const heading2 = TextStyle(fontSize: 32, fontWeight: FontWeight.w600, height: 1.15);
-  static const heading3 = TextStyle(fontSize: 26, fontWeight: FontWeight.w500, height: 1.2);
-  static const body = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, height: 1.4);
-  static const bodyLarge = TextStyle(fontSize: 18, fontWeight: FontWeight.w500, height: 1.3);
-  static const bodySmall = TextStyle(fontSize: 14, fontWeight: FontWeight.w400, height: 1.4);
-  static const button = TextStyle(fontSize: 16, fontWeight: FontWeight.w500, height: 1.2);
-  static const buttonLarge = TextStyle(fontSize: 18, fontWeight: FontWeight.w600, height: 1.2);
-  static const label = TextStyle(fontSize: 14, fontWeight: FontWeight.w500, height: 1.3);
+  static const heading1 = TextStyle(
+    fontSize: 44,
+    fontWeight: FontWeight.w600,
+    height: 1.1,
+  );
+
+  static const heading2 = TextStyle(
+    fontSize: 32,
+    fontWeight: FontWeight.w600,
+    height: 1.15,
+  );
+
+  static const heading3 = TextStyle(
+    fontSize: 26,
+    fontWeight: FontWeight.w500,
+    height: 1.2,
+  );
+
+  static const body = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+    height: 1.4,
+  );
+
+  static const bodyLarge = TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.w500,
+    height: 1.3,
+  );
+
+  static const bodySmall = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+    height: 1.4,
+  );
+
+  static const button = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w500,
+    height: 1.2,
+  );
+
+  static const buttonLarge = TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.w600,
+    height: 1.2,
+  );
+
+  static const label = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+    height: 1.3,
+  );
+
   static const logo = TextStyle(fontSize: 20, fontWeight: FontWeight.w400);
 }
 
@@ -159,8 +209,11 @@ class AppSpacing {
   static const screenHorizontal = 28.0;
 }
 
-// ─── Построение ThemeData ───
-ThemeData buildAppTheme({required bool isDark, required AccentColor accentColor}) {
+
+ThemeData buildAppTheme({
+  required bool isDark,
+  required AccentColor accentColor,
+}) {
   final c = ResolvedColors.from(isDark: isDark, accentColor: accentColor);
 
   return ThemeData(
@@ -178,6 +231,7 @@ ThemeData buildAppTheme({required bool isDark, required AccentColor accentColor}
       error: c.error,
       onError: c.white,
     ),
+
     appBarTheme: AppBarTheme(
       backgroundColor: c.background,
       foregroundColor: c.textPrimary,
@@ -186,6 +240,7 @@ ThemeData buildAppTheme({required bool isDark, required AccentColor accentColor}
       titleTextStyle: AppTextStyles.logo.copyWith(color: c.textPrimary),
       iconTheme: IconThemeData(color: c.textPrimary),
     ),
+
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       backgroundColor: c.background,
       selectedItemColor: c.accentLight,
@@ -193,38 +248,69 @@ ThemeData buildAppTheme({required bool isDark, required AccentColor accentColor}
       type: BottomNavigationBarType.fixed,
       elevation: 0,
     ),
+
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: c.accent,
         foregroundColor: c.white,
         elevation: 0,
         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.extraLarge)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.extraLarge),
+        ),
         textStyle: AppTextStyles.button,
       ),
     ),
+
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
         foregroundColor: c.accentLight,
         side: BorderSide(color: c.accentLight, width: 1.5),
         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.extraLarge)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.extraLarge),
+        ),
         textStyle: AppTextStyles.button,
       ),
     ),
+
     textButtonTheme: TextButtonThemeData(
-      style: TextButton.styleFrom(foregroundColor: c.accentLight, textStyle: AppTextStyles.button),
+      style: TextButton.styleFrom(
+        foregroundColor: c.accentLight,
+        textStyle: AppTextStyles.button,
+      ),
     ),
+
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: c.surface,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.medium), borderSide: BorderSide.none),
-      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.medium), borderSide: BorderSide.none),
-      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.medium), borderSide: BorderSide(color: c.accentLight, width: 1.5)),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(AppRadius.medium),
+        borderSide: BorderSide.none,
+      ),
+
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(AppRadius.medium),
+        borderSide: BorderSide.none,
+      ),
+
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(AppRadius.medium),
+        borderSide: BorderSide(color: c.accentLight, width: 1.5),
+      ),
+
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       hintStyle: TextStyle(color: c.textHint, fontSize: 16),
     ),
-    cardTheme: CardThemeData(color: c.surface, elevation: 0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.medium))),
+
+    cardTheme: CardThemeData(
+      color: c.surface,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.medium),
+      ),
+    ),
+
     dividerTheme: DividerThemeData(color: c.border, thickness: 1),
     progressIndicatorTheme: ProgressIndicatorThemeData(color: c.accentLight),
     expansionTileTheme: ExpansionTileThemeData(

@@ -5,7 +5,9 @@ class LocaleController extends ChangeNotifier {
   final PrefsService _prefs;
   late Locale _locale;
 
-  LocaleController(this._prefs) { _locale = Locale(_prefs.languageCode); }
+  LocaleController(this._prefs) {
+    _locale = Locale(_prefs.languageCode);
+  }
 
   Locale get locale => _locale;
 
@@ -25,5 +27,9 @@ class LocaleController extends ChangeNotifier {
 
 class LocaleProvider extends InheritedNotifier<LocaleController> {
   final LocaleController controller;
-  const LocaleProvider({super.key, required this.controller, required super.child}) : super(notifier: controller);
+  const LocaleProvider({
+    super.key,
+    required this.controller,
+    required super.child,
+  }) : super(notifier: controller);
 }

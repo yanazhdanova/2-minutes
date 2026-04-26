@@ -9,5 +9,9 @@ void goToReplace(BuildContext context, Widget screen) {
 }
 
 void goToAndClear(BuildContext context, Widget screen) {
-  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => screen), (_) => false);
+  Navigator.pushAndRemoveUntil(
+    context,
+    MaterialPageRoute(builder: (_) => screen),
+    (_) => false,
+  );
 }

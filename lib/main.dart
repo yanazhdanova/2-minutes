@@ -12,20 +12,31 @@ import 'features/exercises/data/prefs_service.dart';
 import 'features/auth/login_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-
+import 'features/exercises/data/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await NotificationService.instance.init();
   final prefs = PrefsService();
   await prefs.init();
   final exerciseRepo = ExerciseSqliteRepository(AppDb.instance);
+
   if (await exerciseRepo.isEmpty()) {
-    await exerciseRepo.seed(categories: exerciseCategories, exercises: exercises);
+    await exerciseRepo.seed(
+      categories: exerciseCategories,
+      exercises: exercises,
+    );
   }
-  runApp(MyApp(exerciseRepo: exerciseRepo, prefs: prefs, localeCtrl: LocaleController(prefs), themeCtrl: ThemeController(prefs)));
+
+  runApp(
+    MyApp(
+      exerciseRepo: exerciseRepo,
+      prefs: prefs,
+      localeCtrl: LocaleController(prefs),
+      themeCtrl: ThemeController(prefs),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -34,7 +45,13 @@ class MyApp extends StatelessWidget {
   final LocaleController localeCtrl;
   final ThemeController themeCtrl;
 
-  const MyApp({super.key, required this.exerciseRepo, required this.prefs, required this.localeCtrl, required this.themeCtrl});
+  const MyApp({
+    super.key,
+    required this.exerciseRepo,
+    required this.prefs,
+    required this.localeCtrl,
+    required this.themeCtrl,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +64,7 @@ class MyApp extends StatelessWidget {
           prefs: prefs,
           child: ListenableBuilder(
             listenable: Listenable.merge([themeCtrl, localeCtrl]),
+
             builder: (context, _) {
               final accent = themeCtrl.accentColor;
               return MaterialApp(
@@ -62,10 +80,15 @@ class MyApp extends StatelessWidget {
                   GlobalWidgetsLocalizations.delegate,
                   GlobalCupertinoLocalizations.delegate,
                 ],
+
                 builder: (context, child) {
-                  final isDark = Theme.of(context).brightness == Brightness.dark;
+                  final isDark =
+                      Theme.of(context).brightness == Brightness.dark;
                   return AppColorsProvider(
-                    colors: ResolvedColors.from(isDark: isDark, accentColor: accent),
+                    colors: ResolvedColors.from(
+                      isDark: isDark,
+                      accentColor: accent,
+                    ),
                     child: child!,
                   );
                 },
