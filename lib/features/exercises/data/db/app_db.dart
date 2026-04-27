@@ -1,6 +1,12 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as p;
 
+/**
+Singleton для работы с SQLite БД приложения. Ленивая инициализация: база создаётся
+при первом обращении к геттеру [db]. Схема содержит две таблицы:
+exercise_categories (id, title, type, ord) и exercises (id, category_id, type, title,
+description, default_duration_sec) с FK и индексами. PRAGMA foreign_keys включён.
+*/
 class AppDb {
   static final AppDb instance = AppDb._();
   AppDb._();
@@ -8,6 +14,12 @@ class AppDb {
   static const _dbVersion = 1;
   Database? _db;
 
+  /**
+  Возвращает экземпляр Database, создавая файл two_minutes.db при первом вызове.
+  Включает foreign_keys через PRAGMA и создаёт схему через _createSchema.
+  Последующие вызовы возвращают кэшированный экземпляр.
+  @return Открытая SQLite база данных.
+  */
   Future<Database> get db async {
     final existing = _db;
     if (existing != null) return existing;
@@ -40,6 +52,10 @@ class AppDb {
     await d.execute('CREATE INDEX idx_exercises_type ON exercises(type);');
   }
 
+  /**
+  Закрывает соединение с БД и сбрасывает кэшированный экземпляр.
+  После вызова следующий доступ к [db] создаст новое подключение.
+  */
   Future<void> close() async {
     final d = _db;
     _db = null;

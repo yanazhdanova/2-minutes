@@ -8,6 +8,14 @@ import '../../shared/widgets.dart';
 import '../../features/exercises/data/notification_service.dart';
 import '../../app/app_scope.dart';
 
+/**
+Пятый и финальный экран онбординга. Показывает иконку-галочку и информирует,
+что настройки можно изменить позже. При нажатии «Отлично» выполняет:
+1. Отмечает онбординг завершённым (UserPreferences.setOnboardingComplete).
+2. Запрашивает разрешение на уведомления (NotificationService.requestPermission).
+3. Планирует расписание уведомлений (NotificationService.scheduleFromPrefs).
+4. Переходит на MainTabScreen, очищая весь стек навигации.
+*/
 class FinalScreen extends StatelessWidget {
   const FinalScreen({super.key});
   @override

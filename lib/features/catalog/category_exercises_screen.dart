@@ -5,6 +5,13 @@ import '../../app/l10n/app_localizations.dart';
 import '../../shared/widgets.dart';
 import '../exercises/domain/exercise_models.dart';
 
+/**
+Экран списка упражнений конкретной категории. Загружает упражнения через FutureBuilder.
+Каждое упражнение - тапабельная карточка с AnimatedCrossFade: в свёрнутом состоянии
+показывает только название, в раскрытом - видео-плейсхолдер, описание и длительность.
+Одновременно может быть раскрыта только одна карточка (tracked через _expandedId).
+Открывается из PhysicalGroupsScreen или MentalGroupsScreen.
+*/
 class CategoryExercisesScreen extends StatefulWidget {
   final String categoryId;
   final String title;

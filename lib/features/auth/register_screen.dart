@@ -8,6 +8,12 @@ import 'auth_service.dart';
 import '../onboarding/name_screen.dart';
 import 'login_screen.dart';
 
+/**
+Экран регистрации нового пользователя. Содержит поля email, пароль и подтверждение пароля,
+кнопку «Зарегистрироваться» и «Продолжить с Google», ссылку на экран логина.
+Валидация: все поля обязательны, пароли должны совпадать, минимум 6 символов.
+После успешной регистрации переходит на NameScreen (начало онбординга).
+*/
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
   @override

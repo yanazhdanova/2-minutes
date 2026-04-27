@@ -9,6 +9,13 @@ import '../exercises/data/prefs_service.dart';
 import '../workout/exercise_screen.dart';
 import 'exercises_choice.dart';
 
+/**
+Экран выбора типа тренировки. Два варианта:
+1. «Быстрый старт» - автоматически подбирает 3 упражнения через WorkoutGenerator
+   на основе проблемных зон из настроек пользователя и переходит на ExerciseScreen.
+   Если упражнений нет - показывает SnackBar с ошибкой.
+2. «Своя тренировка» - переходит на ExercisesChoiceScreen для ручного выбора 3 упражнений.
+*/
 class WorkoutTypeScreen extends StatelessWidget {
   const WorkoutTypeScreen({super.key});
 
@@ -59,7 +66,6 @@ class WorkoutTypeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 40),
 
-
               _TypeCard(
                 icon: Icons.bolt,
                 title: t.quickStartTitle,
@@ -69,7 +75,6 @@ class WorkoutTypeScreen extends StatelessWidget {
               ),
 
               const SizedBox(height: 16),
-
 
               _TypeCard(
                 icon: Icons.tune,
@@ -88,6 +93,7 @@ class WorkoutTypeScreen extends StatelessWidget {
   }
 }
 
+/** Карточка варианта тренировки с иконкой, заголовком и описанием. */
 class _TypeCard extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -158,6 +164,7 @@ class _TypeCard extends StatelessWidget {
                 ],
               ),
             ),
+
             Icon(
               Icons.chevron_right,
               color: isAccent ? c.accentLight : c.textSecondary,

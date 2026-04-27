@@ -8,6 +8,14 @@ import 'language_settings_screen.dart';
 import 'appearance_settings_screen.dart';
 import '../premium/buy_premium_screen.dart';
 
+/**
+Главный экран настроек (вкладка «Настройки»). Показывает 5 пунктов меню (_Item):
+1. «Моя программа» - ProgramSettingsScreen (выбор проблемных зон).
+2. «Уведомления» - NotifSettingsScreen (время, частота, дни).
+3. «Язык» - LanguageSettingsScreen (ru/en).
+4. «Внешний вид» - AppearanceSettingsScreen (тема, акцент).
+5. «Платная версия» - BuyPremiumScreen (с акцентной подсветкой).
+*/
 class SettingsMainScreen extends StatelessWidget {
   const SettingsMainScreen({super.key});
   @override
@@ -84,6 +92,7 @@ class SettingsMainScreen extends StatelessWidget {
   }
 }
 
+/** Элемент меню настроек: иконка в контейнере, заголовок и стрелка вправо. При isAccent=true применяется акцентная подсветка фона и текста. */
 class _Item extends StatelessWidget {
   final IconData icon;
   final String title;

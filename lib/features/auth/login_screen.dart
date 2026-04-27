@@ -11,6 +11,12 @@ import 'reset_password_screen.dart';
 import '../../app/main_tab_screen.dart';
 import '../onboarding/name_screen.dart';
 
+/**
+Экран входа в приложение. Содержит поля email и пароль, кнопки «Войти» и «Войти через Google»,
+ссылки на сброс пароля и регистрацию. После успешной аутентификации проверяет,
+завершён ли онбординг: если да - переходит на MainTabScreen, иначе - на NameScreen.
+Ошибки Firebase отображаются через SnackBar с маппингом кодов в пользовательские сообщения.
+*/
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
   @override

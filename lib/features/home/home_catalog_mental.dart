@@ -6,6 +6,13 @@ import '../../app/l10n/app_localizations.dart';
 import '../../shared/widgets.dart';
 import '../exercises/domain/exercise_models.dart';
 
+/**
+Каталог ментальных упражнений для выбора в тренировку. Загружает категории типа
+HealthType.mental через FutureBuilder. Каждая категория - ExpansionTile (_CatTile),
+при раскрытии подгружаются упражнения. Сверху - inline-кнопка «Случайное упражнение»,
+выбирающая случайное из всех ментальных категорий. Аналог HomeCatalogPhysScreen для mental.
+Выбранное упражнение возвращается через Navigator.pop.
+*/
 class HomeCatalogMentalScreen extends StatelessWidget {
   const HomeCatalogMentalScreen({super.key});
 
@@ -124,6 +131,7 @@ class HomeCatalogMentalScreen extends StatelessWidget {
   }
 }
 
+/** Раскрывающаяся плитка категории с загрузкой упражнений по запросу. */
 class _CatTile extends StatelessWidget {
   final ExerciseCategory cat;
   final String localTitle;

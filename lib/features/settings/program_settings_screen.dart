@@ -4,6 +4,13 @@ import '../../app/app_theme.dart';
 import '../../app/l10n/app_localizations.dart';
 import '../../shared/widgets.dart';
 
+/**
+Экран настройки программы тренировок. Аналогичен CategoriesScreen из онбординга,
+но для уже авторизованного пользователя. Показывает 8 проблемных зон с тоглящимися
+карточками. Начальный выбор загружается из PrefsService.selectedCategories.
+Кнопка «Сохранить» появляется при изменениях. Валидация: минимум 1 выбранная проблема.
+При сохранении обновляет PrefsService и показывает SnackBar «Сохранено».
+*/
 class ProgramSettingsScreen extends StatefulWidget {
   const ProgramSettingsScreen({super.key});
   @override
@@ -185,6 +192,7 @@ class _ProgramSettingsScreenState extends State<ProgramSettingsScreen> {
   }
 }
 
+/** Модель проблемной зоны: идентификатор и локализованная метка. */
 class _P {
   final String id;
   final String label;

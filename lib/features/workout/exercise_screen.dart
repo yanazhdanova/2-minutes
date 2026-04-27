@@ -7,6 +7,13 @@ import '../../app/l10n/app_localizations.dart';
 import '../exercises/domain/exercise_models.dart';
 import 'end_of_the_workout_screen.dart';
 
+/**
+Экран выполнения упражнения с анимированным кольцевым таймером.
+Поддерживает: автоматический переход к следующему упражнению, паузу,
+корректировку времени ±15 сек, пропуск упражнения и досрочное завершение тренировки.
+При завершении последнего упражнения - переход на EndOfTheWorkoutScreen.
+Хэптик-обратная связь при завершении таймера. Описание упражнения скрывается на паузе.
+*/
 class ExerciseScreen extends StatefulWidget {
   final List<Exercise> exercises;
   const ExerciseScreen({super.key, required this.exercises});
@@ -178,12 +185,14 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                         bg: c.surface,
                         fg: c.textPrimary,
                       ),
+
                       _Round(
                         label: t.pause,
                         onTap: _togglePause,
                         bg: c.accent,
                         fg: c.white,
                       ),
+
                       _Round(
                         label: '+15',
                         onTap: () => _adjustTime(-15),
@@ -192,6 +201,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                       ),
                     ],
                   ),
+
                   const SizedBox(height: 20),
                   _Round(
                     label: '♡',
@@ -236,6 +246,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
   }
 }
 
+/** Круглая кнопка управления тренировкой: пауза, ±15 сек, избранное. Размер зависит от параметра small (48 или 64 px). */
 class _Round extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
@@ -274,6 +285,7 @@ class _Round extends StatelessWidget {
   }
 }
 
+/** Полноширинная кнопка меню паузы. С фоном (bg != null) рендерится как ElevatedButton, без фона - как OutlinedButton с borderColor. */
 class _PauseBtn extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
@@ -294,7 +306,6 @@ class _PauseBtn extends StatelessWidget {
       width: double.infinity,
       height: 56,
       child: bg != null
-
           ? ElevatedButton(
               onPressed: onTap,
               style: ElevatedButton.styleFrom(
@@ -310,7 +321,6 @@ class _PauseBtn extends StatelessWidget {
                 style: AppTextStyles.buttonLarge.copyWith(color: fg),
               ),
             )
-
           : OutlinedButton(
               onPressed: onTap,
               style: OutlinedButton.styleFrom(
@@ -330,6 +340,12 @@ class _PauseBtn extends StatelessWidget {
   }
 }
 
+/**
+CustomPainter для кольцевого индикатора прогресса таймера.
+Рисует два элемента: фоновый круг (trackColor) и дугу прогресса (progressColor).
+Дуга идёт от 12 часов (-π/2) против часовой стрелки, уменьшаясь по мере progress (0→1).
+Ширина линии - 8px, концы закруглены (StrokeCap.round).
+*/
 class _TimerPainter extends CustomPainter {
   final double progress;
   final Color trackColor;

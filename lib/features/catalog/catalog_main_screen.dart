@@ -5,6 +5,11 @@ import '../../app/l10n/app_localizations.dart';
 import 'physical_groups.dart';
 import 'mental_groups.dart';
 
+/**
+Главный экран каталога (вкладка «Каталог»). Показывает заголовок, подзаголовок
+и две карточки (_Card): «Физические» - PhysicalGroupsScreen, «Ментальные» - MentalGroupsScreen.
+Каждая карточка содержит иконку, название и краткое описание типа упражнений.
+*/
 class CatalogMainScreen extends StatelessWidget {
   const CatalogMainScreen({super.key});
   @override
@@ -66,6 +71,7 @@ class CatalogMainScreen extends StatelessWidget {
   }
 }
 
+/** Карточка раздела каталога с иконкой, заголовком и описанием. */
 class _Card extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -122,7 +128,6 @@ class _Card extends StatelessWidget {
                       color: c.textSecondary,
                     ),
                   ),
-
                 ],
               ),
             ),

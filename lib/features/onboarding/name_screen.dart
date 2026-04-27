@@ -6,6 +6,12 @@ import '../../app/l10n/app_localizations.dart';
 import '../../shared/widgets.dart';
 import 'categories_screen.dart';
 
+/**
+Первый экран онбординга - ввод имени пользователя.
+Содержит текстовое поле с автофокусом и капитализацией слов.
+Кнопка «Далее» активируется только при непустом имени (контролируется флагом _isValid).
+При нажатии сохраняет имя через UserPreferences.setName() и переходит на CategoriesScreen.
+*/
 class NameScreen extends StatefulWidget {
   const NameScreen({super.key});
   @override
@@ -57,6 +63,7 @@ class _NameScreenState extends State<NameScreen> {
                 style: AppTextStyles.heading2.copyWith(color: c.textPrimary),
                 textAlign: TextAlign.center,
               ),
+
               const SizedBox(height: 40),
               TextField(
                 controller: _controller,
@@ -86,6 +93,7 @@ class _NameScreenState extends State<NameScreen> {
                   ),
                 ),
               ),
+
               const Spacer(flex: 2),
               PrimaryButton(
                 label: t.next,

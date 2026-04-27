@@ -6,6 +6,13 @@ import '../../app/l10n/app_localizations.dart';
 import '../../shared/widgets.dart';
 import '../exercises/domain/exercise_models.dart';
 
+/**
+Каталог физических упражнений для выбора в тренировку. Загружает категории типа
+HealthType.physical через FutureBuilder. Каждая категория отображается как
+ExpansionTile (_CatTile), при раскрытии которого загружаются упражнения этой категории.
+Сверху - плитка «Случайное упражнение» (_RandomTile), выбирающая случайное
+из всех физических категорий. Выбранное упражнение возвращается через Navigator.pop.
+*/
 class HomeCatalogPhysScreen extends StatelessWidget {
   const HomeCatalogPhysScreen({super.key});
 
@@ -91,6 +98,7 @@ class HomeCatalogPhysScreen extends StatelessWidget {
   }
 }
 
+/** Плитка «Случайное упражнение» в верхней части каталога. */
 class _RandomTile extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
@@ -132,6 +140,7 @@ class _RandomTile extends StatelessWidget {
   }
 }
 
+/** Раскрывающаяся плитка категории с загрузкой упражнений по запросу. */
 class _CatTile extends StatelessWidget {
   final ExerciseCategory cat;
   final String localTitle;

@@ -6,6 +6,15 @@ import '../../app/l10n/app_localizations.dart';
 import '../../shared/widgets.dart';
 import '../exercises/data/notification_service.dart';
 
+/**
+Экран настроек уведомлений. Три секции:
+1. Время - два блока «От» и «До» (_TimeBox), по тапу открывается CupertinoDatePicker.
+2. Частота - блок с текстом «Каждые N ч M мин», по тапу открывается CupertinoPicker (часы + минуты).
+3. Дни недели - 7 тоглящихся кнопок (минимум 1 день выбран).
+Кнопка «Сохранить» появляется при изменениях (_changed). При сохранении: обновляет
+PrefsService, перепланирует расписание через NotificationService.scheduleFromPrefs(),
+показывает SnackBar «Сохранено». Начальные значения считываются из PrefsService в didChangeDependencies.
+*/
 class NotifSettingsScreen extends StatefulWidget {
   const NotifSettingsScreen({super.key});
   @override
@@ -180,7 +189,6 @@ class _NotifSettingsScreenState extends State<NotifSettingsScreen> {
                           ),
                         ),
                       ),
-
                     ],
                   ),
                 ),
@@ -210,7 +218,6 @@ class _NotifSettingsScreenState extends State<NotifSettingsScreen> {
                               ),
                             ),
                           ),
-
                         ),
                       ),
                       Expanded(
@@ -465,6 +472,7 @@ class _NotifSettingsScreenState extends State<NotifSettingsScreen> {
   }
 }
 
+/** Виджет отображения времени: метка сверху (От/До) и значение HH:mm в контейнере. При тапе вызывает onTap для открытия пикера. */
 class _TimeBox extends StatelessWidget {
   final String label;
   final String value;

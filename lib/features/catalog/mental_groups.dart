@@ -7,6 +7,12 @@ import '../../shared/widgets.dart';
 import '../exercises/domain/exercise_models.dart';
 import 'category_exercises_screen.dart';
 
+/**
+Экран списка категорий ментальных упражнений (вкладка «Каталог» - «Ментальные»).
+Загружает категории типа HealthType.mental через FutureBuilder. Каждая категория -
+тапабельная карточка со стрелкой, при нажатии открывает CategoryExercisesScreen
+с локализованным заголовком. Показывает пустое состояние, если категорий нет.
+*/
 class MentalGroupsScreen extends StatelessWidget {
   const MentalGroupsScreen({super.key});
   @override

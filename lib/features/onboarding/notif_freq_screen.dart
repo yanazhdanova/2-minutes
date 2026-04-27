@@ -7,6 +7,13 @@ import '../../shared/widgets.dart';
 import '../../app/app_scope.dart';
 import 'final_screen.dart';
 
+/**
+Четвёртый экран онбординга - настройка частоты уведомлений и выбор дней недели.
+Частота выбирается через CupertinoPicker (часы + минуты) в bottom sheet,
+минимум 5 минут. Дни недели - 7 тоглящихся кнопок (минимум 1 день).
+По умолчанию: 1 час, все 7 дней. При нажатии «Далее» сохраняет через
+PrefsService (notifFreq в минутах, notifDays как список) и переходит на FinalScreen.
+*/
 class NotifFreqScreen extends StatefulWidget {
   const NotifFreqScreen({super.key});
   @override
@@ -145,7 +152,6 @@ class _NotifFreqScreenState extends State<NotifFreqScreen> {
                                     ),
                                   ),
                                 )
-
                               : List.generate(
                                   12,
                                   (i) => Center(
@@ -213,7 +219,6 @@ class _NotifFreqScreenState extends State<NotifFreqScreen> {
               ),
               const SizedBox(height: 40),
 
-
               Text(
                 t.everyLabel,
                 style: AppTextStyles.label.copyWith(color: c.textSecondary),
@@ -248,7 +253,6 @@ class _NotifFreqScreenState extends State<NotifFreqScreen> {
               ),
 
               const SizedBox(height: 36),
-
 
               Text(
                 t.notifDaysLabel,

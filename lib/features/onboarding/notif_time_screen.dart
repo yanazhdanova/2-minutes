@@ -7,6 +7,13 @@ import '../../app/l10n/app_localizations.dart';
 import '../../shared/widgets.dart';
 import 'notif_freq_screen.dart';
 
+/**
+Третий экран онбординга - выбор временного диапазона уведомлений.
+Показывает два блока «От» и «До» с текущим временем; по тапу открывается
+CupertinoDatePicker в модальном bottom sheet (режим time, 24h формат, шаг 5 мин).
+По умолчанию: 09:00–21:00. При нажатии «Далее» сохраняет через
+UserPreferences.setNotifTimeRange() и переходит на NotifFreqScreen.
+*/
 class NotifTimeScreen extends StatefulWidget {
   const NotifTimeScreen({super.key});
   @override
@@ -14,8 +21,8 @@ class NotifTimeScreen extends StatefulWidget {
 }
 
 class _NotifTimeScreenState extends State<NotifTimeScreen> {
-  DateTime _fromTime = DateTime(2024, 1, 1, 9, 0);
-  DateTime _toTime = DateTime(2024, 1, 1, 21, 0);
+  DateTime _fromTime = DateTime(0, 1, 1, 9, 0);
+  DateTime _toTime = DateTime(0, 1, 1, 21, 0);
 
   void _showPicker({
     required DateTime initial,

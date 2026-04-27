@@ -8,6 +8,12 @@ import '../exercises/domain/exercise_models.dart';
 import '../workout/exercise_screen.dart';
 import 'home_phys_mental_screen.dart';
 
+/**
+Экран ручного выбора 3 упражнений для тренировки. Содержит три слота (_Slot),
+каждый из которых при тапе открывает HomePhysMentalScreen через Navigator.push
+и ожидает возврата выбранного Exercise. Кнопка «Начать» активируется только
+когда все 3 слота заполнены. При нажатии переходит на ExerciseScreen с выбранными упражнениями.
+*/
 class ExercisesChoiceScreen extends StatefulWidget {
   const ExercisesChoiceScreen({super.key});
   @override
@@ -84,6 +90,7 @@ class _ExercisesChoiceScreenState extends State<ExercisesChoiceScreen> {
   }
 }
 
+/** Слот упражнения: отображает номер, название выбранного упражнения или плейсхолдер. */
 class _Slot extends StatelessWidget {
   final int index;
   final Exercise? exercise;

@@ -8,6 +8,13 @@ import '../exercises/domain/exercise_models.dart';
 import 'home_catalog_phys.dart';
 import 'home_catalog_mental.dart';
 
+/**
+Экран выбора типа упражнения для ручной тренировки. Три варианта:
+1. «Физическое» - открывает HomeCatalogPhysScreen для выбора из физических категорий.
+2. «Ментальное» - открывает HomeCatalogMentalScreen для выбора из ментальных категорий.
+3. «Случайное» - загружает все упражнения обоих типов и возвращает случайное.
+Все варианты возвращают выбранное Exercise через Navigator.pop(context, exercise).
+*/
 class HomePhysMentalScreen extends StatelessWidget {
   const HomePhysMentalScreen({super.key});
 
@@ -91,6 +98,7 @@ class HomePhysMentalScreen extends StatelessWidget {
   }
 }
 
+/** Кнопка-карточка с иконкой, заголовком и подзаголовком для выбора типа упражнения. */
 class _Btn extends StatelessWidget {
   final IconData icon;
   final String label;

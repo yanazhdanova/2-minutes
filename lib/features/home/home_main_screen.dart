@@ -9,6 +9,12 @@ import 'workout_type_screen.dart';
 import '../../app/app_scope.dart';
 import 'package:flutter/foundation.dart';
 
+/**
+Главный экран приложения (вкладка «Главная»). Загружает имя пользователя
+из UserPreferences и отображает приветствие, зависящее от времени суток
+(ночь < 6, утро < 12, день < 18, вечер). Содержит иконку премиума в хедере
+и кнопку «Начать тренировку», ведущую на WorkoutTypeScreen.
+*/
 class HomeMainScreen extends StatefulWidget {
   const HomeMainScreen({super.key});
   @override

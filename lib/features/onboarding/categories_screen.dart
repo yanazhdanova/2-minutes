@@ -6,6 +6,13 @@ import '../../app/l10n/app_localizations.dart';
 import '../../shared/widgets.dart';
 import 'notif_time_screen.dart';
 
+/**
+Второй экран онбординга - выбор проблемных зон. Отображает 8 проблем (posture, back,
+neck, eyes, stress, focus, energy, sleep) в виде тоглящихся карточек с чекбоксами.
+Множественный выбор хранится в Set<String> _selected. Валидация: минимум 1 выбранная
+проблема. При нажатии «Далее» сохраняет выбор через UserPreferences.setSelectedCategories()
+и переходит на NotifTimeScreen.
+*/
 class CategoriesScreen extends StatefulWidget {
   const CategoriesScreen({super.key});
   @override
@@ -141,6 +148,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   }
 }
 
+/** Модель проблемной зоны: идентификатор и локализованная метка. */
 class _P {
   final String id;
   final String label;

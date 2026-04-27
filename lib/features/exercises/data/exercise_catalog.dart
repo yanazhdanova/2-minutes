@@ -1,6 +1,7 @@
 import '../domain/exercise_models.dart';
 import 'exercise_repository.dart';
 
+/** Каталог категорий упражнений - 7 категорий (4 физические + 3 ментальные). */
 const exerciseCategories = <ExerciseCategory>[
   ExerciseCategory(
     id: 'neck',

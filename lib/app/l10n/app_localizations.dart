@@ -1,16 +1,30 @@
 import 'package:flutter/widgets.dart';
 
+/**
+Класс локализации приложения. Содержит все строки интерфейса для русской (ru)
+и английской (en) локалей. Строки сгруппированы по разделам: общее, навигация,
+авторизация, онбординг, проблемы, частота, главная, каталог, тренировка,
+настройки, язык, оформление, премиум, категории упражнений, тип тренировки.
+Выбор языка определяется геттером _isRu на основе текущей локали.
+*/
 class Tr {
+  /** Текущая локаль, определяющая язык строк. */
   final Locale locale;
   Tr(this.locale);
 
+  /**
+  Получает экземпляр Tr из контекста через Localizations.of.
+  Возвращает non-null благодаря гарантии наличия делегата _TrDelegate.
+  @param context BuildContext вызывающего виджета.
+  @return Экземпляр Tr для текущей локали.
+  */
   static Tr of(BuildContext context) => Localizations.of<Tr>(context, Tr)!;
   static const LocalizationsDelegate<Tr> delegate = _TrDelegate();
   static const supportedLocales = [Locale('ru'), Locale('en')];
 
   bool get _isRu => locale.languageCode == 'ru';
 
-  // ── Общее ──
+  // Общее
   String get appName => '2 минуты';
   String get next => _isRu ? 'Далее' : 'Next';
   String get cancel => _isRu ? 'Отмена' : 'Cancel';
@@ -18,12 +32,12 @@ class Tr {
   String get save => _isRu ? 'Сохранить' : 'Save';
   String get video => _isRu ? 'Видео' : 'Video';
 
-  // ── Nav ──
+  // Nav
   String get navHome => _isRu ? 'Главная' : 'Home';
   String get navCatalog => _isRu ? 'Каталог' : 'Catalog';
   String get navSettings => _isRu ? 'Настройки' : 'Settings';
 
-  // ── Auth ──
+  // Auth
   String get loginTitle => _isRu ? 'Логин' : 'Login';
   String get emailHint => 'Email';
   String get passwordHint => _isRu ? 'Пароль' : 'Password';
@@ -88,7 +102,7 @@ class Tr {
       : 'You can always\nchange settings\nin the Settings\nsection';
   String get finalButton => _isRu ? 'Отлично' : 'Great';
 
-  // ── Проблемы ──
+  // Проблемы
   String get problemPosture =>
       _isRu ? 'Проблемы с осанкой' : 'Posture problems';
   String get problemBack =>
@@ -101,13 +115,13 @@ class Tr {
   String get problemEnergy => _isRu ? 'Нехватка энергии' : 'Low energy';
   String get problemSleep => _isRu ? 'Проблемы со сном' : 'Sleep problems';
 
-  // ── Частота ──
+  // Частота
   String get freqEvery30min => _isRu ? 'Каждые 30 минут' : 'Every 30 minutes';
   String get freqEveryHour => _isRu ? 'Каждый час' : 'Every hour';
   String get freqEvery2hours => _isRu ? 'Каждые 2 часа' : 'Every 2 hours';
   String get freqEvery4hours => _isRu ? 'Каждые 4 часа' : 'Every 4 hours';
 
-  // ── Home ──
+  // Home
   String get greetingNight => _isRu ? 'Доброй ночи' : 'Good night';
   String get greetingMorning => _isRu ? 'Доброе утро' : 'Good morning';
   String get greetingAfternoon => _isRu ? 'Добрый день' : 'Good afternoon';
@@ -132,7 +146,7 @@ class Tr {
   String get randomExercise =>
       _isRu ? 'Случайное упражнение' : 'Random exercise';
 
-  // ── Catalog ──
+  // Catalog
   String get catalogTitle => _isRu ? 'Каталог' : 'Catalog';
   String get catalogSubtitle =>
       _isRu ? 'Все упражнения по категориям' : 'All exercises by category';
@@ -151,7 +165,7 @@ class Tr {
   String durationSec(int sec) =>
       _isRu ? 'Длительность: $sec сек' : 'Duration: ${sec}s';
 
-  // ── Workout ──
+  // Workout
   String get pause => _isRu ? 'пауза' : 'pause';
   String get continueWorkout => _isRu ? 'Продолжить' : 'Continue';
   String get skipExercise => _isRu ? 'Пропустить упражнение' : 'Skip exercise';
@@ -162,7 +176,7 @@ class Tr {
       : 'Workout complete.\nKeep it up!';
   String get goHome => _isRu ? 'На главную' : 'Go home';
 
-  // ── Settings ──
+  // Settings
   String get settingsTitle => _isRu ? 'Настройки' : 'Settings';
   String get settingsProgram => _isRu ? 'Моя программа' : 'My program';
   String get settingsNotif => _isRu ? 'Уведомления' : 'Notifications';
@@ -181,12 +195,12 @@ class Tr {
       ? ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
       : ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
 
-  // ── Language ──
+  // Language
   String get langTitle => _isRu ? 'Язык' : 'Language';
   String get langRussian => 'Русский';
   String get langEnglish => 'English';
 
-  // ── Appearance ──
+  // Appearance
   String get appearanceTitle => _isRu ? 'Внешний вид' : 'Appearance';
   String get themeSection => _isRu ? 'Тема' : 'Theme';
   String get themeSystem => _isRu ? 'Системная' : 'System';
@@ -196,7 +210,7 @@ class Tr {
   String get accentGreen => _isRu ? 'Зелёный' : 'Green';
   String get accentPink => _isRu ? 'Розовый' : 'Pink';
 
-  // ── Premium ──
+  // Premium
   String get premiumTitle => _isRu ? 'Премиум' : 'Premium';
   String get premiumDescription => _isRu
       ? 'Всего за \$1 в месяц вы можете\nубрать рекламу и получить\nдоступ ко всем упражнениям'
@@ -205,7 +219,7 @@ class Tr {
   String get premiumComingSoon =>
       _isRu ? 'Скоро будет доступно' : 'Coming soon';
 
-  // ── Категории упражнений ──
+  // Категории упражнений
   String get catNeck => _isRu ? 'Шея' : 'Neck';
   String get catShouldersArms => _isRu ? 'Плечи и руки' : 'Shoulders & arms';
   String get catBackLower => _isRu ? 'Спина и поясница' : 'Back & lower back';
@@ -216,7 +230,7 @@ class Tr {
   String get catEmotionalBalance =>
       _isRu ? 'Эмоциональная стабилизация' : 'Emotional balance';
 
-  // ── Workout type ──
+  // Workout type
   String get workoutTypeTitle =>
       _isRu ? 'Выберите тип\nтренировки' : 'Choose workout\ntype';
   String get quickStartTitle => _isRu ? 'Быстрый старт' : 'Quick start';
@@ -228,12 +242,18 @@ class Tr {
       ? 'Выберите 3 упражнения самостоятельно'
       : 'Pick 3 exercises yourself';
 
-  // ── Notification frequency ──
+  // Notification frequency
   String get hoursShort => _isRu ? 'ч' : 'h';
   String get minutesShort => _isRu ? 'мин' : 'min';
   String get everyLabel => _isRu ? 'Каждые' : 'Every';
   String get tapToChange => _isRu ? 'Нажмите, чтобы изменить' : 'Tap to change';
 
+  /**
+  Возвращает локализованное название категории упражнений по её идентификатору.
+  Если id не найден в маппинге - возвращает сам id как fallback.
+  @param id Идентификатор категории (neck, shoulders_arms, back_lower и др.).
+  @return Локализованное название категории.
+  */
   String categoryTitle(String id) => switch (id) {
     'neck' => catNeck,
     'shoulders_arms' => catShouldersArms,
@@ -246,6 +266,11 @@ class Tr {
   };
 }
 
+/**
+Делегат для загрузки локализации Tr. Поддерживает локали 'ru' и 'en'.
+Загрузка синхронна - просто создаёт экземпляр Tr с переданной локалью.
+Не перезагружается при hot-reload (shouldReload возвращает false).
+*/
 class _TrDelegate extends LocalizationsDelegate<Tr> {
   const _TrDelegate();
   @override

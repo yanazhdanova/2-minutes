@@ -4,6 +4,14 @@ import '../../app/theme_controller.dart';
 import '../../app/l10n/app_localizations.dart';
 import '../../shared/widgets.dart';
 
+/**
+Экран настроек оформления. Две секции:
+1. Тема - три варианта (_ThemeOption): системная, светлая, тёмная.
+   При тапе вызывает ctrl.setThemeMode(), что пересобирает MaterialApp.
+2. Акцент - два цветных круга (_AccentCircle): зелёный и розовый.
+   При тапе вызывает ctrl.setAccentColor(), что меняет палитру ResolvedColors.
+Текущие значения считываются из ThemeController.of(context).
+*/
 class AppearanceSettingsScreen extends StatelessWidget {
   const AppearanceSettingsScreen({super.key});
 
@@ -62,7 +70,6 @@ class AppearanceSettingsScreen extends StatelessWidget {
 
               const SizedBox(height: 32),
 
-
               Text(
                 t.accentSection,
                 style: AppTextStyles.label.copyWith(color: c.textSecondary),
@@ -94,6 +101,7 @@ class AppearanceSettingsScreen extends StatelessWidget {
   }
 }
 
+/** Элемент выбора темы: иконка слева, название, индикатор check_circle/circle_outlined справа. При isSelected=true - акцентная подсветка фона и текста. */
 class _ThemeOption extends StatelessWidget {
   final String label;
   final IconData icon;
@@ -149,6 +157,7 @@ class _ThemeOption extends StatelessWidget {
   }
 }
 
+/** Круглый элемент выбора акцентного цвета (56x56). При isSelected - жирная рамка и галочка внутри. Под кругом - текстовая метка цвета. */
 class _AccentCircle extends StatelessWidget {
   final Color color;
   final String label;
