@@ -1,21 +1,17 @@
 import 'package:flutter/material.dart';
+import '../../app/app_scope.dart';
 import '../../app/app_theme.dart';
-import '../../app/navigation.dart';
-import '../../app/user_preferences.dart';
 import '../../app/l10n/app_localizations.dart';
 import '../../app/main_tab_screen.dart';
 import '../../shared/widgets.dart';
 import '../../features/exercises/data/notification_service.dart';
-import '../../app/app_scope.dart';
 
-/**
-Пятый и финальный экран онбординга. Показывает иконку-галочку и информирует,
-что настройки можно изменить позже. При нажатии «Отлично» выполняет:
-1. Отмечает онбординг завершённым (UserPreferences.setOnboardingComplete).
-2. Запрашивает разрешение на уведомления (NotificationService.requestPermission).
-3. Планирует расписание уведомлений (NotificationService.scheduleFromPrefs).
-4. Переходит на MainTabScreen, очищая весь стек навигации.
-*/
+/// Пятый и финальный экран онбординга. Показывает иконку-галочку и информирует,
+/// что настройки можно изменить позже. При нажатии «Отлично» выполняет:
+/// 1. Отмечает онбординг завершённым (UserPreferences.setOnboardingComplete).
+/// 2. Запрашивает разрешение на уведомления (NotificationService.requestPermission).
+/// 3. Планирует расписание уведомлений (NotificationService.scheduleFromPrefs).
+/// 4. Переходит на MainTabScreen, очищая весь стек навигации.
 class FinalScreen extends StatelessWidget {
   const FinalScreen({super.key});
   @override
@@ -59,13 +55,15 @@ class FinalScreen extends StatelessWidget {
                 label: t.finalButton,
                 width: 260,
                 onPressed: () async {
-                  await UserPreferences.setOnboardingComplete(true);
+                  final scope = AppScope.of(context);
+                  final nav = Navigator.of(context);
+                  await scope.userData.setOnboardingDone(true);
                   await NotificationService.instance.requestPermission();
-                  if (context.mounted) {
-                    final prefs = AppScope.of(context).prefs;
-                    await NotificationService.instance.scheduleFromPrefs(prefs);
-                    goToAndClear(context, const MainTabScreen());
-                  }
+                  await NotificationService.instance.scheduleFromPrefs(scope.prefs);
+                  nav.pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (_) => const MainTabScreen()),
+                    (_) => false,
+                  );
                 },
               ),
               const Spacer(flex: 5),

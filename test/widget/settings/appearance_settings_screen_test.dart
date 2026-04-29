@@ -76,7 +76,7 @@ void main() {
       await tester.tap(find.text('Светлая'));
       await tester.pumpAndSettle();
 
-      final prefs = await createTestPrefsService();
+      await createTestPrefsService();
     });
 
     testWidgets('тап на "Тёмная" выбирает dark тему', (tester) async {

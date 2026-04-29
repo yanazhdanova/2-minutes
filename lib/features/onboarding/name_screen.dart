@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
+import '../../app/app_scope.dart';
 import '../../app/app_theme.dart';
 import '../../app/navigation.dart';
-import '../../app/user_preferences.dart';
 import '../../app/l10n/app_localizations.dart';
 import '../../shared/widgets.dart';
 import 'categories_screen.dart';
 
-/**
-Первый экран онбординга - ввод имени пользователя.
-Содержит текстовое поле с автофокусом и капитализацией слов.
-Кнопка «Далее» активируется только при непустом имени (контролируется флагом _isValid).
-При нажатии сохраняет имя через UserPreferences.setName() и переходит на CategoriesScreen.
-*/
+/// Первый экран онбординга - ввод имени пользователя.
+/// Содержит текстовое поле с автофокусом и капитализацией слов.
+/// Кнопка «Далее» активируется только при непустом имени (контролируется флагом _isValid).
+/// При нажатии сохраняет имя через UserPreferences.setName() и переходит на CategoriesScreen.
 class NameScreen extends StatefulWidget {
   const NameScreen({super.key});
   @override
@@ -39,7 +37,7 @@ class _NameScreenState extends State<NameScreen> {
   Future<void> _continue() async {
     final name = _controller.text.trim();
     if (name.isEmpty) return;
-    await UserPreferences.setName(name);
+    await AppScope.of(context).userData.setUserName(name);
     if (mounted) goTo(context, const CategoriesScreen());
   }
 

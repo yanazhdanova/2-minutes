@@ -7,16 +7,39 @@ import '../../shared/widgets.dart';
 import '../exercises/domain/exercise_models.dart';
 import 'home_catalog_phys.dart';
 import 'home_catalog_mental.dart';
+import 'home_favorites_screen.dart';
 
-/**
-Экран выбора типа упражнения для ручной тренировки. Три варианта:
-1. «Физическое» - открывает HomeCatalogPhysScreen для выбора из физических категорий.
-2. «Ментальное» - открывает HomeCatalogMentalScreen для выбора из ментальных категорий.
-3. «Случайное» - загружает все упражнения обоих типов и возвращает случайное.
-Все варианты возвращают выбранное Exercise через Navigator.pop(context, exercise).
-*/
+/// Экран выбора типа упражнения для ручной тренировки. Три варианта:
+/// 1. «Физическое» - открывает HomeCatalogPhysScreen для выбора из физических категорий.
+/// 2. «Ментальное» - открывает HomeCatalogMentalScreen для выбора из ментальных категорий.
+/// 3. «Случайное» - загружает все упражнения обоих типов и возвращает случайное.
+/// Все варианты возвращают выбранное Exercise через Navigator.pop(context, exercise).
 class HomePhysMentalScreen extends StatelessWidget {
   const HomePhysMentalScreen({super.key});
+
+  Future<void> _pickFromFavorites(BuildContext context) async {
+    final scope = AppScope.of(context);
+    final ids = scope.userData.favoriteIds;
+    final list = <Exercise>[];
+    for (final id in ids) {
+      final ex = await scope.exerciseRepo.exerciseById(id);
+      if (ex != null) list.add(ex);
+    }
+    if (!context.mounted) return;
+    if (list.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(Tr.of(context).favoritesEmpty)),
+      );
+      return;
+    }
+    final r = await Navigator.push<Exercise>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => HomeFavoritesScreen(exercises: list),
+      ),
+    );
+    if (r != null && context.mounted) Navigator.pop(context, r);
+  }
 
   Future<void> _pickRandom(BuildContext context) async {
     final repo = AppScope.of(context).exerciseRepo;
@@ -27,8 +50,9 @@ class HomePhysMentalScreen extends StatelessWidget {
     ]) {
       all.addAll(await repo.exercisesByCategory(cat.id));
     }
-    if (all.isNotEmpty && context.mounted)
+    if (all.isNotEmpty && context.mounted) {
       Navigator.pop(context, all[Random().nextInt(all.length)]);
+    }
   }
 
   @override
@@ -89,6 +113,14 @@ class HomePhysMentalScreen extends StatelessWidget {
                 onTap: () => _pickRandom(context),
                 outlined: true,
               ),
+              const SizedBox(height: 16),
+              _Btn(
+                icon: Icons.favorite_border,
+                label: t.typeFavorites,
+                sub: t.typeFavoritesSub,
+                onTap: () => _pickFromFavorites(context),
+                outlined: true,
+              ),
               const Spacer(flex: 3),
             ],
           ),
@@ -98,7 +130,7 @@ class HomePhysMentalScreen extends StatelessWidget {
   }
 }
 
-/** Кнопка-карточка с иконкой, заголовком и подзаголовком для выбора типа упражнения. */
+/// Кнопка-карточка с иконкой, заголовком и подзаголовком для выбора типа упражнения.
 class _Btn extends StatelessWidget {
   final IconData icon;
   final String label;

@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:two_mins/app/l10n/app_localizations.dart';
 
-/**
-RegisterScreen создаёт AuthService внутри → Firebase зависимость.
-Тестируем логику валидации и маппинг ошибок без Flutter виджетов.
-*/
+/// RegisterScreen создаёт AuthService внутри → Firebase зависимость.
+/// Тестируем логику валидации и маппинг ошибок без Flutter виджетов.
 void main() {
   group('RegisterScreen — логика валидации', () {
     test('пустые поля → ошибка', () {

@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import '../../app/app_theme.dart';
+import '../../app/app_scope.dart';
 import '../../app/locale_controller.dart';
 import '../../app/l10n/app_localizations.dart';
 import '../../shared/widgets.dart';
 
-/**
-Экран выбора языка приложения. Два варианта: русский и английский.
-Каждый отображается как карточка (_Opt) с локализованным и нативным названием.
-Текущий язык определяется через LocaleController.of(context).locale.languageCode.
-При тапе - вызывает ctrl.setLocale(), что пересобирает MaterialApp с новой локалью.
-*/
+/// Экран выбора языка приложения. Два варианта: русский и английский.
+/// Каждый отображается как карточка (_Opt) с локализованным и нативным названием.
+/// Текущий язык определяется через LocaleController.of(context).locale.languageCode.
+/// При тапе - вызывает ctrl.setLocale(), что пересобирает MaterialApp с новой локалью.
 class LanguageSettingsScreen extends StatelessWidget {
   const LanguageSettingsScreen({super.key});
   @override
@@ -39,14 +38,14 @@ class LanguageSettingsScreen extends StatelessWidget {
                 title: t.langRussian,
                 sub: 'Русский',
                 sel: code == 'ru',
-                onTap: () => ctrl.setLocale(const Locale('ru')),
+                onTap: () { ctrl.setLocale(const Locale('ru')); AppScope.of(context).userData.setLanguageCode('ru'); },
               ),
               const SizedBox(height: 12),
               _Opt(
                 title: t.langEnglish,
                 sub: 'English',
                 sel: code == 'en',
-                onTap: () => ctrl.setLocale(const Locale('en')),
+                onTap: () { ctrl.setLocale(const Locale('en')); AppScope.of(context).userData.setLanguageCode('en'); },
               ),
             ],
           ),
@@ -56,7 +55,7 @@ class LanguageSettingsScreen extends StatelessWidget {
   }
 }
 
-/** Элемент выбора языка: заголовок (локализованный), подзаголовок (нативное название), индикатор check_circle/circle_outlined. При sel=true - акцентная подсветка. */
+/// Элемент выбора языка: заголовок (локализованный), подзаголовок (нативное название), индикатор check_circle/circle_outlined. При sel=true - акцентная подсветка.
 class _Opt extends StatelessWidget {
   final String title;
   final String sub;

@@ -5,12 +5,10 @@ import '../features/home/home_main_screen.dart';
 import '../features/catalog/catalog_main_screen.dart';
 import '../features/settings/settings_main_screen.dart';
 
-/**
-Главный экран приложения с нижней навигацией из трёх вкладок:
-Главная (HomeMainScreen), Каталог (CatalogMainScreen), Настройки (SettingsMainScreen).
-Использует IndexedStack для сохранения состояния каждой вкладки при переключении.
-BottomNavigationBar стилизован под тему приложения с акцентным цветом для выбранного элемента.
-*/
+/// Главный экран приложения с нижней навигацией из трёх вкладок:
+/// Главная (HomeMainScreen), Каталог (CatalogMainScreen), Настройки (SettingsMainScreen).
+/// Использует IndexedStack для сохранения состояния каждой вкладки при переключении.
+/// BottomNavigationBar стилизован под тему приложения с акцентным цветом для выбранного элемента.
 class MainTabScreen extends StatefulWidget {
   const MainTabScreen({super.key});
   @override

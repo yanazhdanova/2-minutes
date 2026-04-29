@@ -5,16 +5,39 @@ import '../../app/app_theme.dart';
 import '../../app/l10n/app_localizations.dart';
 import '../../shared/widgets.dart';
 import '../exercises/domain/exercise_models.dart';
+import 'home_favorites_screen.dart';
 
-/**
-Каталог ментальных упражнений для выбора в тренировку. Загружает категории типа
-HealthType.mental через FutureBuilder. Каждая категория - ExpansionTile (_CatTile),
-при раскрытии подгружаются упражнения. Сверху - inline-кнопка «Случайное упражнение»,
-выбирающая случайное из всех ментальных категорий. Аналог HomeCatalogPhysScreen для mental.
-Выбранное упражнение возвращается через Navigator.pop.
-*/
+/// Каталог ментальных упражнений для выбора в тренировку. Загружает категории типа
+/// HealthType.mental через FutureBuilder. Каждая категория - ExpansionTile (_CatTile),
+/// при раскрытии подгружаются упражнения. Сверху - inline-кнопка «Случайное упражнение»,
+/// выбирающая случайное из всех ментальных категорий. Аналог HomeCatalogPhysScreen для mental.
+/// Выбранное упражнение возвращается через Navigator.pop.
 class HomeCatalogMentalScreen extends StatelessWidget {
   const HomeCatalogMentalScreen({super.key});
+
+  Future<void> _pickFromFavorites(BuildContext ctx) async {
+    final scope = AppScope.of(ctx);
+    final ids = scope.userData.favoriteIds;
+    final list = <Exercise>[];
+    for (final id in ids) {
+      final ex = await scope.exerciseRepo.exerciseById(id);
+      if (ex != null) list.add(ex);
+    }
+    if (!ctx.mounted) return;
+    if (list.isEmpty) {
+      ScaffoldMessenger.of(ctx).showSnackBar(
+        SnackBar(content: Text(Tr.of(ctx).favoritesEmpty)),
+      );
+      return;
+    }
+    final r = await Navigator.push<Exercise>(
+      ctx,
+      MaterialPageRoute(
+        builder: (_) => HomeFavoritesScreen(exercises: list),
+      ),
+    );
+    if (r != null && ctx.mounted) Navigator.pop(ctx, r);
+  }
 
   Future<void> _pickRandom(BuildContext ctx) async {
     final repo = AppScope.of(ctx).exerciseRepo;
@@ -22,8 +45,9 @@ class HomeCatalogMentalScreen extends StatelessWidget {
     for (final c in await repo.categoriesByType(HealthType.mental)) {
       all.addAll(await repo.exercisesByCategory(c.id));
     }
-    if (all.isNotEmpty && ctx.mounted)
+    if (all.isNotEmpty && ctx.mounted) {
       Navigator.pop(ctx, all[Random().nextInt(all.length)]);
+    }
   }
 
   @override
@@ -60,54 +84,27 @@ class HomeCatalogMentalScreen extends StatelessWidget {
               child: FutureBuilder<List<ExerciseCategory>>(
                 future: repo.categoriesByType(HealthType.mental),
                 builder: (ctx, snap) {
-                  if (snap.connectionState != ConnectionState.done)
+                  if (snap.connectionState != ConnectionState.done) {
                     return Center(
                       child: CircularProgressIndicator(color: c.accentLight),
                     );
+                  }
                   final cats = snap.data ?? [];
                   return ListView(
                     padding: const EdgeInsets.symmetric(
                       horizontal: AppSpacing.screenHorizontal,
                     ),
                     children: [
-                      InkWell(
+                      _ActionTile(
+                        label: t.randomExercise,
+                        icon: Icons.shuffle,
                         onTap: () => _pickRandom(context),
-                        borderRadius: BorderRadius.circular(AppRadius.medium),
-                        child: Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: c.accentSurface,
-                            borderRadius: BorderRadius.circular(
-                              AppRadius.medium,
-                            ),
-                          ),
-
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: c.accent,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Icon(
-                                  Icons.shuffle,
-                                  color: c.white,
-                                  size: 20,
-                                ),
-                              ),
-
-                              const SizedBox(width: 16),
-                              Text(
-                                t.randomExercise,
-                                style: AppTextStyles.bodyLarge.copyWith(
-                                  color: c.accentLight,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      _ActionTile(
+                        label: t.favoritesTitle,
+                        icon: Icons.favorite_border,
+                        onTap: () => _pickFromFavorites(context),
                       ),
                       const SizedBox(height: 20),
                       for (final cat in cats) ...[
@@ -131,7 +128,48 @@ class HomeCatalogMentalScreen extends StatelessWidget {
   }
 }
 
-/** Раскрывающаяся плитка категории с загрузкой упражнений по запросу. */
+/// Плитка действия (случайное / избранное) в верхней части каталога.
+class _ActionTile extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final VoidCallback onTap;
+  const _ActionTile({required this.label, required this.icon, required this.onTap});
+  @override
+  Widget build(BuildContext context) {
+    final c = C(context);
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppRadius.medium),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: c.accentSurface,
+          borderRadius: BorderRadius.circular(AppRadius.medium),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: c.accent,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, color: c.white, size: 20),
+            ),
+            const SizedBox(width: 16),
+            Text(
+              label,
+              style: AppTextStyles.bodyLarge.copyWith(color: c.accentLight),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Раскрывающаяся плитка категории с загрузкой упражнений по запросу.
 class _CatTile extends StatelessWidget {
   final ExerciseCategory cat;
   final String localTitle;
@@ -169,7 +207,7 @@ class _CatTile extends StatelessWidget {
             FutureBuilder<List<Exercise>>(
               future: repo.exercisesByCategory(cat.id),
               builder: (ctx, snap) {
-                if (snap.connectionState != ConnectionState.done)
+                if (snap.connectionState != ConnectionState.done) {
                   return Padding(
                     padding: const EdgeInsets.all(16),
                     child: Center(
@@ -183,9 +221,10 @@ class _CatTile extends StatelessWidget {
                       ),
                     ),
                   );
+                }
 
                 final exs = snap.data ?? [];
-                if (exs.isEmpty)
+                if (exs.isEmpty) {
                   return Padding(
                     padding: const EdgeInsets.all(16),
                     child: Text(
@@ -195,6 +234,7 @@ class _CatTile extends StatelessWidget {
                       ),
                     ),
                   );
+                }
 
                 return Column(
                   children: exs

@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:two_mins/app/app_theme.dart';
 import 'package:two_mins/app/l10n/app_localizations.dart';
-import '../../helpers/test_helpers.dart';
 
-/**
-LoginScreen создаёт AuthService внутри, который зависит от Firebase.
-Поэтому тестируем UI логику экрана через простой макет,
-повторяющий его layout без реального AuthService.
-*/
+/// LoginScreen создаёт AuthService внутри, который зависит от Firebase.
+/// Поэтому тестируем UI логику экрана через простой макет,
+/// повторяющий его layout без реального AuthService.
 void main() {
   group('LoginScreen — логика валидации (unit)', () {
     test('пустой email и пароль → ошибка "Заполните все поля"', () {

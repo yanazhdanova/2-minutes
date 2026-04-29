@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:two_mins/features/exercises/data/prefs_service.dart';
 
-/** Edge cases для сохранения и загрузки данных через PrefsService. */
+/// Edge cases для сохранения и загрузки данных через PrefsService.
 void main() {
   group('PrefsService — edge cases', () {
     test('пустой список категорий возвращает []', () async {

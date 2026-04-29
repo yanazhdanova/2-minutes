@@ -7,20 +7,21 @@ import 'package:two_mins/app/locale_controller.dart';
 import 'package:two_mins/app/l10n/app_localizations.dart';
 import 'package:two_mins/features/exercises/data/prefs_service.dart';
 import 'package:two_mins/features/exercises/data/exercise_sqlite_repository.dart';
+import 'package:two_mins/features/user/user_data_service.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/**
-Оборачивает виджет во все необходимые провайдеры для тестов.
-@param prefs PrefsService, должен быть уже проинициализирован.
-@param exerciseRepo ExerciseSqliteRepository (может быть мок).
-@param locale начальная локаль (по умолчанию 'ru').
-@param themeMode начальная тема (по умолчанию system).
-@param accentColor начальный акцент (по умолчанию green).
-*/
+/// Оборачивает виджет во все необходимые провайдеры для тестов.
+/// @param prefs PrefsService, должен быть уже проинициализирован.
+/// @param exerciseRepo ExerciseSqliteRepository (может быть мок).
+/// @param locale начальная локаль (по умолчанию 'ru').
+/// @param themeMode начальная тема (по умолчанию system).
+/// @param accentColor начальный акцент (по умолчанию green).
 Widget wrapWithApp(
   Widget child, {
   required PrefsService prefs,
   required ExerciseSqliteRepository exerciseRepo,
+  UserDataService? userData,
   String locale = 'ru',
   ThemeMode themeMode = ThemeMode.light,
   AccentColor accentColor = AccentColor.green,
@@ -35,6 +36,11 @@ Widget wrapWithApp(
       child: AppScope(
         exerciseRepo: exerciseRepo,
         prefs: prefs,
+        userData: userData ?? UserDataService(
+          firestore: FakeFirebaseFirestore(),
+          uidProvider: () => 'test_user',
+          emailProvider: () => 'test@example.com',
+        ),
         child: MaterialApp(
           locale: Locale(locale),
           supportedLocales: Tr.supportedLocales,
@@ -64,10 +70,8 @@ Widget wrapWithApp(
   );
 }
 
-/**
-Минимальная обёртка только с AppColorsProvider для тестирования
-виджетов, которым не нужен AppScope.
-*/
+/// Минимальная обёртка только с AppColorsProvider для тестирования
+/// виджетов, которым не нужен AppScope.
 Widget wrapWithTheme(
   Widget child, {
   bool isDark = false,
@@ -91,7 +95,7 @@ Widget wrapWithTheme(
   );
 }
 
-/** Инициализирует SharedPreferences с пустыми значениями для тестов. */
+/// Инициализирует SharedPreferences с пустыми значениями для тестов.
 Future<PrefsService> createTestPrefsService([
   Map<String, Object> initial = const {},
 ]) async {

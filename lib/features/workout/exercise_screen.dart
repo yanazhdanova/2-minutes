@@ -1,19 +1,18 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../app/app_scope.dart';
 import '../../app/app_theme.dart';
 import '../../app/navigation.dart';
 import '../../app/l10n/app_localizations.dart';
 import '../exercises/domain/exercise_models.dart';
 import 'end_of_the_workout_screen.dart';
 
-/**
-Экран выполнения упражнения с анимированным кольцевым таймером.
-Поддерживает: автоматический переход к следующему упражнению, паузу,
-корректировку времени ±15 сек, пропуск упражнения и досрочное завершение тренировки.
-При завершении последнего упражнения - переход на EndOfTheWorkoutScreen.
-Хэптик-обратная связь при завершении таймера. Описание упражнения скрывается на паузе.
-*/
+/// Экран выполнения упражнения с анимированным кольцевым таймером.
+/// Поддерживает: автоматический переход к следующему упражнению, паузу,
+/// корректировку времени ±15 сек, пропуск упражнения и досрочное завершение тренировки.
+/// При завершении последнего упражнения - переход на EndOfTheWorkoutScreen.
+/// Хэптик-обратная связь при завершении таймера. Описание упражнения скрывается на паузе.
 class ExerciseScreen extends StatefulWidget {
   final List<Exercise> exercises;
   const ExerciseScreen({super.key, required this.exercises});
@@ -36,6 +35,23 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     super.initState();
     _totalSeconds = _exercise.defaultDurationSec;
     _initTimer();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadFavorite();
+  }
+
+  void _loadFavorite() {
+    final userData = AppScope.of(context).userData;
+    setState(() => _isFavorite = userData.isFavorite(_exercise.id));
+  }
+
+  void _toggleFav() async {
+    final userData = AppScope.of(context).userData;
+    final result = await userData.toggleFavorite(_exercise.id);
+    if (mounted) setState(() => _isFavorite = result);
   }
 
   void _initTimer() {
@@ -82,6 +98,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
       _currentIndex++;
       _totalSeconds = _exercise.defaultDurationSec;
       _initTimer();
+      _loadFavorite();
       setState(() {});
     }
   }
@@ -205,7 +222,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                   const SizedBox(height: 20),
                   _Round(
                     label: '♡',
-                    onTap: () => setState(() => _isFavorite = !_isFavorite),
+                    onTap: _toggleFav,
                     bg: _isFavorite ? c.accent : c.surface,
                     fg: _isFavorite ? c.white : c.textPrimary,
                     small: true,
@@ -246,7 +263,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
   }
 }
 
-/** Круглая кнопка управления тренировкой: пауза, ±15 сек, избранное. Размер зависит от параметра small (48 или 64 px). */
+/// Круглая кнопка управления тренировкой: пауза, ±15 сек, избранное. Размер зависит от параметра small (48 или 64 px).
 class _Round extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
@@ -285,7 +302,7 @@ class _Round extends StatelessWidget {
   }
 }
 
-/** Полноширинная кнопка меню паузы. С фоном (bg != null) рендерится как ElevatedButton, без фона - как OutlinedButton с borderColor. */
+/// Полноширинная кнопка меню паузы. С фоном (bg != null) рендерится как ElevatedButton, без фона - как OutlinedButton с borderColor.
 class _PauseBtn extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
@@ -340,12 +357,10 @@ class _PauseBtn extends StatelessWidget {
   }
 }
 
-/**
-CustomPainter для кольцевого индикатора прогресса таймера.
-Рисует два элемента: фоновый круг (trackColor) и дугу прогресса (progressColor).
-Дуга идёт от 12 часов (-π/2) против часовой стрелки, уменьшаясь по мере progress (0→1).
-Ширина линии - 8px, концы закруглены (StrokeCap.round).
-*/
+/// CustomPainter для кольцевого индикатора прогресса таймера.
+/// Рисует два элемента: фоновый круг (trackColor) и дугу прогресса (progressColor).
+/// Дуга идёт от 12 часов (-π/2) против часовой стрелки, уменьшаясь по мере progress (0-1).
+/// Ширина линии - 8px, концы закруглены (StrokeCap.round).
 class _TimerPainter extends CustomPainter {
   final double progress;
   final Color trackColor;

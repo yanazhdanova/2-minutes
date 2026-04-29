@@ -3,11 +3,9 @@ import 'package:mocktail/mocktail.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../mocks/mocks.dart';
 
-/**
-Тестируемая обёртка над AuthService с внедрёнными зависимостями.
-Оригинальный AuthService создаёт FirebaseAuth.instance напрямую,
-поэтому для unit-тестов используем тестируемую версию.
-*/
+/// Тестируемая обёртка над AuthService с внедрёнными зависимостями.
+/// Оригинальный AuthService создаёт FirebaseAuth.instance напрямую,
+/// поэтому для unit-тестов используем тестируемую версию.
 class TestableAuthService {
   final FirebaseAuth auth;
   final MockGoogleSignIn googleSignIn;

@@ -53,12 +53,27 @@ void main() {
 
     testWidgets('показывает пункт "Платная версия"', (tester) async {
       await pumpScreen(tester);
+      await tester.scrollUntilVisible(
+        find.text('Платная версия'),
+        200,
+        scrollable: find.byType(Scrollable).last,
+      );
       expect(find.text('Платная версия'), findsOneWidget);
     });
 
     testWidgets('показывает 5 пунктов меню', (tester) async {
       await pumpScreen(tester);
-      expect(find.byIcon(Icons.chevron_right), findsNWidgets(5));
+      // Проверяем каждый пункт по тексту (ListView виртуализирует элементы)
+      expect(find.text('Моя программа'), findsOneWidget);
+      expect(find.text('Уведомления'), findsOneWidget);
+      expect(find.text('Язык'), findsOneWidget);
+      expect(find.text('Внешний вид'), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.text('Платная версия'),
+        200,
+        scrollable: find.byType(Scrollable).last,
+      );
+      expect(find.text('Платная версия'), findsOneWidget);
     });
   });
 
@@ -96,6 +111,11 @@ void main() {
     testWidgets('"Платная версия" → BuyPremiumScreen', (tester) async {
       await pumpScreen(tester);
 
+      await tester.scrollUntilVisible(
+        find.text('Платная версия'),
+        200,
+        scrollable: find.byType(Scrollable).last,
+      );
       await tester.tap(find.text('Платная версия'));
       await tester.pumpAndSettle();
 

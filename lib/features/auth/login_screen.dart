@@ -3,20 +3,21 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../../app/app_theme.dart';
 import '../../app/navigation.dart';
 import '../../app/l10n/app_localizations.dart';
-import '../../app/user_preferences.dart';
+import '../../app/app_scope.dart';
+import '../../app/theme_controller.dart';
+import '../../app/locale_controller.dart';
 import '../../shared/widgets.dart';
 import 'auth_service.dart';
 import 'register_screen.dart';
 import 'reset_password_screen.dart';
 import '../../app/main_tab_screen.dart';
 import '../onboarding/name_screen.dart';
+import '../exercises/data/notification_service.dart';
 
-/**
-Экран входа в приложение. Содержит поля email и пароль, кнопки «Войти» и «Войти через Google»,
-ссылки на сброс пароля и регистрацию. После успешной аутентификации проверяет,
-завершён ли онбординг: если да - переходит на MainTabScreen, иначе - на NameScreen.
-Ошибки Firebase отображаются через SnackBar с маппингом кодов в пользовательские сообщения.
-*/
+/// Экран входа в приложение. Содержит поля email и пароль, кнопки «Войти» и «Войти через Google»,
+/// ссылки на сброс пароля и регистрацию. После успешной аутентификации проверяет,
+/// завершён ли онбординг: если да - переходит на MainTabScreen, иначе - на NameScreen.
+/// Ошибки Firebase отображаются через SnackBar с маппингом кодов в пользовательские сообщения.
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
   @override
@@ -75,11 +76,46 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _navigateAfterAuth() async {
-    final done = await UserPreferences.isOnboardingComplete();
+    final scope = AppScope.of(context);
+    await scope.userData.init();
     if (!mounted) return;
-    done
+    await _syncSettings(scope);
+    if (!mounted) return;
+    scope.userData.isOnboardingDone
         ? goToAndClear(context, const MainTabScreen())
         : goToAndClear(context, const NameScreen());
+  }
+
+  Future<void> _syncSettings(AppScope scope) async {
+    final userData = scope.userData;
+    final prefs = scope.prefs;
+    final themeCtrl = ThemeController.of(context);
+    final localeCtrl = LocaleController.of(context);
+
+    // Тема и акцент
+    final tm = userData.themeMode;
+    await themeCtrl.setThemeMode(
+      tm == 'dark' ? ThemeMode.dark : tm == 'light' ? ThemeMode.light : ThemeMode.system,
+    );
+    await themeCtrl.setAccentColor(
+      userData.accentColor == 'pink' ? AccentColor.pink : AccentColor.green,
+    );
+
+    // Язык
+    final lang = userData.languageCode;
+    if (lang.isNotEmpty) {
+      await localeCtrl.setLocale(Locale(lang));
+    }
+
+    // Уведомления - синхронизация в PrefsService
+    await prefs.setNotifFrom(userData.notifFrom);
+    await prefs.setNotifTo(userData.notifTo);
+    await prefs.setNotifFreq(userData.notifFreq);
+    await prefs.setNotifDays(userData.notifDays);
+
+    if (userData.isOnboardingDone) {
+      NotificationService.instance.scheduleFromPrefs(prefs);
+    }
   }
 
   void _showError(String msg) {
@@ -105,14 +141,14 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: c.background,
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.screenHorizontal,
           ),
           child: Column(
             children: [
               const AppHeader(),
-              const Spacer(flex: 2),
+              const SizedBox(height: 40),
               Text(
                 t.loginTitle,
                 style: AppTextStyles.heading1.copyWith(color: c.textPrimary),
@@ -159,19 +195,19 @@ class _LoginScreenState extends State<LoginScreen> {
               Row(
                 children: [
                   Expanded(
-                    child: Divider(color: c.textPrimary.withOpacity(0.2)),
+                    child: Divider(color: c.textPrimary.withValues(alpha: 0.2)),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
                       t.orDivider,
                       style: AppTextStyles.bodySmall.copyWith(
-                        color: c.textPrimary.withOpacity(0.5),
+                        color: c.textPrimary.withValues(alpha: 0.5),
                       ),
                     ),
                   ),
                   Expanded(
-                    child: Divider(color: c.textPrimary.withOpacity(0.2)),
+                    child: Divider(color: c.textPrimary.withValues(alpha: 0.2)),
                   ),
                 ],
               ),
@@ -186,7 +222,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: OutlinedButton.styleFrom(
                     foregroundColor: c.textPrimary,
                     side: BorderSide(
-                      color: c.textPrimary.withOpacity(0.3),
+                      color: c.textPrimary.withValues(alpha: 0.3),
                       width: 1.5,
                     ),
                     shape: RoundedRectangleBorder(
@@ -212,7 +248,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
 
-              const Spacer(flex: 3),
+              const SizedBox(height: 48),
               TextButton(
                 onPressed: () => goToAndClear(context, const RegisterScreen()),
                 child: Text(
@@ -223,7 +259,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
             ],
           ),
         ),

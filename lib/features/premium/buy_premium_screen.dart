@@ -3,12 +3,10 @@ import '../../app/app_theme.dart';
 import '../../app/l10n/app_localizations.dart';
 import '../../shared/widgets.dart';
 
-/**
-Экран покупки премиум-подписки. Показывает иконку премиума, заголовок,
-описание преимуществ ($1/мес - без рекламы + все упражнения) и CTA-кнопку «Купить».
-Покупка пока не реализована - при нажатии показывает SnackBar «Скоро будет доступно».
-Доступен из SettingsMainScreen и HomeMainScreen (иконка PremiumIcon).
-*/
+/// Экран покупки премиум-подписки. Показывает иконку премиума, заголовок,
+/// описание преимуществ ($1/мес - без рекламы + все упражнения) и CTA-кнопку «Купить».
+/// Покупка пока не реализована - при нажатии показывает SnackBar «Скоро будет доступно».
+/// Доступен из SettingsMainScreen и HomeMainScreen (иконка PremiumIcon).
 class BuyPremiumScreen extends StatelessWidget {
   const BuyPremiumScreen({super.key});
   @override

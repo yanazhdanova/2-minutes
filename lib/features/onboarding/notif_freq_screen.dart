@@ -7,13 +7,11 @@ import '../../shared/widgets.dart';
 import '../../app/app_scope.dart';
 import 'final_screen.dart';
 
-/**
-Четвёртый экран онбординга - настройка частоты уведомлений и выбор дней недели.
-Частота выбирается через CupertinoPicker (часы + минуты) в bottom sheet,
-минимум 5 минут. Дни недели - 7 тоглящихся кнопок (минимум 1 день).
-По умолчанию: 1 час, все 7 дней. При нажатии «Далее» сохраняет через
-PrefsService (notifFreq в минутах, notifDays как список) и переходит на FinalScreen.
-*/
+/// Четвёртый экран онбординга - настройка частоты уведомлений и выбор дней недели.
+/// Частота выбирается через CupertinoPicker (часы + минуты) в bottom sheet,
+/// минимум 5 минут. Дни недели - 7 тоглящихся кнопок (минимум 1 день).
+/// По умолчанию: 1 час, все 7 дней. При нажатии «Далее» сохраняет через
+/// PrefsService (notifFreq в минутах, notifDays как список) и переходит на FinalScreen.
 class NotifFreqScreen extends StatefulWidget {
   const NotifFreqScreen({super.key});
   @override
@@ -28,8 +26,9 @@ class _NotifFreqScreenState extends State<NotifFreqScreen> {
   int get _totalMinutes => _hours * 60 + _minutes;
 
   String _formatInterval(Tr t) {
-    if (_hours > 0 && _minutes > 0)
+    if (_hours > 0 && _minutes > 0) {
       return '$_hours ${t.hoursShort} $_minutes ${t.minutesShort}';
+    }
     if (_hours > 0) return '$_hours ${t.hoursShort}';
     return '$_minutes ${t.minutesShort}';
   }
@@ -188,9 +187,12 @@ class _NotifFreqScreenState extends State<NotifFreqScreen> {
   }
 
   Future<void> _next() async {
-    final prefs = AppScope.of(context).prefs;
-    await prefs.setNotifFreq('$_totalMinutes');
-    await prefs.setNotifDays(_days.toList()..sort());
+    final scope = AppScope.of(context);
+    final sortedDays = _days.toList()..sort();
+    scope.userData.setNotifFreq('$_totalMinutes');
+    scope.userData.setNotifDays(sortedDays);
+    await scope.prefs.setNotifFreq('$_totalMinutes');
+    await scope.prefs.setNotifDays(sortedDays);
     if (mounted) goTo(context, const FinalScreen());
   }
 

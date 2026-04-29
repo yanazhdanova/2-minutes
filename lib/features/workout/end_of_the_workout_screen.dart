@@ -5,11 +5,9 @@ import '../../app/main_tab_screen.dart';
 import '../../app/l10n/app_localizations.dart';
 import '../../shared/widgets.dart';
 
-/**
-Экран завершения тренировки. Отображает иконку-галочку, заголовок «Отлично!»
-и мотивационный подзаголовок. Кнопка «На главную» очищает стек навигации
-и переходит на MainTabScreen. Открывается через goToAndClear из ExerciseScreen.
-*/
+/// Экран завершения тренировки. Отображает иконку-галочку, заголовок «Отлично!»
+/// и мотивационный подзаголовок. Кнопка «На главную» очищает стек навигации
+/// и переходит на MainTabScreen. Открывается через goToAndClear из ExerciseScreen.
 class EndOfTheWorkoutScreen extends StatelessWidget {
   const EndOfTheWorkoutScreen({super.key});
   @override

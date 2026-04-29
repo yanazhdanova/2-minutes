@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:two_mins/features/home/exercises_choice.dart';
-import 'package:two_mins/shared/widgets.dart';
 import '../../helpers/test_helpers.dart';
 import '../../mocks/mocks.dart';
 

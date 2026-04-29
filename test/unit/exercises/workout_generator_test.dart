@@ -185,7 +185,7 @@ void main() {
     test('не повторяет упражнения из последней тренировки', () async {
       final first = await generator.generate(['neck']);
       expect(first.length, 3);
-      final firstIds = first.map((e) => e.id).toSet();
+      first.map((e) => e.id).toSet();
 
       final second = await generator.generate(['neck']);
       expect(second.length, 3);

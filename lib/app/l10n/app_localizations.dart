@@ -1,23 +1,19 @@
 import 'package:flutter/widgets.dart';
 
-/**
-Класс локализации приложения. Содержит все строки интерфейса для русской (ru)
-и английской (en) локалей. Строки сгруппированы по разделам: общее, навигация,
-авторизация, онбординг, проблемы, частота, главная, каталог, тренировка,
-настройки, язык, оформление, премиум, категории упражнений, тип тренировки.
-Выбор языка определяется геттером _isRu на основе текущей локали.
-*/
+/// Класс локализации приложения. Содержит все строки интерфейса для русской (ru)
+/// и английской (en) локалей. Строки сгруппированы по разделам: общее, навигация,
+/// авторизация, онбординг, проблемы, частота, главная, каталог, тренировка,
+/// настройки, язык, оформление, премиум, категории упражнений, тип тренировки.
+/// Выбор языка определяется геттером _isRu на основе текущей локали.
 class Tr {
-  /** Текущая локаль, определяющая язык строк. */
+  /// Текущая локаль, определяющая язык строк.
   final Locale locale;
   Tr(this.locale);
 
-  /**
-  Получает экземпляр Tr из контекста через Localizations.of.
-  Возвращает non-null благодаря гарантии наличия делегата _TrDelegate.
-  @param context BuildContext вызывающего виджета.
-  @return Экземпляр Tr для текущей локали.
-  */
+  /// Получает экземпляр Tr из контекста через Localizations.of.
+  /// Возвращает non-null благодаря гарантии наличия делегата _TrDelegate.
+  /// @param context BuildContext вызывающего виджета.
+  /// @return Экземпляр Tr для текущей локали.
   static Tr of(BuildContext context) => Localizations.of<Tr>(context, Tr)!;
   static const LocalizationsDelegate<Tr> delegate = _TrDelegate();
   static const supportedLocales = [Locale('ru'), Locale('en')];
@@ -145,6 +141,9 @@ class Tr {
       _isRu ? 'Мы выберем за вас' : "We'll pick for you";
   String get randomExercise =>
       _isRu ? 'Случайное упражнение' : 'Random exercise';
+  String get typeFavorites => _isRu ? 'Из избранного' : 'From favorites';
+  String get typeFavoritesSub =>
+      _isRu ? 'Выбрать из сохранённых' : 'Pick from saved exercises';
 
   // Catalog
   String get catalogTitle => _isRu ? 'Каталог' : 'Catalog';
@@ -219,6 +218,14 @@ class Tr {
   String get premiumComingSoon =>
       _isRu ? 'Скоро будет доступно' : 'Coming soon';
 
+  // Favorites
+  String get favoritesTitle => _isRu ? 'Избранное' : 'Favorites';
+  String get favoritesSub =>
+      _isRu ? 'Ваши любимые упражнения' : 'Your favorite exercises';
+  String get favoritesEmpty => _isRu
+      ? 'Пока нет избранных упражнений'
+      : 'No favorite exercises yet';
+
   // Категории упражнений
   String get catNeck => _isRu ? 'Шея' : 'Neck';
   String get catShouldersArms => _isRu ? 'Плечи и руки' : 'Shoulders & arms';
@@ -242,18 +249,25 @@ class Tr {
       ? 'Выберите 3 упражнения самостоятельно'
       : 'Pick 3 exercises yourself';
 
+  // Logout
+  String get logoutButton => _isRu ? 'Выйти' : 'Log out';
+  String get logoutConfirmTitle =>
+      _isRu ? 'Выйти из аккаунта?' : 'Log out?';
+  String get logoutConfirmText => _isRu
+      ? 'Ваши данные сохранятся'
+      : 'Your data will be saved';
+  String get logoutCancel => _isRu ? 'Отмена' : 'Cancel';
+
   // Notification frequency
   String get hoursShort => _isRu ? 'ч' : 'h';
   String get minutesShort => _isRu ? 'мин' : 'min';
   String get everyLabel => _isRu ? 'Каждые' : 'Every';
   String get tapToChange => _isRu ? 'Нажмите, чтобы изменить' : 'Tap to change';
 
-  /**
-  Возвращает локализованное название категории упражнений по её идентификатору.
-  Если id не найден в маппинге - возвращает сам id как fallback.
-  @param id Идентификатор категории (neck, shoulders_arms, back_lower и др.).
-  @return Локализованное название категории.
-  */
+  /// Возвращает локализованное название категории упражнений по её идентификатору.
+  /// Если id не найден в маппинге - возвращает сам id как fallback.
+  /// @param id Идентификатор категории (neck, shoulders_arms, back_lower и др.).
+  /// @return Локализованное название категории.
   String categoryTitle(String id) => switch (id) {
     'neck' => catNeck,
     'shoulders_arms' => catShouldersArms,
@@ -266,11 +280,9 @@ class Tr {
   };
 }
 
-/**
-Делегат для загрузки локализации Tr. Поддерживает локали 'ru' и 'en'.
-Загрузка синхронна - просто создаёт экземпляр Tr с переданной локалью.
-Не перезагружается при hot-reload (shouldReload возвращает false).
-*/
+/// Делегат для загрузки локализации Tr. Поддерживает локали 'ru' и 'en'.
+/// Загрузка синхронна - просто создаёт экземпляр Tr с переданной локалью.
+/// Не перезагружается при hot-reload (shouldReload возвращает false).
 class _TrDelegate extends LocalizationsDelegate<Tr> {
   const _TrDelegate();
   @override

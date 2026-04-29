@@ -5,13 +5,11 @@ import '../../app/l10n/app_localizations.dart';
 import '../../shared/widgets.dart';
 import '../exercises/domain/exercise_models.dart';
 
-/**
-Экран списка упражнений конкретной категории. Загружает упражнения через FutureBuilder.
-Каждое упражнение - тапабельная карточка с AnimatedCrossFade: в свёрнутом состоянии
-показывает только название, в раскрытом - видео-плейсхолдер, описание и длительность.
-Одновременно может быть раскрыта только одна карточка (tracked через _expandedId).
-Открывается из PhysicalGroupsScreen или MentalGroupsScreen.
-*/
+/// Экран списка упражнений конкретной категории. Загружает упражнения через FutureBuilder.
+/// Каждое упражнение - тапабельная карточка с AnimatedCrossFade: в свёрнутом состоянии
+/// показывает только название, в раскрытом - видео-плейсхолдер, описание и длительность.
+/// Одновременно может быть раскрыта только одна карточка (tracked через _expandedId).
+/// Открывается из PhysicalGroupsScreen или MentalGroupsScreen.
 class CategoryExercisesScreen extends StatefulWidget {
   final String categoryId;
   final String title;
@@ -26,9 +24,12 @@ class CategoryExercisesScreen extends StatefulWidget {
 
 class _State extends State<CategoryExercisesScreen> {
   String? _expandedId;
+  final Map<String, bool> _favoriteState = {};
   @override
   Widget build(BuildContext context) {
-    final repo = AppScope.of(context).exerciseRepo;
+    final scope = AppScope.of(context);
+    final repo = scope.exerciseRepo;
+    final userData = scope.userData;
     final c = C(context);
     final t = Tr.of(context);
     return Scaffold(
@@ -60,13 +61,14 @@ class _State extends State<CategoryExercisesScreen> {
               child: FutureBuilder<List<Exercise>>(
                 future: repo.exercisesByCategory(widget.categoryId),
                 builder: (ctx, snap) {
-                  if (snap.connectionState != ConnectionState.done)
+                  if (snap.connectionState != ConnectionState.done) {
                     return Center(
                       child: CircularProgressIndicator(color: c.accentLight),
                     );
+                  }
 
                   final items = snap.data ?? [];
-                  if (items.isEmpty)
+                  if (items.isEmpty) {
                     return Center(
                       child: Text(
                         t.noExercisesInCategory,
@@ -75,19 +77,24 @@ class _State extends State<CategoryExercisesScreen> {
                         ),
                       ),
                     );
+                  }
 
                   return ListView.separated(
                     padding: const EdgeInsets.symmetric(
                       horizontal: AppSpacing.screenHorizontal,
                     ),
                     itemCount: items.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    separatorBuilder: (_, _) => const SizedBox(height: 12),
                     itemBuilder: (ctx, i) {
                       final e = items[i];
                       final exp = _expandedId == e.id;
                       return InkWell(
-                        onTap: () =>
-                            setState(() => _expandedId = exp ? null : e.id),
+                        onTap: () => setState(() {
+                          _expandedId = exp ? null : e.id;
+                          if (!exp) {
+                            _favoriteState[e.id] = userData.isFavorite(e.id);
+                          }
+                        }),
                         borderRadius: BorderRadius.circular(AppRadius.medium),
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
@@ -138,6 +145,7 @@ class _State extends State<CategoryExercisesScreen> {
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
+
                                     children: [
                                       Container(
                                         height: 160,
@@ -152,12 +160,14 @@ class _State extends State<CategoryExercisesScreen> {
                                         child: Column(
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
+
                                           children: [
                                             Icon(
                                               Icons.play_circle_outline,
                                               color: c.textSecondary,
                                               size: 48,
                                             ),
+
                                             const SizedBox(height: 8),
                                             Text(
                                               t.video,
@@ -183,6 +193,38 @@ class _State extends State<CategoryExercisesScreen> {
                                         t.durationSec(e.defaultDurationSec),
                                         style: AppTextStyles.bodySmall.copyWith(
                                           color: c.textSecondary,
+                                        ),
+                                      ),
+
+                                      const SizedBox(height: 12),
+                                      GestureDetector(
+                                        onTap: () async {
+                                          final result = await userData.toggleFavorite(e.id);
+                                          setState(() => _favoriteState[e.id] = result);
+                                        },
+
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              (_favoriteState[e.id] ?? false)
+                                                  ? Icons.favorite
+                                                  : Icons.favorite_border,
+                                              color: (_favoriteState[e.id] ?? false)
+                                                  ? c.error
+                                                  : c.textSecondary,
+                                              size: 22,
+                                            ),
+
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              t.favoritesTitle,
+                                              style: AppTextStyles.bodySmall.copyWith(
+                                                color: (_favoriteState[e.id] ?? false)
+                                                    ? c.error
+                                                    : c.textSecondary,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ],

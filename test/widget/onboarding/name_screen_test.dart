@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:two_mins/features/onboarding/name_screen.dart';
-import 'package:two_mins/shared/widgets.dart';
 import '../../helpers/test_helpers.dart';
 import '../../mocks/mocks.dart';
 

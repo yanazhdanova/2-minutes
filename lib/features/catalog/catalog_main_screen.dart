@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import '../../app/app_theme.dart';
 import '../../app/navigation.dart';
 import '../../app/l10n/app_localizations.dart';
+import '../favorites/favorites_screen.dart';
 import 'physical_groups.dart';
 import 'mental_groups.dart';
 
-/**
-Главный экран каталога (вкладка «Каталог»). Показывает заголовок, подзаголовок
-и две карточки (_Card): «Физические» - PhysicalGroupsScreen, «Ментальные» - MentalGroupsScreen.
-Каждая карточка содержит иконку, название и краткое описание типа упражнений.
-*/
+/// Главный экран каталога (вкладка «Каталог»). Показывает заголовок, подзаголовок
+/// и две карточки (_Card): «Физические» - PhysicalGroupsScreen, «Ментальные» - MentalGroupsScreen.
+/// Каждая карточка содержит иконку, название и краткое описание типа упражнений.
 class CatalogMainScreen extends StatelessWidget {
   const CatalogMainScreen({super.key});
   @override
@@ -62,6 +61,13 @@ class CatalogMainScreen extends StatelessWidget {
                 sub: t.mentalSub,
                 onTap: () => goTo(context, const MentalGroupsScreen()),
               ),
+              const SizedBox(height: 16),
+              _Card(
+                icon: Icons.favorite_outline,
+                title: t.favoritesTitle,
+                sub: t.favoritesSub,
+                onTap: () => goTo(context, const FavoritesScreen()),
+              ),
               const Spacer(),
             ],
           ),
@@ -71,7 +77,7 @@ class CatalogMainScreen extends StatelessWidget {
   }
 }
 
-/** Карточка раздела каталога с иконкой, заголовком и описанием. */
+/// Карточка раздела каталога с иконкой, заголовком и описанием.
 class _Card extends StatelessWidget {
   final IconData icon;
   final String title;

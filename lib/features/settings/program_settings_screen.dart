@@ -4,13 +4,11 @@ import '../../app/app_theme.dart';
 import '../../app/l10n/app_localizations.dart';
 import '../../shared/widgets.dart';
 
-/**
-Экран настройки программы тренировок. Аналогичен CategoriesScreen из онбординга,
-но для уже авторизованного пользователя. Показывает 8 проблемных зон с тоглящимися
-карточками. Начальный выбор загружается из PrefsService.selectedCategories.
-Кнопка «Сохранить» появляется при изменениях. Валидация: минимум 1 выбранная проблема.
-При сохранении обновляет PrefsService и показывает SnackBar «Сохранено».
-*/
+/// Экран настройки программы тренировок. Аналогичен CategoriesScreen из онбординга,
+/// но для уже авторизованного пользователя. Показывает 8 проблемных зон с тоглящимися
+/// карточками. Начальный выбор загружается из PrefsService.selectedCategories.
+/// Кнопка «Сохранить» появляется при изменениях. Валидация: минимум 1 выбранная проблема.
+/// При сохранении обновляет PrefsService и показывает SnackBar «Сохранено».
 class ProgramSettingsScreen extends StatefulWidget {
   const ProgramSettingsScreen({super.key});
   @override
@@ -35,8 +33,8 @@ class _ProgramSettingsScreenState extends State<ProgramSettingsScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final prefs = AppScope.of(context).prefs;
-    _selected = prefs.selectedCategories.toSet();
+    final userData = AppScope.of(context).userData;
+    _selected = userData.selectedCategories.toSet();
   }
 
   void _toggle(String id) {
@@ -58,8 +56,8 @@ class _ProgramSettingsScreenState extends State<ProgramSettingsScreen> {
       return;
     }
 
-    final prefs = AppScope.of(context).prefs;
-    await prefs.setSelectedCategories(_selected.toList());
+    final userData = AppScope.of(context).userData;
+    await userData.setSelectedCategories(_selected.toList());
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -192,7 +190,7 @@ class _ProgramSettingsScreenState extends State<ProgramSettingsScreen> {
   }
 }
 
-/** Модель проблемной зоны: идентификатор и локализованная метка. */
+/// Модель проблемной зоны: идентификатор и локализованная метка.
 class _P {
   final String id;
   final String label;

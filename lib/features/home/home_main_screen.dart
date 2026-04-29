@@ -1,20 +1,16 @@
 import 'package:flutter/material.dart';
+import '../../app/app_scope.dart';
 import '../../app/app_theme.dart';
 import '../../app/navigation.dart';
-import '../../app/user_preferences.dart';
 import '../../app/l10n/app_localizations.dart';
 import '../../shared/widgets.dart';
 import '../premium/buy_premium_screen.dart';
 import 'workout_type_screen.dart';
-import '../../app/app_scope.dart';
-import 'package:flutter/foundation.dart';
 
-/**
-Главный экран приложения (вкладка «Главная»). Загружает имя пользователя
-из UserPreferences и отображает приветствие, зависящее от времени суток
-(ночь < 6, утро < 12, день < 18, вечер). Содержит иконку премиума в хедере
-и кнопку «Начать тренировку», ведущую на WorkoutTypeScreen.
-*/
+/// Главный экран приложения (вкладка «Главная»). Загружает имя пользователя
+/// из UserPreferences и отображает приветствие, зависящее от времени суток
+/// (ночь < 6, утро < 12, день < 18, вечер). Содержит иконку премиума в хедере
+/// и кнопку «Начать тренировку», ведущую на WorkoutTypeScreen.
 class HomeMainScreen extends StatefulWidget {
   const HomeMainScreen({super.key});
   @override
@@ -22,18 +18,6 @@ class HomeMainScreen extends StatefulWidget {
 }
 
 class _HomeMainScreenState extends State<HomeMainScreen> {
-  String _userName = '';
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
-
-  Future<void> _load() async {
-    final n = await UserPreferences.getName();
-    if (mounted) setState(() => _userName = n ?? 'User');
-  }
-
   String _greeting(Tr t) {
     final h = DateTime.now().hour;
     if (h < 6) return t.greetingNight;
@@ -46,12 +30,15 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
   Widget build(BuildContext context) {
     final c = C(context);
     final t = Tr.of(context);
-    final prefs = AppScope.of(context).prefs;
+    final scope = AppScope.of(context);
+    final userName = scope.userData.userName.isNotEmpty
+        ? scope.userData.userName
+        : 'User';
     debugPrint('=== NOTIF DEBUG ===');
-    debugPrint('from: ${prefs.notifFrom}');
-    debugPrint('to: ${prefs.notifTo}');
-    debugPrint('freq: ${prefs.notifFreq}');
-    debugPrint('categories: ${prefs.selectedCategories}');
+    debugPrint('from: ${scope.prefs.notifFrom}');
+    debugPrint('to: ${scope.prefs.notifTo}');
+    debugPrint('freq: ${scope.prefs.notifFreq}');
+    debugPrint('categories: ${scope.userData.selectedCategories}');
 
     return Scaffold(
       backgroundColor: c.background,
@@ -87,7 +74,7 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
 
               const SizedBox(height: 4),
               Text(
-                _userName,
+                userName,
                 style: AppTextStyles.heading2.copyWith(color: c.textPrimary),
               ),
 

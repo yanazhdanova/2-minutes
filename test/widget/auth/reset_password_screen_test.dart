@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:two_mins/app/l10n/app_localizations.dart';
 
-/**
-ResetPasswordScreen создаёт AuthService внутри → Firebase зависимость.
-Тестируем логику и текст.
-*/
+/// ResetPasswordScreen создаёт AuthService внутри → Firebase зависимость.
+/// Тестируем логику и текст.
 void main() {
   group('ResetPasswordScreen — логика валидации', () {
     test('пустой email → ошибка', () {

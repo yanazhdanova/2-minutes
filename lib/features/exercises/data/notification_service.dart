@@ -4,12 +4,10 @@ import 'package:timezone/data/latest_all.dart' as tz_data;
 import 'package:flutter/foundation.dart';
 import 'prefs_service.dart';
 
-/**
-Singleton-сервис для планирования локальных уведомлений о тренировках.
-Управляет жизненным циклом flutter_local_notifications: инициализация,
-запрос разрешений, создание еженедельного расписания на основе настроек пользователя.
-Таймзона определяется эвристически через _guessTimeZone() по текущему UTC-смещению.
-*/
+/// Singleton-сервис для планирования локальных уведомлений о тренировках.
+/// Управляет жизненным циклом flutter_local_notifications: инициализация,
+/// запрос разрешений, создание еженедельного расписания на основе настроек пользователя.
+/// Таймзона определяется эвристически через _guessTimeZone() по текущему UTC-смещению.
 class NotificationService {
   static final NotificationService instance = NotificationService._();
   NotificationService._();
@@ -17,11 +15,9 @@ class NotificationService {
   final _plugin = FlutterLocalNotificationsPlugin();
   bool _initialized = false;
 
-  /**
-  Инициализирует сервис: загружает базу таймзон, определяет локальную зону,
-  настраивает плагин уведомлений для Android и iOS. повторные
-  вызовы игнорируются благодаря флагу _initialized. Вызывается в main().
-  */
+  /// Инициализирует сервис: загружает базу таймзон, определяет локальную зону,
+  /// настраивает плагин уведомлений для Android и iOS. повторные
+  /// вызовы игнорируются благодаря флагу _initialized. Вызывается в main().
   Future<void> init() async {
     if (_initialized) return;
 
@@ -50,12 +46,10 @@ class NotificationService {
     _initialized = true;
   }
 
-  /**
-  Запрашивает разрешение на отправку уведомлений. На iOS запрашивает alert, badge, sound.
-  На Android запрашивает notification permission (Android 13+).
-  На других платформах возвращает true.
-  @return true если разрешение получено.
-  */
+  /// Запрашивает разрешение на отправку уведомлений. На iOS запрашивает alert, badge, sound.
+  /// На Android запрашивает notification permission (Android 13+).
+  /// На других платформах возвращает true.
+  /// @return true если разрешение получено.
   Future<bool> requestPermission() async {
     final ios = _plugin
         .resolvePlatformSpecificImplementation<
@@ -82,18 +76,16 @@ class NotificationService {
     return true;
   }
 
-  /**
-  Планирует еженедельные уведомления на основе настроек пользователя.
-  Алгоритм:
-  1. Отменяет все ранее запланированные уведомления.
-  2. Парсит notifFrom/notifTo в минуты от полуночи, notifFreq в интервал в минутах.
-  3. Если диапазон пересекает полночь (to <= from) - прибавляет 24ч к to.
-  4. Генерирует список моментов времени с шагом freqMinutes в пределах диапазона.
-  5. Для каждого дня недели (notifDays) и каждого момента - планирует повторяющееся
-     еженедельное уведомление через zonedSchedule с matchDateTimeComponents.dayOfWeekAndTime.
-  Если freqMinutes < 5 или days пуст - ничего не планирует.
-  @param prefs PrefsService с настройками уведомлений.
-  */
+  /// Планирует еженедельные уведомления на основе настроек пользователя.
+  /// Алгоритм:
+  /// 1. Отменяет все ранее запланированные уведомления.
+  /// 2. Парсит notifFrom/notifTo в минуты от полуночи, notifFreq в интервал в минутах.
+  /// 3. Если диапазон пересекает полночь (to <= from) - прибавляет 24ч к to.
+  /// 4. Генерирует список моментов времени с шагом freqMinutes в пределах диапазона.
+  /// 5. Для каждого дня недели (notifDays) и каждого момента - планирует повторяющееся
+  /// еженедельное уведомление через zonedSchedule с matchDateTimeComponents.dayOfWeekAndTime.
+  /// Если freqMinutes < 5 или days пуст - ничего не планирует.
+  /// @param prefs PrefsService с настройками уведомлений.
   Future<void> scheduleFromPrefs(PrefsService prefs) async {
     await cancelAll();
 
@@ -137,7 +129,7 @@ class NotificationService {
     );
   }
 
-  /** Отменяет все ранее запланированные уведомления через плагин. Вызывается перед scheduleFromPrefs. */
+  /// Отменяет все ранее запланированные уведомления через плагин. Вызывается перед scheduleFromPrefs.
   Future<void> cancelAll() async {
     await _plugin.cancelAll();
   }
@@ -226,7 +218,7 @@ class NotificationService {
   }
 }
 
-/** Вспомогательная структура: час и минута для расчёта расписания уведомлений. */
+/// Вспомогательная структура: час и минута для расчёта расписания уведомлений.
 class _HourMin {
   final int hour;
   final int minute;

@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
+import '../../app/app_scope.dart';
 import '../../app/app_theme.dart';
 import '../../app/navigation.dart';
-import '../../app/user_preferences.dart';
 import '../../app/l10n/app_localizations.dart';
 import '../../shared/widgets.dart';
 import 'notif_time_screen.dart';
 
-/**
-Второй экран онбординга - выбор проблемных зон. Отображает 8 проблем (posture, back,
-neck, eyes, stress, focus, energy, sleep) в виде тоглящихся карточек с чекбоксами.
-Множественный выбор хранится в Set<String> _selected. Валидация: минимум 1 выбранная
-проблема. При нажатии «Далее» сохраняет выбор через UserPreferences.setSelectedCategories()
-и переходит на NotifTimeScreen.
-*/
+/// Второй экран онбординга - выбор проблемных зон. Отображает 8 проблем (posture, back,
+/// neck, eyes, stress, focus, energy, sleep) в виде тоглящихся карточек с чекбоксами.
+/// Множественный выбор хранится в `Set<String>` _selected. Валидация: минимум 1 выбранная
+/// проблема. При нажатии «Далее» сохраняет выбор через UserPreferences.setSelectedCategories()
+/// и переходит на NotifTimeScreen.
 class CategoriesScreen extends StatefulWidget {
   const CategoriesScreen({super.key});
   @override
@@ -48,7 +46,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       );
       return;
     }
-    await UserPreferences.setSelectedCategories(_selected.toList());
+    await AppScope.of(context).userData.setSelectedCategories(_selected.toList());
     if (mounted) goTo(context, const NotifTimeScreen());
   }
 
@@ -148,7 +146,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   }
 }
 
-/** Модель проблемной зоны: идентификатор и локализованная метка. */
+/// Модель проблемной зоны: идентификатор и локализованная метка.
 class _P {
   final String id;
   final String label;

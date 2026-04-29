@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:two_mins/app/l10n/app_localizations.dart';
 
-/** Edge cases для локализации. */
+/// Edge cases для локализации.
 void main() {
   group('Tr — edge cases', () {
     test('categoryTitle с неизвестным id возвращает сам id', () {

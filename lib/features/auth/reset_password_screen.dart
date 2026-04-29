@@ -5,12 +5,10 @@ import '../../app/l10n/app_localizations.dart';
 import '../../shared/widgets.dart';
 import 'auth_service.dart';
 
-/**
-Экран сброса пароля. Два состояния:
-1. Ввод email и кнопка «Далее» - отправляет письмо для сброса через Firebase.
-2. Подтверждение отправки - показывает иконку письма, текст с email и кнопку «Назад к логину».
-Переключение между состояниями через флаг _isSent.
-*/
+/// Экран сброса пароля. Два состояния:
+/// 1. Ввод email и кнопка «Далее» - отправляет письмо для сброса через Firebase.
+/// 2. Подтверждение отправки - показывает иконку письма, текст с email и кнопку «Назад к логину».
+/// Переключение между состояниями через флаг _isSent.
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({super.key});
   @override

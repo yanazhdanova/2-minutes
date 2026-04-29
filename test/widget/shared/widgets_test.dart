@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:two_mins/shared/widgets.dart';
-import 'package:two_mins/app/app_theme.dart';
 import '../../helpers/test_helpers.dart';
 
 void main() {

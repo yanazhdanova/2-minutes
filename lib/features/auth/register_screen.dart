@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../app/app_scope.dart';
 import '../../app/app_theme.dart';
 import '../../app/navigation.dart';
 import '../../app/l10n/app_localizations.dart';
+import '../../app/theme_controller.dart';
+import '../../app/locale_controller.dart';
 import '../../shared/widgets.dart';
 import 'auth_service.dart';
 import '../onboarding/name_screen.dart';
+import '../exercises/data/notification_service.dart';
+import '../../app/main_tab_screen.dart';
 import 'login_screen.dart';
 
-/**
-Экран регистрации нового пользователя. Содержит поля email, пароль и подтверждение пароля,
-кнопку «Зарегистрироваться» и «Продолжить с Google», ссылку на экран логина.
-Валидация: все поля обязательны, пароли должны совпадать, минимум 6 символов.
-После успешной регистрации переходит на NameScreen (начало онбординга).
-*/
+/// Экран регистрации нового пользователя. Содержит поля email, пароль и подтверждение пароля,
+/// кнопку «Зарегистрироваться» и «Продолжить с Google», ссылку на экран логина.
+/// Валидация: все поля обязательны, пароли должны совпадать, минимум 6 символов.
+/// После успешной регистрации переходит на NameScreen (начало онбординга).
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
   @override
@@ -58,7 +61,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     setState(() => _isLoading = true);
     try {
       await _auth.register(email: email, password: password);
-      if (mounted) goToReplace(context, const NameScreen());
+      if (mounted) {
+        final scope = AppScope.of(context);
+        await scope.userData.init();
+        if (mounted) await _syncSettings(scope);
+        if (mounted) goToReplace(context, const NameScreen());
+      }
     } on FirebaseAuthException catch (e) {
       if (mounted) _showError(_mapError(e.code));
     } catch (_) {
@@ -72,7 +80,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
     setState(() => _isGoogleLoading = true);
     try {
       await _auth.signInWithGoogle();
-      if (mounted) goToAndClear(context, const NameScreen());
+      if (mounted) {
+        final scope = AppScope.of(context);
+        await scope.userData.init();
+        if (mounted) await _syncSettings(scope);
+        if (mounted) {
+          scope.userData.isOnboardingDone
+              ? goToAndClear(context, const MainTabScreen())
+              : goToAndClear(context, const NameScreen());
+        }
+      }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'google-cancelled') return;
       if (mounted) _showError(_mapError(e.code));
@@ -89,6 +106,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
+  Future<void> _syncSettings(AppScope scope) async {
+    final userData = scope.userData;
+    final prefs = scope.prefs;
+    final themeCtrl = ThemeController.of(context);
+    final localeCtrl = LocaleController.of(context);
+
+    final tm = userData.themeMode;
+    await themeCtrl.setThemeMode(
+      tm == 'dark' ? ThemeMode.dark : tm == 'light' ? ThemeMode.light : ThemeMode.system,
+    );
+    await themeCtrl.setAccentColor(
+      userData.accentColor == 'pink' ? AccentColor.pink : AccentColor.green,
+    );
+
+    final lang = userData.languageCode;
+    if (lang.isNotEmpty) {
+      await localeCtrl.setLocale(Locale(lang));
+    }
+
+    await prefs.setNotifFrom(userData.notifFrom);
+    await prefs.setNotifTo(userData.notifTo);
+    await prefs.setNotifFreq(userData.notifFreq);
+    await prefs.setNotifDays(userData.notifDays);
+
+    if (userData.isOnboardingDone) {
+      NotificationService.instance.scheduleFromPrefs(prefs);
+    }
+  }
+
   String _mapError(String code) => switch (code) {
     'email-already-in-use' => 'Email already in use',
     'weak-password' => 'Weak password',
@@ -103,14 +149,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       backgroundColor: c.background,
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.screenHorizontal,
           ),
           child: Column(
             children: [
               const AppHeader(),
-              const Spacer(flex: 2),
+              const SizedBox(height: 40),
               Text(
                 t.registerTitle,
                 style: AppTextStyles.heading1.copyWith(
@@ -153,20 +199,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
               Row(
                 children: [
                   Expanded(
-                    child: Divider(color: c.textPrimary.withOpacity(0.2)),
+                    child: Divider(color: c.textPrimary.withValues(alpha: 0.2)),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
                       t.orDivider,
                       style: AppTextStyles.bodySmall.copyWith(
-                        color: c.textPrimary.withOpacity(0.5),
+                        color: c.textPrimary.withValues(alpha: 0.5),
                       ),
                     ),
                   ),
 
                   Expanded(
-                    child: Divider(color: c.textPrimary.withOpacity(0.2)),
+                    child: Divider(color: c.textPrimary.withValues(alpha: 0.2)),
                   ),
                 ],
               ),
@@ -181,7 +227,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   style: OutlinedButton.styleFrom(
                     foregroundColor: c.textPrimary,
                     side: BorderSide(
-                      color: c.textPrimary.withOpacity(0.3),
+                      color: c.textPrimary.withValues(alpha: 0.3),
                       width: 1.5,
                     ),
                     shape: RoundedRectangleBorder(
@@ -207,7 +253,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
 
-              const Spacer(flex: 3),
+              const SizedBox(height: 48),
               TextButton(
                 onPressed: () => goToAndClear(context, const LoginScreen()),
                 child: Text(

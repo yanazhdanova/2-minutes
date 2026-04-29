@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:two_mins/features/exercises/domain/exercise_models.dart';
 import 'package:two_mins/features/exercises/data/exercise_catalog.dart';
 
-/** Edge cases для моделей упражнений и каталога. */
+/// Edge cases для моделей упражнений и каталога.
 void main() {
   group('Exercise catalog — целостность данных', () {
     test('все упражнения ссылаются на существующие категории', () {

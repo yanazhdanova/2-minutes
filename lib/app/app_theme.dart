@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 
-/** Варианты акцентного цвета приложения: зелёный (по умолчанию) и розовый. Используется в ResolvedColors для выбора палитры. */
+/// Варианты акцентного цвета приложения: зелёный (по умолчанию) и розовый. Используется в ResolvedColors для выбора палитры.
 enum AccentColor { green, pink }
 
-/**
-Набор из 12 цветов, полностью определяющих визуальную палитру приложения
-для конкретной комбинации темы (светлая/тёмная) и акцента (green/pink).
-Включает цвета фонов, поверхностей, текста трёх уровней, акцента в трёх
-вариантах (основной, светлый, поверхностный), ошибки и белый.
-Создаётся через фабрику [ResolvedColors.from] и передаётся вниз через [AppColorsProvider].
-*/
+/// Набор из 12 цветов, полностью определяющих визуальную палитру приложения
+/// для конкретной комбинации темы (светлая/тёмная) и акцента (green/pink).
+/// Включает цвета фонов, поверхностей, текста трёх уровней, акцента в трёх
+/// вариантах (основной, светлый, поверхностный), ошибки и белый.
+/// Создаётся через фабрику [ResolvedColors.from] и передаётся вниз через [AppColorsProvider].
 class ResolvedColors {
   final Color background;
   final Color surface;
@@ -39,15 +37,13 @@ class ResolvedColors {
     required this.white,
   });
 
-  /**
-  Фабрика, создающая палитру из 12 цветов на основе темы и акцента.
-  Поддерживает 4 комбинации: dark+green, dark+pink, light+green, light+pink.
-  Каждая комбинация содержит вручную подобранные hex-цвета для обеспечения
-  достаточного контраста и визуальной гармонии.
-  @param isDark true для тёмной темы, false для светлой.
-  @param accentColor Акцентный цвет (green или pink).
-  @return Экземпляр ResolvedColors с 12 цветами.
-  */
+  /// Фабрика, создающая палитру из 12 цветов на основе темы и акцента.
+  /// Поддерживает 4 комбинации: dark+green, dark+pink, light+green, light+pink.
+  /// Каждая комбинация содержит вручную подобранные hex-цвета для обеспечения
+  /// достаточного контраста и визуальной гармонии.
+  /// @param isDark true для тёмной темы, false для светлой.
+  /// @param accentColor Акцентный цвет (green или pink).
+  /// @return Экземпляр ResolvedColors с 12 цветами.
   factory ResolvedColors.from({
     required bool isDark,
     required AccentColor accentColor,
@@ -122,12 +118,10 @@ class ResolvedColors {
   }
 }
 
-/**
-InheritedWidget для передачи [ResolvedColors] вниз по дереву виджетов.
-Размещается в MaterialApp.builder, чтобы иметь доступ к реальной яркости
-после применения themeMode. Всегда уведомляет зависимых при обновлении,
-так как сравнение 12 полей дороже пересборки.
-*/
+/// InheritedWidget для передачи [ResolvedColors] вниз по дереву виджетов.
+/// Размещается в MaterialApp.builder, чтобы иметь доступ к реальной яркости
+/// после применения themeMode. Всегда уведомляет зависимых при обновлении,
+/// так как сравнение 12 полей дороже пересборки.
 class AppColorsProvider extends InheritedWidget {
   final ResolvedColors colors;
 
@@ -137,12 +131,10 @@ class AppColorsProvider extends InheritedWidget {
     required super.child,
   });
 
-  /**
-  Получает [ResolvedColors] из ближайшего [AppColorsProvider] и подписывает виджет на обновления.
-  @param context BuildContext вызывающего виджета.
-  @return Текущая палитра цветов.
-  @throws AssertionError если AppColorsProvider не найден.
-  */
+  /// Получает [ResolvedColors] из ближайшего [AppColorsProvider] и подписывает виджет на обновления.
+  /// @param context BuildContext вызывающего виджета.
+  /// @return Текущая палитра цветов.
+  /// @throws AssertionError если AppColorsProvider не найден.
   static ResolvedColors of(BuildContext context) {
     final p = context.dependOnInheritedWidgetOfExactType<AppColorsProvider>();
     assert(p != null, 'AppColorsProvider not found');
@@ -153,23 +145,21 @@ class AppColorsProvider extends InheritedWidget {
   bool updateShouldNotify(AppColorsProvider old) => true;
 }
 
-/** Сокращение для [AppColorsProvider.of] - быстрый доступ к цветам через C(context). */
+/// Сокращение для [AppColorsProvider.of] - быстрый доступ к цветам через C(context).
 ResolvedColors C(BuildContext context) => AppColorsProvider.of(context);
 
-/**
-Типографика приложения. Содержит все текстовые стили:
-heading1 (44px) - основные заголовки экранов,
-heading2 (32px) - подзаголовки и заголовки разделов,
-heading3 (26px) - крупный текст в карточках,
-body (16px) - основной текст,
-bodyLarge (18px) - акцентированный текст списков,
-bodySmall (14px) - второстепенный текст и описания,
-button (16px) - текст обычных кнопок,
-buttonLarge (18px) - текст крупных CTA-кнопок,
-label (14px) - метки полей и секций,
-logo (20px) - текст логотипа «2 минуты».
-Цвет не задан - применяется через copyWith(color:) на месте использования.
-*/
+/// Типографика приложения. Содержит все текстовые стили:
+/// heading1 (44px) - основные заголовки экранов,
+/// heading2 (32px) - подзаголовки и заголовки разделов,
+/// heading3 (26px) - крупный текст в карточках,
+/// body (16px) - основной текст,
+/// bodyLarge (18px) - акцентированный текст списков,
+/// bodySmall (14px) - второстепенный текст и описания,
+/// button (16px) - текст обычных кнопок,
+/// buttonLarge (18px) - текст крупных CTA-кнопок,
+/// label (14px) - метки полей и секций,
+/// logo (20px) - текст логотипа «2 минуты».
+/// Цвет не задан - применяется через copyWith(color:) на месте использования.
 class AppTextStyles {
   AppTextStyles._();
   static const heading1 = TextStyle(
@@ -229,14 +219,12 @@ class AppTextStyles {
   static const logo = TextStyle(fontSize: 20, fontWeight: FontWeight.w400);
 }
 
-/**
-Стандартные радиусы скругления элементов:
-small (12) - внутренние элементы, чекбоксы;
-medium (16) - карточки, текстовые поля;
-large (24) - крупные карточки;
-extraLarge (28) - кнопки;
-full (100) - полностью круглые элементы.
-*/
+/// Стандартные радиусы скругления элементов:
+/// small (12) - внутренние элементы, чекбоксы;
+/// medium (16) - карточки, текстовые поля;
+/// large (24) - крупные карточки;
+/// extraLarge (28) - кнопки;
+/// full (100) - полностью круглые элементы.
 class AppRadius {
   AppRadius._();
   static const small = 12.0;
@@ -246,10 +234,8 @@ class AppRadius {
   static const full = 100.0;
 }
 
-/**
-Стандартные отступы и интервалы. Шкала: xs(4), sm(8), md(12), lg(16), xl(20), xxl(24), xxxl(32).
-screenHorizontal (28) - горизонтальные отступы экрана от краёв, используется во всех Scaffold.
-*/
+/// Стандартные отступы и интервалы. Шкала: xs(4), sm(8), md(12), lg(16), xl(20), xxl(24), xxxl(32).
+/// screenHorizontal (28) - горизонтальные отступы экрана от краёв, используется во всех Scaffold.
 class AppSpacing {
   AppSpacing._();
   static const xs = 4.0;
@@ -262,17 +248,15 @@ class AppSpacing {
   static const screenHorizontal = 28.0;
 }
 
-/**
-Создаёт полностью настроенную [ThemeData] для MaterialApp.
-Конфигурирует: colorScheme, appBarTheme, bottomNavigationBarTheme,
-elevatedButtonTheme, outlinedButtonTheme, textButtonTheme, inputDecorationTheme,
-cardTheme, dividerTheme, progressIndicatorTheme и expansionTileTheme.
-Все цвета берутся из [ResolvedColors], сгенерированной для данной комбинации isDark/accentColor.
-Material3 включён. Elevation всех кнопок и карточек - 0 (flat-дизайн).
-@param isDark true для тёмной темы, false для светлой.
-@param accentColor Акцентный цвет (green или pink).
-@return ThemeData, готовая для передачи в MaterialApp.theme или darkTheme.
-*/
+/// Создаёт полностью настроенную [ThemeData] для MaterialApp.
+/// Конфигурирует: colorScheme, appBarTheme, bottomNavigationBarTheme,
+/// elevatedButtonTheme, outlinedButtonTheme, textButtonTheme, inputDecorationTheme,
+/// cardTheme, dividerTheme, progressIndicatorTheme и expansionTileTheme.
+/// Все цвета берутся из [ResolvedColors], сгенерированной для данной комбинации isDark/accentColor.
+/// Material3 включён. Elevation всех кнопок и карточек - 0 (flat-дизайн).
+/// @param isDark true для тёмной темы, false для светлой.
+/// @param accentColor Акцентный цвет (green или pink).
+/// @return ThemeData, готовая для передачи в MaterialApp.theme или darkTheme.
 ThemeData buildAppTheme({
   required bool isDark,
   required AccentColor accentColor,

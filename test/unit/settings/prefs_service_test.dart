@@ -158,6 +158,57 @@ void main() {
     });
   });
 
+  group('favorites', () {
+    test('по умолчанию пустой список', () {
+      expect(prefs.favoriteIds, isEmpty);
+    });
+
+    test('isFavorite возвращает false для неизвестного id', () {
+      expect(prefs.isFavorite('unknown'), false);
+    });
+
+    test('toggleFavorite добавляет и возвращает true', () async {
+      final result = await prefs.toggleFavorite('ex_01');
+      expect(result, true);
+      expect(prefs.favoriteIds, ['ex_01']);
+      expect(prefs.isFavorite('ex_01'), true);
+    });
+
+    test('toggleFavorite дважды — удаляет и возвращает false', () async {
+      await prefs.toggleFavorite('ex_01');
+      final result = await prefs.toggleFavorite('ex_01');
+      expect(result, false);
+      expect(prefs.favoriteIds, isEmpty);
+      expect(prefs.isFavorite('ex_01'), false);
+    });
+
+    test('toggleFavorite нескольких упражнений', () async {
+      await prefs.toggleFavorite('ex_01');
+      await prefs.toggleFavorite('ex_02');
+      await prefs.toggleFavorite('ex_03');
+      expect(prefs.favoriteIds, ['ex_01', 'ex_02', 'ex_03']);
+    });
+
+    test('removeFavorite удаляет из списка', () async {
+      await prefs.toggleFavorite('ex_01');
+      await prefs.toggleFavorite('ex_02');
+      await prefs.removeFavorite('ex_01');
+      expect(prefs.favoriteIds, ['ex_02']);
+      expect(prefs.isFavorite('ex_01'), false);
+    });
+
+    test('removeFavorite для отсутствующего id — без ошибок', () async {
+      await prefs.removeFavorite('nonexistent');
+      expect(prefs.favoriteIds, isEmpty);
+    });
+
+    test('clearAll очищает избранное', () async {
+      await prefs.toggleFavorite('ex_01');
+      await prefs.clearAll();
+      expect(prefs.favoriteIds, isEmpty);
+    });
+  });
+
   group('clearAll', () {
     test('очищает все данные', () async {
       await prefs.setUserName('Тест');

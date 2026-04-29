@@ -2,18 +2,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../app/app_theme.dart';
 import '../../app/navigation.dart';
-import '../../app/user_preferences.dart';
+import '../../app/app_scope.dart';
 import '../../app/l10n/app_localizations.dart';
 import '../../shared/widgets.dart';
 import 'notif_freq_screen.dart';
 
-/**
-Третий экран онбординга - выбор временного диапазона уведомлений.
-Показывает два блока «От» и «До» с текущим временем; по тапу открывается
-CupertinoDatePicker в модальном bottom sheet (режим time, 24h формат, шаг 5 мин).
-По умолчанию: 09:00–21:00. При нажатии «Далее» сохраняет через
-UserPreferences.setNotifTimeRange() и переходит на NotifFreqScreen.
-*/
+/// Третий экран онбординга - выбор временного диапазона уведомлений.
+/// Показывает два блока «От» и «До» с текущим временем; по тапу открывается
+/// CupertinoDatePicker в модальном bottom sheet (режим time, 24h формат, шаг 5 мин).
+/// По умолчанию: 09:00–21:00. При нажатии «Далее» сохраняет через
+/// UserPreferences.setNotifTimeRange() и переходит на NotifFreqScreen.
 class NotifTimeScreen extends StatefulWidget {
   const NotifTimeScreen({super.key});
   @override
@@ -108,12 +106,13 @@ class _NotifTimeScreenState extends State<NotifTimeScreen> {
       '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
 
   Future<void> _next() async {
-    await UserPreferences.setNotifTimeRange(
-      fromHour: _fromTime.hour,
-      fromMinute: _fromTime.minute,
-      toHour: _toTime.hour,
-      toMinute: _toTime.minute,
-    );
+    final scope = AppScope.of(context);
+    final from = _fmt(_fromTime);
+    final to = _fmt(_toTime);
+    scope.userData.setNotifFrom(from);
+    scope.userData.setNotifTo(to);
+    await scope.prefs.setNotifFrom(from);
+    await scope.prefs.setNotifTo(to);
     if (mounted) goTo(context, const NotifFreqScreen());
   }
 

@@ -1,14 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:two_mins/features/exercises/data/prefs_service.dart';
 import '../../mocks/mocks.dart';
 
-/**
-Тесты для логики NotificationService.
-NotificationService — синглтон с жёсткой зависимостью от
-FlutterLocalNotificationsPlugin и timezone, поэтому unit-тесты
-покрывают логику расчётов, а не сам вызов плагина.
-*/
+/// Тесты для логики NotificationService.
+/// NotificationService — синглтон с жёсткой зависимостью от
+/// FlutterLocalNotificationsPlugin и timezone, поэтому unit-тесты
+/// покрывают логику расчётов, а не сам вызов плагина.
 void main() {
   group('Логика расчёта расписания уведомлений', () {
     test('freqMinutes < 5 → не планировать', () {

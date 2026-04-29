@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:two_mins/app/app_theme.dart';
 
-/** Edge cases для темы и цветов. */
+/// Edge cases для темы и цветов.
 void main() {
   group('ResolvedColors — edge cases', () {
     test('все 4 комбинации тем создаются без ошибок', () {

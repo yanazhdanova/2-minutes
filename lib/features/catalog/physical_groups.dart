@@ -7,12 +7,10 @@ import '../../shared/widgets.dart';
 import '../exercises/domain/exercise_models.dart';
 import 'category_exercises_screen.dart';
 
-/**
-Экран списка категорий физических упражнений (вкладка «Каталог» - «Физические»).
-Загружает категории типа HealthType.physical через FutureBuilder. Каждая категория -
-тапабельная карточка со стрелкой, при нажатии открывает CategoryExercisesScreen
-с локализованным заголовком. Показывает пустое состояние, если категорий нет.
-*/
+/// Экран списка категорий физических упражнений (вкладка «Каталог» - «Физические»).
+/// Загружает категории типа HealthType.physical через FutureBuilder. Каждая категория -
+/// тапабельная карточка со стрелкой, при нажатии открывает CategoryExercisesScreen
+/// с локализованным заголовком. Показывает пустое состояние, если категорий нет.
 class PhysicalGroupsScreen extends StatelessWidget {
   const PhysicalGroupsScreen({super.key});
   @override
@@ -50,13 +48,14 @@ class PhysicalGroupsScreen extends StatelessWidget {
               child: FutureBuilder<List<ExerciseCategory>>(
                 future: repo.categoriesByType(HealthType.physical),
                 builder: (ctx, snap) {
-                  if (snap.connectionState != ConnectionState.done)
+                  if (snap.connectionState != ConnectionState.done) {
                     return Center(
                       child: CircularProgressIndicator(color: c.accentLight),
                     );
+                  }
 
                   final cats = snap.data ?? [];
-                  if (cats.isEmpty)
+                  if (cats.isEmpty) {
                     return Center(
                       child: Text(
                         t.noCategories,
@@ -65,13 +64,14 @@ class PhysicalGroupsScreen extends StatelessWidget {
                         ),
                       ),
                     );
+                  }
 
                   return ListView.separated(
                     padding: const EdgeInsets.symmetric(
                       horizontal: AppSpacing.screenHorizontal,
                     ),
                     itemCount: cats.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    separatorBuilder: (_, _) => const SizedBox(height: 12),
                     itemBuilder: (ctx, i) {
                       final cat = cats[i];
                       return InkWell(

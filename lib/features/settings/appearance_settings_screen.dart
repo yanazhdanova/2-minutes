@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import '../../app/app_theme.dart';
+import '../../app/app_scope.dart';
 import '../../app/theme_controller.dart';
 import '../../app/l10n/app_localizations.dart';
 import '../../shared/widgets.dart';
 
-/**
-Экран настроек оформления. Две секции:
-1. Тема - три варианта (_ThemeOption): системная, светлая, тёмная.
-   При тапе вызывает ctrl.setThemeMode(), что пересобирает MaterialApp.
-2. Акцент - два цветных круга (_AccentCircle): зелёный и розовый.
-   При тапе вызывает ctrl.setAccentColor(), что меняет палитру ResolvedColors.
-Текущие значения считываются из ThemeController.of(context).
-*/
+/// Экран настроек оформления. Две секции:
+/// 1. Тема - три варианта (_ThemeOption): системная, светлая, тёмная.
+/// При тапе вызывает ctrl.setThemeMode(), что пересобирает MaterialApp.
+/// 2. Акцент - два цветных круга (_AccentCircle): зелёный и розовый.
+/// При тапе вызывает ctrl.setAccentColor(), что меняет палитру ResolvedColors.
+/// Текущие значения считываются из ThemeController.of(context).
 class AppearanceSettingsScreen extends StatelessWidget {
   const AppearanceSettingsScreen({super.key});
 
@@ -49,7 +48,7 @@ class AppearanceSettingsScreen extends StatelessWidget {
                 label: t.themeSystem,
                 icon: Icons.brightness_auto_outlined,
                 isSelected: ctrl.themeMode == ThemeMode.system,
-                onTap: () => ctrl.setThemeMode(ThemeMode.system),
+                onTap: () { ctrl.setThemeMode(ThemeMode.system); AppScope.of(context).userData.setThemeMode('system'); },
               ),
 
               const SizedBox(height: 8),
@@ -57,7 +56,7 @@ class AppearanceSettingsScreen extends StatelessWidget {
                 label: t.themeLight,
                 icon: Icons.light_mode_outlined,
                 isSelected: ctrl.themeMode == ThemeMode.light,
-                onTap: () => ctrl.setThemeMode(ThemeMode.light),
+                onTap: () { ctrl.setThemeMode(ThemeMode.light); AppScope.of(context).userData.setThemeMode('light'); },
               ),
 
               const SizedBox(height: 8),
@@ -65,7 +64,7 @@ class AppearanceSettingsScreen extends StatelessWidget {
                 label: t.themeDark,
                 icon: Icons.dark_mode_outlined,
                 isSelected: ctrl.themeMode == ThemeMode.dark,
-                onTap: () => ctrl.setThemeMode(ThemeMode.dark),
+                onTap: () { ctrl.setThemeMode(ThemeMode.dark); AppScope.of(context).userData.setThemeMode('dark'); },
               ),
 
               const SizedBox(height: 32),
@@ -81,7 +80,7 @@ class AppearanceSettingsScreen extends StatelessWidget {
                     color: const Color(0xFF2D5A45),
                     label: t.accentGreen,
                     isSelected: ctrl.accentColor == AccentColor.green,
-                    onTap: () => ctrl.setAccentColor(AccentColor.green),
+                    onTap: () { ctrl.setAccentColor(AccentColor.green); AppScope.of(context).userData.setAccentColor('green'); },
                   ),
 
                   const SizedBox(width: 16),
@@ -89,7 +88,7 @@ class AppearanceSettingsScreen extends StatelessWidget {
                     color: const Color(0xFFC9707F),
                     label: t.accentPink,
                     isSelected: ctrl.accentColor == AccentColor.pink,
-                    onTap: () => ctrl.setAccentColor(AccentColor.pink),
+                    onTap: () { ctrl.setAccentColor(AccentColor.pink); AppScope.of(context).userData.setAccentColor('pink'); },
                   ),
                 ],
               ),
@@ -101,7 +100,7 @@ class AppearanceSettingsScreen extends StatelessWidget {
   }
 }
 
-/** Элемент выбора темы: иконка слева, название, индикатор check_circle/circle_outlined справа. При isSelected=true - акцентная подсветка фона и текста. */
+/// Элемент выбора темы: иконка слева, название, индикатор check_circle/circle_outlined справа. При isSelected=true - акцентная подсветка фона и текста.
 class _ThemeOption extends StatelessWidget {
   final String label;
   final IconData icon;
@@ -157,7 +156,7 @@ class _ThemeOption extends StatelessWidget {
   }
 }
 
-/** Круглый элемент выбора акцентного цвета (56x56). При isSelected - жирная рамка и галочка внутри. Под кругом - текстовая метка цвета. */
+/// Круглый элемент выбора акцентного цвета (56x56). При isSelected - жирная рамка и галочка внутри. Под кругом - текстовая метка цвета.
 class _AccentCircle extends StatelessWidget {
   final Color color;
   final String label;
