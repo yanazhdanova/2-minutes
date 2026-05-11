@@ -176,10 +176,29 @@ void main() {
       expect(result, isEmpty);
     });
 
-    test('максимум 3 упражнения в результате', () async {
+    test('максимум 3 упражнения в результате (дефолт)', () async {
       final result = await generator.generate(['posture']);
 
       expect(result.length, lessThanOrEqualTo(3));
+    });
+
+    test('exerciseCount: 1 → одно упражнение', () async {
+      final result = await generator.generate(['neck'], exerciseCount: 1);
+
+      expect(result.length, 1);
+    });
+
+    test('exerciseCount: 5 → min(pool, 5) упражнений', () async {
+      final result = await generator.generate(['neck'], exerciseCount: 5);
+
+      expect(result.length, lessThanOrEqualTo(5));
+      expect(result.length, 3); // в пуле только 3 neck упражнения
+    });
+
+    test('exerciseCount: 6 с большим пулом', () async {
+      final result = await generator.generate(['posture'], exerciseCount: 6);
+
+      expect(result.length, 6);
     });
 
     test('не повторяет упражнения из последней тренировки', () async {

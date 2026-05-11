@@ -231,6 +231,12 @@ class _NotifTimeScreenState extends State<NotifTimeScreen> {
                 ],
               ),
               const Spacer(flex: 3),
+              Text(
+                t.canChangeLater,
+                textAlign: TextAlign.center,
+                style: AppTextStyles.bodySmall.copyWith(color: c.textHint),
+              ),
+              const SizedBox(height: 8),
               OutlineButton(label: t.next, width: 260, onPressed: _next),
               const SizedBox(height: 32),
             ],

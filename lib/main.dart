@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter/services.dart';
 import 'app/app_theme.dart';
 import 'app/app_scope.dart';
 import 'app/locale_controller.dart';
@@ -38,12 +39,7 @@ void main() async {
   final exerciseRepo = ExerciseSqliteRepository(AppDb.instance);
   final userData = UserDataService();
 
-  if (await exerciseRepo.isEmpty()) {
-    await exerciseRepo.seed(
-      categories: exerciseCategories,
-      exercises: exercises,
-    );
-  }
+  await exerciseRepo.seed(categories: exerciseCategories, exercises: exercises);
 
   runApp(
     MyApp(
@@ -111,12 +107,29 @@ class MyApp extends StatelessWidget {
                 builder: (context, child) {
                   final isDark =
                       Theme.of(context).brightness == Brightness.dark;
+                  final colors = ResolvedColors.from(
+                    isDark: isDark,
+                    accentColor: accent,
+                  );
                   return AppColorsProvider(
-                    colors: ResolvedColors.from(
-                      isDark: isDark,
-                      accentColor: accent,
+                    colors: colors,
+                    child: AnnotatedRegion<SystemUiOverlayStyle>(
+                      value: SystemUiOverlayStyle(
+                        statusBarColor: colors.background,
+                        systemNavigationBarColor: colors.background,
+                        systemNavigationBarDividerColor: colors.background,
+                        statusBarIconBrightness: isDark
+                            ? Brightness.light
+                            : Brightness.dark,
+                        systemNavigationBarIconBrightness: isDark
+                            ? Brightness.light
+                            : Brightness.dark,
+                        statusBarBrightness: isDark
+                            ? Brightness.dark
+                            : Brightness.light,
+                      ),
+                      child: child!,
                     ),
-                    child: child!,
                   );
                 },
                 home: const LoginScreen(),

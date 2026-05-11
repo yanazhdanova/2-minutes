@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 /// Класс локализации приложения. Содержит все строки интерфейса для русской (ru)
 /// и английской (en) локалей. Строки сгруппированы по разделам: общее, навигация,
 /// авторизация, онбординг, проблемы, частота, главная, каталог, тренировка,
-/// настройки, язык, оформление, премиум, категории упражнений, тип тренировки.
+/// настройки, язык, оформление, категории упражнений, тип тренировки.
 /// Выбор языка определяется геттером _isRu на основе текущей локали.
 class Tr {
   /// Текущая локаль, определяющая язык строк.
@@ -20,8 +20,40 @@ class Tr {
 
   bool get _isRu => locale.languageCode == 'ru';
 
+  // ── Плюрализация ──
+
+  static String _pluralRu(int n, String one, String few, String many) {
+    final mod10 = n % 10;
+    final mod100 = n % 100;
+    if (mod10 == 1 && mod100 != 11) return one;
+    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return few;
+    return many;
+  }
+
+  String pluralExercises(int n) => _isRu
+      ? '$n ${_pluralRu(n, 'упражнение', 'упражнения', 'упражнений')}'
+      : '$n ${n == 1 ? 'exercise' : 'exercises'}';
+
+  String formatDuration(int totalSeconds) {
+    final min = totalSeconds ~/ 60;
+    final sec = totalSeconds % 60;
+    if (_isRu) {
+      final minStr = min > 0
+          ? '$min ${_pluralRu(min, 'минуту', 'минуты', 'минут')}'
+          : '';
+      final secStr = sec > 0
+          ? '$sec ${_pluralRu(sec, 'секунду', 'секунды', 'секунд')}'
+          : '';
+      return [minStr, secStr].where((s) => s.isNotEmpty).join(' ');
+    } else {
+      final minStr = min > 0 ? '$min ${min == 1 ? 'minute' : 'minutes'}' : '';
+      final secStr = sec > 0 ? '$sec ${sec == 1 ? 'second' : 'seconds'}' : '';
+      return [minStr, secStr].where((s) => s.isNotEmpty).join(' ');
+    }
+  }
+
   // Общее
-  String get appName => '2 минуты';
+  String get appName => '2mins';
   String get next => _isRu ? 'Далее' : 'Next';
   String get cancel => _isRu ? 'Отмена' : 'Cancel';
   String get done => _isRu ? 'Готово' : 'Done';
@@ -79,6 +111,9 @@ class Tr {
   // ── Onboarding ──
   String get nameTitle => _isRu ? 'Как вас зовут?' : "What's your name?";
   String get nameHint => _isRu ? 'Введите имя' : 'Enter name';
+  String get genderMale => _isRu ? 'Мужской' : 'Male';
+  String get genderFemale => _isRu ? 'Женский' : 'Female';
+
   String get categoriesTitle => _isRu
       ? 'Выберите, какие\nпроблемы хотите\nисправить'
       : 'Select problems\nyou want to fix';
@@ -174,6 +209,21 @@ class Tr {
       ? 'Тренировка завершена.\nТак держать!'
       : 'Workout complete.\nKeep it up!';
   String get goHome => _isRu ? 'На главную' : 'Go home';
+  String get shareButton => _isRu ? 'Поделиться' : 'Share';
+  String get shareCardTitle =>
+      _isRu ? 'Тренировка завершена!' : 'Workout complete!';
+  String shareCardResultPrefix(
+    int exercises,
+    String duration, {
+    String gender = '',
+  }) => _isRu
+      ? 'Я ${gender == 'female' ? 'сделала' : 'сделал'} ${pluralExercises(exercises)} за $duration в приложении'
+      : 'I did ${pluralExercises(exercises)} in $duration with';
+  String shareCardResult(
+    int exercises,
+    String duration, {
+    String gender = '',
+  }) => '${shareCardResultPrefix(exercises, duration, gender: gender)} 2mins';
 
   // Settings
   String get settingsTitle => _isRu ? 'Настройки' : 'Settings';
@@ -181,7 +231,6 @@ class Tr {
   String get settingsNotif => _isRu ? 'Уведомления' : 'Notifications';
   String get settingsLang => _isRu ? 'Язык' : 'Language';
   String get settingsAppearance => _isRu ? 'Внешний вид' : 'Appearance';
-  String get settingsPremium => _isRu ? 'Платная версия' : 'Premium';
   String get programSubtitle => _isRu
       ? 'Выберите проблемы, которые хотите решать'
       : 'Select problems you want to address';
@@ -208,23 +257,19 @@ class Tr {
   String get accentSection => _isRu ? 'Акцент' : 'Accent';
   String get accentGreen => _isRu ? 'Зелёный' : 'Green';
   String get accentPink => _isRu ? 'Розовый' : 'Pink';
-
-  // Premium
-  String get premiumTitle => _isRu ? 'Премиум' : 'Premium';
-  String get premiumDescription => _isRu
-      ? 'Всего за \$1 в месяц вы можете\nубрать рекламу и получить\nдоступ ко всем упражнениям'
-      : 'For just \$1/month you can\nremove ads and unlock\nall exercises';
-  String get premiumBuy => _isRu ? 'Купить' : 'Buy';
-  String get premiumComingSoon =>
-      _isRu ? 'Скоро будет доступно' : 'Coming soon';
+  String get appIconSection => _isRu ? 'Иконка приложения' : 'App icon';
+  String get appIconMain => _isRu ? 'Основная' : 'Main';
+  String get appIconAlt => _isRu ? 'Альтернативная' : 'Alternative';
+  String get appIconChanged => _isRu ? 'Иконка изменена' : 'App icon changed';
+  String get appIconChangeFailed =>
+      _isRu ? 'Не удалось изменить иконку' : 'Could not change app icon';
 
   // Favorites
   String get favoritesTitle => _isRu ? 'Избранное' : 'Favorites';
   String get favoritesSub =>
       _isRu ? 'Ваши любимые упражнения' : 'Your favorite exercises';
-  String get favoritesEmpty => _isRu
-      ? 'Пока нет избранных упражнений'
-      : 'No favorite exercises yet';
+  String get favoritesEmpty =>
+      _isRu ? 'Пока нет избранных упражнений' : 'No favorite exercises yet';
 
   // Категории упражнений
   String get catNeck => _isRu ? 'Шея' : 'Neck';
@@ -236,6 +281,12 @@ class Tr {
       _isRu ? 'Переключение внимания' : 'Attention switch';
   String get catEmotionalBalance =>
       _isRu ? 'Эмоциональная стабилизация' : 'Emotional balance';
+  String get catWristsHands => _isRu ? 'Кисти и запястья' : 'Wrists & hands';
+  String get catLegsFeet => _isRu ? 'Ноги и стопы' : 'Legs & feet';
+  String get catPostureAlignment => _isRu ? 'Осанка' : 'Posture';
+  String get catBreathing => _isRu ? 'Дыхание' : 'Breathing';
+  String get catCognitiveUnload =>
+      _isRu ? 'Когнитивная разгрузка' : 'Cognitive unload';
 
   // Workout type
   String get workoutTypeTitle =>
@@ -248,15 +299,50 @@ class Tr {
   String get customWorkoutSub => _isRu
       ? 'Выберите 3 упражнения самостоятельно'
       : 'Pick 3 exercises yourself';
+  String customWorkoutSubCount(int n) => _isRu
+      ? 'Выберите $n упражнений самостоятельно'
+      : 'Pick $n exercises yourself';
 
   // Logout
   String get logoutButton => _isRu ? 'Выйти' : 'Log out';
-  String get logoutConfirmTitle =>
-      _isRu ? 'Выйти из аккаунта?' : 'Log out?';
-  String get logoutConfirmText => _isRu
-      ? 'Ваши данные сохранятся'
-      : 'Your data will be saved';
+  String get logoutConfirmTitle => _isRu ? 'Выйти из аккаунта?' : 'Log out?';
+  String get logoutConfirmText =>
+      _isRu ? 'Ваши данные сохранятся' : 'Your data will be saved';
   String get logoutCancel => _isRu ? 'Отмена' : 'Cancel';
+
+  // Exercise count
+  String get exerciseCountLabel =>
+      _isRu ? 'Количество упражнений' : 'Number of exercises';
+  String get exerciseCountSub =>
+      _isRu ? 'В каждой тренировке' : 'Per workout session';
+  String get exerciseCountTitle => _isRu
+      ? 'Сколько упражнений\nв тренировке?'
+      : 'How many exercises\nper workout?';
+  String get exerciseCountOnboardingSub => _isRu
+      ? 'Каждое упражнение длится ~40 секунд'
+      : 'Each exercise lasts ~40 seconds';
+  String approxDuration(int totalSec) {
+    final min = totalSec ~/ 60;
+    final sec = totalSec % 60;
+    if (sec == 0) return '≈ $min ${_isRu ? "мин" : "min"}';
+    return '≈ $min ${_isRu ? "мин" : "min"} $sec ${_isRu ? "сек" : "sec"}';
+  }
+
+  String get canChangeLater => _isRu
+      ? 'Можно изменить позже в настройках'
+      : 'You can change this later in settings';
+
+  // Streak
+  String streakText(int n) {
+    if (!_isRu) return '$n day streak';
+    final mod10 = n % 10;
+    final mod100 = n % 100;
+    if (mod10 == 1 && mod100 != 11) return '$n день подряд';
+    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) {
+      return '$n дня подряд';
+    }
+    return '$n дней подряд';
+  }
 
   // Notification frequency
   String get hoursShort => _isRu ? 'ч' : 'h';
@@ -276,6 +362,11 @@ class Tr {
     'relaxation' => catRelaxation,
     'attention_switch' => catAttentionSwitch,
     'emotional_balance' => catEmotionalBalance,
+    'wrists_hands' => catWristsHands,
+    'legs_feet' => catLegsFeet,
+    'posture_alignment' => catPostureAlignment,
+    'breathing' => catBreathing,
+    'cognitive_unload' => catCognitiveUnload,
     _ => id,
   };
 }

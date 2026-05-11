@@ -11,7 +11,7 @@ void main() {
     });
 
     test('appName', () {
-      expect(tr.appName, '2 минуты');
+      expect(tr.appName, '2mins');
     });
 
     test('навигация', () {
@@ -71,12 +71,6 @@ void main() {
       expect(tr.accentPink, 'Розовый');
     });
 
-    test('premium', () {
-      expect(tr.premiumTitle, 'Премиум');
-      expect(tr.premiumBuy, 'Купить');
-      expect(tr.premiumComingSoon, 'Скоро будет доступно');
-    });
-
     test('weekdays', () {
       expect(tr.weekdaysShort.length, 7);
       expect(tr.weekdaysShort, ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']);
@@ -119,7 +113,7 @@ void main() {
     });
 
     test('appName', () {
-      expect(tr.appName, '2 минуты');
+      expect(tr.appName, '2mins');
     });
 
     test('навигация', () {

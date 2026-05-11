@@ -22,7 +22,8 @@ class WorkoutTypeScreen extends StatelessWidget {
     final problems =
         scope.userData.selectedCategories; // список проблем из онбординга
 
-    final exercises = await generator.generate(problems);
+    final exerciseCount = scope.userData.exerciseCount;
+    final exercises = await generator.generate(problems, exerciseCount: exerciseCount);
 
     if (exercises.isEmpty) {
       if (context.mounted) {
@@ -76,7 +77,7 @@ class WorkoutTypeScreen extends StatelessWidget {
               _TypeCard(
                 icon: Icons.tune,
                 title: t.customWorkoutTitle,
-                subtitle: t.customWorkoutSub,
+                subtitle: t.customWorkoutSubCount(AppScope.of(context).userData.exerciseCount),
                 isAccent: false,
                 onTap: () => goTo(context, const ExercisesChoiceScreen()),
               ),

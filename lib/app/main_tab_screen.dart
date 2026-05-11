@@ -44,12 +44,12 @@ class _MainTabScreenState extends State<MainTabScreen> {
           elevation: 0,
           selectedLabelStyle: const TextStyle(
             fontSize: 12,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w700,
           ),
 
           unselectedLabelStyle: const TextStyle(
             fontSize: 12,
-            fontWeight: FontWeight.w400,
+            fontWeight: FontWeight.w700,
           ),
 
           items: [

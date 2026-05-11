@@ -17,7 +17,7 @@ void main() {
     final prefs = await createTestPrefsService();
     await tester.pumpWidget(
       wrapWithApp(
-        const EndOfTheWorkoutScreen(),
+        const EndOfTheWorkoutScreen(exerciseCount: 3, durationSeconds: 120),
         prefs: prefs,
         exerciseRepo: mockRepo,
       ),
@@ -33,7 +33,7 @@ void main() {
 
     testWidgets('показывает подзаголовок', (tester) async {
       await pumpScreen(tester);
-      expect(find.textContaining('Тренировка завершена'), findsOneWidget);
+      expect(find.textContaining('Тренировка завершена'), findsWidgets);
     });
 
     testWidgets('показывает кнопку "На главную"', (tester) async {
@@ -41,14 +41,19 @@ void main() {
       expect(find.text('На главную'), findsOneWidget);
     });
 
+    testWidgets('показывает кнопку "Поделиться"', (tester) async {
+      await pumpScreen(tester);
+      expect(find.text('Поделиться'), findsOneWidget);
+    });
+
     testWidgets('показывает иконку check_circle', (tester) async {
       await pumpScreen(tester);
-      expect(find.byIcon(Icons.check_circle), findsOneWidget);
+      expect(find.byIcon(Icons.check_circle), findsWidgets);
     });
 
     testWidgets('показывает логотип', (tester) async {
       await pumpScreen(tester);
-      expect(find.text('2 минуты'), findsOneWidget);
+      expect(find.text('2mins'), findsWidgets);
     });
   });
 }

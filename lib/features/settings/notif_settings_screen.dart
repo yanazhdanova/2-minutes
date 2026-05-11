@@ -415,7 +415,7 @@ class _NotifSettingsScreenState extends State<NotifSettingsScreen> {
                         _formatFreq(t),
                         style: AppTextStyles.bodyLarge.copyWith(
                           color: c.accentLight,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
 

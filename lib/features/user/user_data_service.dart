@@ -39,6 +39,7 @@ class UserDataService {
   /// Дефолтные значения для нового пользователя.
   static Map<String, dynamic> get _defaults => {
     'userName': '',
+    'gender': '',
     'selectedCategories': <String>[],
     'onboardingDone': false,
     'favoriteIds': <String>[],
@@ -56,6 +57,7 @@ class UserDataService {
     'themeMode': 'system',
     'accentColor': 'green',
     'languageCode': '',
+    'exerciseCount': 3,
   };
 
   /// Загружает документ пользователя из Firestore в кэш.
@@ -101,6 +103,12 @@ class UserDataService {
     _cache['userName'] = n;
     _write({'userName': n});
   }
+
+  // ── Пол ──
+
+  String get gender => (_cache['gender'] as String?) ?? '';
+
+  void setGender(String v) { _cache['gender'] = v; _write({'gender': v}); }
 
   // ── Онбординг ──
 
@@ -182,6 +190,14 @@ class UserDataService {
   void setAccentColor(String v) { _cache['accentColor'] = v; _write({'accentColor': v}); }
   void setLanguageCode(String v) { _cache['languageCode'] = v; _write({'languageCode': v}); }
 
+  // ── Количество упражнений ──
+
+  /// Количество упражнений в одной тренировке (1–6, по умолчанию 3).
+  int get exerciseCount => (_cache['exerciseCount'] as int?) ?? 3;
+
+  /// Обновляет количество упражнений в кэше и Firestore.
+  void setExerciseCount(int v) { _cache['exerciseCount'] = v; _write({'exerciseCount': v}); }
+
   // ── Статистика ──
 
   Map<String, dynamic> get _stats =>
@@ -200,10 +216,10 @@ class UserDataService {
   int get streakDays => (_stats['streakDays'] as int?) ?? 0;
 
   /// Записывает результат тренировки. Обновляет счётчики и streak.
-  /// Streak-логика:
-  /// - lastWorkoutDate == сегодня - streak не меняется
-  /// - lastWorkoutDate == вчера - streak++
-  /// - иначе - streak = 1
+  /// Streak-логика учитывает нерабочие дни (notifDays):
+  /// - lastWorkoutDate == сегодня → streak не меняется
+  /// - Между lastWorkoutDate и сегодня нет пропущенных рабочих дней → streak++
+  /// - Есть пропущенный рабочий день → streak = 1
   /// @param exerciseCount Количество упражнений в тренировке.
   /// @param durationSeconds Суммарная длительность тренировки в секундах.
   Future<void> recordWorkout({
@@ -220,12 +236,24 @@ class UserDataService {
     if (lastDate != todayStr) {
       if (lastDate.isNotEmpty) {
         final last = DateTime.tryParse(lastDate);
-        final yesterday = today.subtract(const Duration(days: 1));
-        if (last != null &&
-            last.year == yesterday.year &&
-            last.month == yesterday.month &&
-            last.day == yesterday.day) {
-          streak++;
+        if (last != null) {
+          final workingDays = notifDays;
+          bool missedWorkingDay = false;
+          DateTime check = DateTime(last.year, last.month, last.day)
+              .add(const Duration(days: 1));
+          final todayMidnight = DateTime(today.year, today.month, today.day);
+          while (check.isBefore(todayMidnight)) {
+            if (workingDays.contains(check.weekday)) {
+              missedWorkingDay = true;
+              break;
+            }
+            check = check.add(const Duration(days: 1));
+          }
+          if (missedWorkingDay) {
+            streak = 1;
+          } else {
+            streak++;
+          }
         } else {
           streak = 1;
         }

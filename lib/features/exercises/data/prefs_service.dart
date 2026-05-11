@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class PrefsService {
   static const _keyOnboardingDone = 'onboarding_done';
   static const _keyUserName = 'user_name';
+  static const _keyGender = 'gender';
   static const _keyCategories = 'selected_categories';
   static const _keyNotifFrom = 'notif_from';
   static const _keyNotifTo = 'notif_to';
@@ -15,6 +16,7 @@ class PrefsService {
   static const _keyLanguageCode = 'language_code';
   static const _keyThemeMode = 'theme_mode';
   static const _keyAccentColor = 'accent_color';
+  static const _keyAppIcon = 'app_icon';
 
   late final SharedPreferences _prefs;
 
@@ -24,51 +26,81 @@ class PrefsService {
 
   /// Завершён ли онбординг (false по умолчанию).
   bool get isOnboardingDone => _prefs.getBool(_keyOnboardingDone) ?? false;
+
   /// Отмечает онбординг как завершённый или нет.
   Future<void> setOnboardingDone(bool v) =>
       _prefs.setBool(_keyOnboardingDone, v);
 
   /// Имя пользователя, отображаемое в приветствии на главном экране (пустая строка по умолчанию).
   String get userName => _prefs.getString(_keyUserName) ?? '';
+
   /// Сохраняет имя пользователя.
   Future<void> setUserName(String n) => _prefs.setString(_keyUserName, n);
+
+  /// Пол пользователя: 'male' или 'female' (пустая строка по умолчанию).
+  String get gender => _prefs.getString(_keyGender) ?? '';
+
+  /// Сохраняет пол пользователя.
+  Future<void> setGender(String v) => _prefs.setString(_keyGender, v);
 
   /// Список идентификаторов выбранных проблемных зон (posture, back, neck и др.). Пустой по умолчанию.
   List<String> get selectedCategories =>
       _prefs.getStringList(_keyCategories) ?? [];
+
   /// Сохраняет список выбранных проблемных зон.
   Future<void> setSelectedCategories(List<String> c) =>
       _prefs.setStringList(_keyCategories, c);
 
   /// Время начала уведомлений в формате HH:mm (09:00 по умолчанию).
   String get notifFrom => _prefs.getString(_keyNotifFrom) ?? '09:00';
+
   /// Время окончания уведомлений в формате HH:mm (21:00 по умолчанию).
   String get notifTo => _prefs.getString(_keyNotifTo) ?? '21:00';
+
   /// Сохраняет время начала уведомлений.
   Future<void> setNotifFrom(String t) => _prefs.setString(_keyNotifFrom, t);
+
   /// Сохраняет время окончания уведомлений.
   Future<void> setNotifTo(String t) => _prefs.setString(_keyNotifTo, t);
 
   /// Частота уведомлений в минутах как строка ('daily' по умолчанию). Парсится в int при расчёте расписания.
   String get notifFreq => _prefs.getString(_keyNotifFreq) ?? 'daily';
+
   /// Сохраняет частоту уведомлений (количество минут как строка).
   Future<void> setNotifFreq(String f) => _prefs.setString(_keyNotifFreq, f);
 
   /// Код языка приложения ('ru' по умолчанию). Используется LocaleController.
   String get languageCode => _prefs.getString(_keyLanguageCode) ?? '';
+
   /// Сохраняет код языка.
   Future<void> setLanguageCode(String code) =>
       _prefs.setString(_keyLanguageCode, code);
 
   /// Режим темы как строка: 'system', 'light' или 'dark' ('system' по умолчанию). Используется ThemeController.
   String get themeMode => _prefs.getString(_keyThemeMode) ?? 'system';
+
   /// Сохраняет режим темы.
   Future<void> setThemeMode(String m) => _prefs.setString(_keyThemeMode, m);
 
   /// Акцентный цвет как строка: 'green' или 'pink' ('green' по умолчанию). Используется ThemeController.
   String get accentColor => _prefs.getString(_keyAccentColor) ?? 'green';
+
   /// Сохраняет акцентный цвет.
   Future<void> setAccentColor(String c) => _prefs.setString(_keyAccentColor, c);
+
+  /// Иконка приложения как строка: 'main' или 'alt' ('main' по умолчанию).
+  String get appIcon => _prefs.getString(_keyAppIcon) ?? 'main';
+
+  /// Сохраняет выбранную иконку приложения.
+  Future<void> setAppIcon(String icon) => _prefs.setString(_keyAppIcon, icon);
+
+  static const _keyExerciseCount = 'exercise_count';
+
+  /// Количество упражнений в одной тренировке (1–6, по умолчанию 3).
+  int get exerciseCount => _prefs.getInt(_keyExerciseCount) ?? 3;
+
+  /// Сохраняет количество упражнений.
+  Future<void> setExerciseCount(int v) => _prefs.setInt(_keyExerciseCount, v);
 
   static const _keyFavorites = 'favorite_exercise_ids';
 

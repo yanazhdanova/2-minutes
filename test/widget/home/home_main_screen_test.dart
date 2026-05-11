@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:two_mins/features/home/home_main_screen.dart';
@@ -25,9 +24,9 @@ void main() {
   }
 
   group('HomeMainScreen — UI', () {
-    testWidgets('показывает логотип "2 минуты"', (tester) async {
+    testWidgets('показывает логотип "2mins"', (tester) async {
       await pumpScreen(tester);
-      expect(find.text('2 минуты'), findsOneWidget);
+      expect(find.text('2mins'), findsOneWidget);
     });
 
     testWidgets('показывает приветствие по времени суток', (tester) async {
@@ -49,11 +48,6 @@ void main() {
       await pumpScreen(tester);
       expect(find.text('Начать тренировку'), findsOneWidget);
     });
-
-    testWidgets('показывает Premium icon', (tester) async {
-      await pumpScreen(tester);
-      expect(find.byIcon(Icons.workspace_premium), findsOneWidget);
-    });
   });
 
   group('HomeMainScreen — навигация', () {
@@ -65,17 +59,6 @@ void main() {
       await tester.tap(find.text('Начать тренировку'));
       await tester.pumpAndSettle();
       expect(find.textContaining('Выберите тип'), findsOneWidget);
-    });
-
-    testWidgets('Premium icon → навигирует на BuyPremiumScreen', (
-      tester,
-    ) async {
-      await pumpScreen(tester);
-
-      await tester.tap(find.byIcon(Icons.workspace_premium));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Премиум'), findsOneWidget);
     });
   });
 }

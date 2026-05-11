@@ -59,9 +59,10 @@ class _ExerciseScreenState extends State<ExerciseScreen>
       vsync: this,
       duration: Duration(seconds: _totalSeconds),
     );
-    _controller.addStatusListener((s) {
+    _controller.addStatusListener((s) async {
       if (s == AnimationStatus.completed) {
         HapticFeedback.heavyImpact();
+        await Future.delayed(const Duration(milliseconds: 300));
         _onDone();
       }
     });
@@ -77,8 +78,15 @@ class _ExerciseScreenState extends State<ExerciseScreen>
   }
 
   void _adjustTime(int delta) {
+    final rem = _remaining;
+    // Перемотка вперёд: если осталось ≤ 5 сек — завершаем упражнение
+    if (delta < 0 && rem <= 2) {
+      _controller.stop();
+      _onDone();
+      return;
+    }
+    // Иначе перематываем, но не ниже 1 секунды
     setState(() {
-      final rem = (_totalSeconds * (1.0 - _controller.value)).ceil();
       final nr = (rem + delta).clamp(1, _totalSeconds);
       _controller.stop();
       _controller.value = (1.0 - (nr / _totalSeconds)).clamp(0.0, 1.0);
@@ -86,13 +94,31 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     });
   }
 
-  int get _remaining => (_totalSeconds * (1.0 - _controller.value)).ceil();
+  int get _remaining => (_totalSeconds * (1.0 - _controller.value)).round();
   String get _timeStr =>
       '${(_remaining ~/ 60).toString().padLeft(2, '0')}:${(_remaining % 60).toString().padLeft(2, '0')}';
 
+  void _recordWorkout(int completedCount) {
+    if (completedCount <= 0) return;
+    final scope = AppScope.of(context);
+    final totalSec = widget.exercises
+        .take(completedCount)
+        .fold(0, (sum, e) => sum + e.defaultDurationSec);
+    scope.userData.recordWorkout(
+      exerciseCount: completedCount,
+      durationSeconds: totalSec,
+    );
+  }
+
   void _onDone() {
     if (_currentIndex >= widget.exercises.length - 1) {
-      goToAndClear(context, const EndOfTheWorkoutScreen());
+      final count = widget.exercises.length;
+      _recordWorkout(count);
+      final totalSec = widget.exercises.fold(0, (sum, e) => sum + e.defaultDurationSec);
+      goToAndClearNoAnimation(context, EndOfTheWorkoutScreen(
+        exerciseCount: count,
+        durationSeconds: totalSec,
+      ));
     } else {
       _controller.dispose();
       _currentIndex++;
@@ -110,7 +136,15 @@ class _ExerciseScreenState extends State<ExerciseScreen>
 
   void _end() {
     _controller.stop();
-    goToAndClear(context, const EndOfTheWorkoutScreen());
+    final count = _currentIndex;
+    _recordWorkout(count);
+    final totalSec = widget.exercises
+        .take(count.clamp(0, widget.exercises.length))
+        .fold(0, (sum, e) => sum + e.defaultDurationSec);
+    goToAndClearNoAnimation(context, EndOfTheWorkoutScreen(
+      exerciseCount: count,
+      durationSeconds: totalSec,
+    ));
   }
 
   @override
@@ -145,7 +179,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                   _timeStr,
                   style: TextStyle(
                     fontSize: 72,
-                    fontWeight: FontWeight.w300,
+                    fontWeight: FontWeight.w700,
                     color: c.textPrimary,
                     fontFeatures: const [FontFeature.tabularFigures()],
                   ),
@@ -165,7 +199,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                       child: Padding(
                         padding: const EdgeInsets.all(24),
                         child: Text(
-                          _exercise.title,
+                          _exercise.localizedTitle(t.locale.languageCode),
                           textAlign: TextAlign.center,
                           style: AppTextStyles.bodyLarge.copyWith(
                             color: c.textPrimary,
@@ -181,12 +215,12 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: Text(
-                      _exercise.description,
+                      _exercise.localizedDescription(t.locale.languageCode),
                       textAlign: TextAlign.center,
                       style: AppTextStyles.bodySmall.copyWith(
                         color: c.textSecondary,
                       ),
-                      maxLines: 3,
+                      maxLines: 5,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -293,7 +327,7 @@ class _Round extends StatelessWidget {
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: small ? 18 : 13,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w700,
             color: fg,
           ),
         ),

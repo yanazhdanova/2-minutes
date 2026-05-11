@@ -245,19 +245,20 @@ void main() {
       expect(service.totalWorkouts, 2);
     });
 
-    test('пропуск дня сбрасывает streak в 1', () async {
+    test('пропуск рабочего дня сбрасывает streak в 1', () async {
       await service.init();
+      // notifDays по умолчанию [1..7] — все дни рабочие
 
       await service.recordWorkout(
         exerciseCount: 3,
         durationSeconds: 120,
-        now: DateTime(2026, 4, 27),
+        now: DateTime(2026, 4, 27), // воскресенье
       );
-      // Пропускаем 28 апреля
+      // Пропускаем 28 апреля (понедельник — рабочий день)
       await service.recordWorkout(
         exerciseCount: 2,
         durationSeconds: 80,
-        now: DateTime(2026, 4, 29),
+        now: DateTime(2026, 4, 29), // вторник
       );
 
       expect(service.streakDays, 1);
@@ -280,6 +281,68 @@ void main() {
       expect(service.totalWorkouts, 3);
       expect(service.totalExercises, 3);
       expect(service.totalSeconds, 120);
+    });
+
+    test('пропуск нерабочего дня НЕ сбрасывает streak', () async {
+      await service.init();
+      // Ставим рабочие дни = будни (пн-пт = 1..5)
+      service.setNotifDays([1, 2, 3, 4, 5]);
+
+      // Пятница 25 апреля 2026
+      await service.recordWorkout(
+        exerciseCount: 3,
+        durationSeconds: 120,
+        now: DateTime(2026, 4, 24), // пятница
+      );
+      // Пропускаем субботу (26) и воскресенье (27) — нерабочие
+      await service.recordWorkout(
+        exerciseCount: 2,
+        durationSeconds: 80,
+        now: DateTime(2026, 4, 27), // понедельник
+      );
+
+      expect(service.streakDays, 2);
+    });
+
+    test('пропуск рабочего дня среди нерабочих сбрасывает streak', () async {
+      await service.init();
+      // Рабочие дни: пн, ср, пт (1, 3, 5)
+      service.setNotifDays([1, 3, 5]);
+
+      await service.recordWorkout(
+        exerciseCount: 1,
+        durationSeconds: 40,
+        now: DateTime(2026, 4, 22), // среда
+      );
+      // Пропускаем чт (нерабочий), пт (РАБОЧИЙ!), сб (нерабочий)
+      await service.recordWorkout(
+        exerciseCount: 1,
+        durationSeconds: 40,
+        now: DateTime(2026, 4, 26), // воскресенье
+      );
+
+      expect(service.streakDays, 1);
+    });
+
+    test('несколько нерабочих дней подряд — streak продолжается', () async {
+      await service.init();
+      // Рабочие дни: только пн и пт (1, 5)
+      service.setNotifDays([1, 5]);
+
+      // Понедельник 20 апреля
+      await service.recordWorkout(
+        exerciseCount: 1,
+        durationSeconds: 40,
+        now: DateTime(2026, 4, 20), // понедельник
+      );
+      // вт(2), ср(3), чт(4) — нерабочие, пропускаем
+      await service.recordWorkout(
+        exerciseCount: 1,
+        durationSeconds: 40,
+        now: DateTime(2026, 4, 24), // пятница
+      );
+
+      expect(service.streakDays, 2);
     });
 
     test('recordWorkout сохраняет stats в Firestore', () async {

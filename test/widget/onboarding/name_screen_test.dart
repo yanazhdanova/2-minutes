@@ -39,7 +39,7 @@ void main() {
 
     testWidgets('показывает логотип', (tester) async {
       await pumpScreen(tester);
-      expect(find.text('2 минуты'), findsOneWidget);
+      expect(find.text('2mins'), findsOneWidget);
     });
   });
 

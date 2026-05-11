@@ -200,11 +200,11 @@ void main() {
   });
 
   group('AppHeader', () {
-    testWidgets('отображает логотип "2 минуты"', (tester) async {
+    testWidgets('отображает логотип "2mins"', (tester) async {
       await tester.pumpWidget(wrapWithTheme(const Scaffold(body: AppHeader())));
       await tester.pumpAndSettle();
 
-      expect(find.text('2 минуты'), findsOneWidget);
+      expect(find.text('2mins'), findsOneWidget);
     });
 
     testWidgets('показывает кнопку назад если onBack задан', (tester) async {
@@ -234,28 +234,6 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.arrow_back), findsNothing);
-    });
-  });
-
-  group('PremiumIcon', () {
-    testWidgets('отображает иконку премиума', (tester) async {
-      await tester.pumpWidget(
-        wrapWithTheme(const Scaffold(body: PremiumIcon())),
-      );
-      await tester.pumpAndSettle();
-
-      expect(find.byIcon(Icons.workspace_premium), findsOneWidget);
-    });
-
-    testWidgets('вызывает onTap при нажатии', (tester) async {
-      bool tapped = false;
-      await tester.pumpWidget(
-        wrapWithTheme(Scaffold(body: PremiumIcon(onTap: () => tapped = true))),
-      );
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.byType(GestureDetector).first);
-      expect(tapped, true);
     });
   });
 }

@@ -64,7 +64,8 @@ class ExerciseSqliteRepository {
   }
 
   /// Заполняет БД начальными данными из каталога. Все вставки выполняются
-  /// в одной транзакции для атомарности. При конфликте ID - заменяет существующую запись.
+  /// в одной транзакции для атомарности. При конфликте ID обновляет существующую
+  /// запись без удаления, чтобы не нарушать внешние ключи у упражнений.
   /// @param categories Список категорий для вставки.
   /// @param exercises Список упражнений для вставки.
   Future<void> seed({
@@ -74,17 +75,31 @@ class ExerciseSqliteRepository {
     final Database d = await _db.db;
     await d.transaction((txn) async {
       for (final c in categories) {
+        final values = categoryToMap(c);
         await txn.insert(
           'exercise_categories',
-          categoryToMap(c),
-          conflictAlgorithm: ConflictAlgorithm.replace,
+          values,
+          conflictAlgorithm: ConflictAlgorithm.ignore,
+        );
+        await txn.update(
+          'exercise_categories',
+          values,
+          where: 'id = ?',
+          whereArgs: [c.id],
         );
       }
       for (final e in exercises) {
+        final values = exerciseToMap(e);
         await txn.insert(
           'exercises',
-          exerciseToMap(e),
-          conflictAlgorithm: ConflictAlgorithm.replace,
+          values,
+          conflictAlgorithm: ConflictAlgorithm.ignore,
+        );
+        await txn.update(
+          'exercises',
+          values,
+          where: 'id = ?',
+          whereArgs: [e.id],
         );
       }
     });

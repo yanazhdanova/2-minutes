@@ -35,10 +35,14 @@ class Exercise {
   final String categoryId;
   /// Тип здоровья (дублирует тип категории для ускорения запросов).
   final HealthType type;
-  /// Название упражнения, отображаемое в UI.
+  /// Название упражнения на русском.
   final String title;
-  /// Текстовое описание техники выполнения.
+  /// Текстовое описание техники выполнения на русском.
   final String description;
+  /// Название упражнения на английском.
+  final String titleEn;
+  /// Описание техники выполнения на английском.
+  final String descriptionEn;
   /// Длительность по умолчанию в секундах, используется таймером на ExerciseScreen.
   final int defaultDurationSec;
   const Exercise({
@@ -47,6 +51,16 @@ class Exercise {
     required this.type,
     required this.title,
     required this.description,
+    this.titleEn = '',
+    this.descriptionEn = '',
     required this.defaultDurationSec,
   });
+
+  /// Возвращает локализованное название: английское для en, русское для остальных.
+  String localizedTitle(String langCode) =>
+      (langCode == 'en' && titleEn.isNotEmpty) ? titleEn : title;
+
+  /// Возвращает локализованное описание: английское для en, русское для остальных.
+  String localizedDescription(String langCode) =>
+      (langCode == 'en' && descriptionEn.isNotEmpty) ? descriptionEn : description;
 }

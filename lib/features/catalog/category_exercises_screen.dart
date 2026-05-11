@@ -116,7 +116,7 @@ class _State extends State<CategoryExercisesScreen> {
                                 children: [
                                   Expanded(
                                     child: Text(
-                                      e.title,
+                                      e.localizedTitle(t.locale.languageCode),
                                       style: AppTextStyles.bodyLarge.copyWith(
                                         color: exp
                                             ? c.accentLight
@@ -182,7 +182,7 @@ class _State extends State<CategoryExercisesScreen> {
 
                                       const SizedBox(height: 16),
                                       Text(
-                                        e.description,
+                                        e.localizedDescription(t.locale.languageCode),
                                         style: AppTextStyles.body.copyWith(
                                           color: c.textPrimary,
                                         ),

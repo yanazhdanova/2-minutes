@@ -6,10 +6,11 @@ import '../../app/l10n/app_localizations.dart';
 import '../../shared/widgets.dart';
 import 'categories_screen.dart';
 
-/// Первый экран онбординга - ввод имени пользователя.
-/// Содержит текстовое поле с автофокусом и капитализацией слов.
-/// Кнопка «Далее» активируется только при непустом имени (контролируется флагом _isValid).
-/// При нажатии сохраняет имя через UserPreferences.setName() и переходит на CategoriesScreen.
+/// Первый экран онбординга - ввод имени пользователя и выбор пола.
+/// Содержит текстовое поле с автофокусом и капитализацией слов,
+/// а также два варианта пола (мужской/женский) в горизонтальном ряду.
+/// Кнопка «Далее» активируется только при непустом имени и выбранном поле.
+/// При нажатии сохраняет данные через UserDataService и переходит на CategoriesScreen.
 class NameScreen extends StatefulWidget {
   const NameScreen({super.key});
   @override
@@ -19,6 +20,7 @@ class NameScreen extends StatefulWidget {
 class _NameScreenState extends State<NameScreen> {
   final _controller = TextEditingController();
   bool _isValid = false;
+  String? _gender;
 
   @override
   void initState() {
@@ -34,11 +36,41 @@ class _NameScreenState extends State<NameScreen> {
     super.dispose();
   }
 
+  bool get _canContinue => _isValid && _gender != null;
+
   Future<void> _continue() async {
-    final name = _controller.text.trim();
-    if (name.isEmpty) return;
-    await AppScope.of(context).userData.setUserName(name);
+    if (!_canContinue) return;
+    final userData = AppScope.of(context).userData;
+    await userData.setUserName(_controller.text.trim());
+    userData.setGender(_gender!);
     if (mounted) goTo(context, const CategoriesScreen());
+  }
+
+  Widget _genderChip(String id, String label, ResolvedColors c) {
+    final selected = _gender == id;
+    return Expanded(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppRadius.medium),
+        onTap: () => setState(() => _gender = id),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          decoration: BoxDecoration(
+            color: selected ? c.accentSurface : c.surface,
+            borderRadius: BorderRadius.circular(AppRadius.medium),
+            border: selected
+                ? Border.all(color: c.accentLight, width: 1.5)
+                : null,
+          ),
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+            style: AppTextStyles.bodyLarge.copyWith(
+              color: selected ? c.accentLight : c.textPrimary,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -92,11 +124,20 @@ class _NameScreenState extends State<NameScreen> {
                 ),
               ),
 
+              const SizedBox(height: 32),
+              Row(
+                children: [
+                  _genderChip('male', t.genderMale, c),
+                  const SizedBox(width: 12),
+                  _genderChip('female', t.genderFemale, c),
+                ],
+              ),
+
               const Spacer(flex: 2),
               PrimaryButton(
                 label: t.next,
                 width: double.infinity,
-                onPressed: _isValid ? _continue : null,
+                onPressed: _canContinue ? _continue : null,
               ),
               const SizedBox(height: 32),
             ],

@@ -255,7 +255,7 @@ class _CatTile extends StatelessWidget {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        e.title,
+                                        e.localizedTitle(t.locale.languageCode),
                                         style: AppTextStyles.body.copyWith(
                                           color: c.textPrimary,
                                         ),
@@ -263,7 +263,7 @@ class _CatTile extends StatelessWidget {
 
                                       const SizedBox(height: 4),
                                       Text(
-                                        e.description,
+                                        e.localizedDescription(t.locale.languageCode),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                         style: AppTextStyles.bodySmall.copyWith(

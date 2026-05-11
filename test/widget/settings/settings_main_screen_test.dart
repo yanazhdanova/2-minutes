@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:two_mins/features/settings/settings_main_screen.dart';
@@ -51,29 +50,12 @@ void main() {
       expect(find.text('Внешний вид'), findsOneWidget);
     });
 
-    testWidgets('показывает пункт "Платная версия"', (tester) async {
+    testWidgets('показывает 4 пункта меню', (tester) async {
       await pumpScreen(tester);
-      await tester.scrollUntilVisible(
-        find.text('Платная версия'),
-        200,
-        scrollable: find.byType(Scrollable).last,
-      );
-      expect(find.text('Платная версия'), findsOneWidget);
-    });
-
-    testWidgets('показывает 5 пунктов меню', (tester) async {
-      await pumpScreen(tester);
-      // Проверяем каждый пункт по тексту (ListView виртуализирует элементы)
       expect(find.text('Моя программа'), findsOneWidget);
       expect(find.text('Уведомления'), findsOneWidget);
       expect(find.text('Язык'), findsOneWidget);
       expect(find.text('Внешний вид'), findsOneWidget);
-      await tester.scrollUntilVisible(
-        find.text('Платная версия'),
-        200,
-        scrollable: find.byType(Scrollable).last,
-      );
-      expect(find.text('Платная версия'), findsOneWidget);
     });
   });
 
@@ -106,20 +88,6 @@ void main() {
       expect(find.text('Системная'), findsOneWidget);
       expect(find.text('Светлая'), findsOneWidget);
       expect(find.text('Тёмная'), findsOneWidget);
-    });
-
-    testWidgets('"Платная версия" → BuyPremiumScreen', (tester) async {
-      await pumpScreen(tester);
-
-      await tester.scrollUntilVisible(
-        find.text('Платная версия'),
-        200,
-        scrollable: find.byType(Scrollable).last,
-      );
-      await tester.tap(find.text('Платная версия'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Премиум'), findsOneWidget);
     });
   });
 }

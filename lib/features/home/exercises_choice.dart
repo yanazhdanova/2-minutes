@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../app/app_scope.dart';
 import '../../app/app_theme.dart';
 import '../../app/navigation.dart';
 import '../../app/main_tab_screen.dart';
@@ -19,8 +20,20 @@ class ExercisesChoiceScreen extends StatefulWidget {
 }
 
 class _ExercisesChoiceScreenState extends State<ExercisesChoiceScreen> {
-  final List<Exercise?> _slots = [null, null, null];
+  late List<Exercise?> _slots;
   bool get _allSelected => _slots.every((e) => e != null);
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final count = AppScope.of(context).userData.exerciseCount;
+    if (!_initialized) {
+      _slots = List.filled(count, null);
+      _initialized = true;
+    }
+  }
+
+  bool _initialized = false;
 
   Future<void> _pick(int i) async {
     final Exercise? r = await Navigator.push<Exercise>(
@@ -56,7 +69,7 @@ class _ExercisesChoiceScreenState extends State<ExercisesChoiceScreen> {
               ),
 
               const SizedBox(height: 32),
-              for (int i = 0; i < 3; i++) ...[
+              for (int i = 0; i < _slots.length; i++) ...[
                 _Slot(
                   index: i + 1,
                   exercise: _slots[i],
@@ -131,7 +144,7 @@ class _Slot extends StatelessWidget {
                 '$index',
                 style: TextStyle(
                   fontSize: 14,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w700,
                   color: sel ? c.white : c.textSecondary,
                 ),
               ),

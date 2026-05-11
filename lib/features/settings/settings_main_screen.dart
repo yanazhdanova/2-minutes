@@ -12,7 +12,6 @@ import 'program_settings_screen.dart';
 import 'notif_settings_screen.dart';
 import 'language_settings_screen.dart';
 import 'appearance_settings_screen.dart';
-import '../premium/buy_premium_screen.dart';
 
 /// Главный экран настроек (вкладка «Настройки»). Вверху - блок профиля
 /// (аватар, имя, email, кнопка «Выйти»), ниже - 5 пунктов меню (_Item).
@@ -87,14 +86,6 @@ class SettingsMainScreen extends StatelessWidget {
                       title: t.settingsAppearance,
                       onTap: () =>
                           goTo(context, const AppearanceSettingsScreen()),
-                    ),
-
-                    const SizedBox(height: 12),
-                    _Item(
-                      icon: Icons.workspace_premium_outlined,
-                      title: t.settingsPremium,
-                      onTap: () => goTo(context, const BuyPremiumScreen()),
-                      isAccent: true,
                     ),
 
                     const SizedBox(height: 24),

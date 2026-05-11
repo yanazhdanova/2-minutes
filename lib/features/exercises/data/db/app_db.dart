@@ -9,7 +9,7 @@ class AppDb {
   static final AppDb instance = AppDb._();
   AppDb._();
   static const _dbName = 'two_minutes.db';
-  static const _dbVersion = 1;
+  static const _dbVersion = 2;
   Database? _db;
 
   /// Возвращает экземпляр Database, создавая файл two_minutes.db при первом вызове.
@@ -30,6 +30,12 @@ class AppDb {
       onCreate: (d, version) async {
         await _createSchema(d);
       },
+      onUpgrade: (d, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          await d.execute("ALTER TABLE exercises ADD COLUMN title_en TEXT NOT NULL DEFAULT '';");
+          await d.execute("ALTER TABLE exercises ADD COLUMN description_en TEXT NOT NULL DEFAULT '';");
+        }
+      },
     );
     _db = database;
     return database;
@@ -40,7 +46,7 @@ class AppDb {
       'CREATE TABLE exercise_categories (id TEXT PRIMARY KEY, title TEXT NOT NULL, type TEXT NOT NULL, ord INTEGER NOT NULL DEFAULT 0);',
     );
     await d.execute(
-      'CREATE TABLE exercises (id TEXT PRIMARY KEY, category_id TEXT NOT NULL, type TEXT NOT NULL, title TEXT NOT NULL, description TEXT NOT NULL, default_duration_sec INTEGER NOT NULL, FOREIGN KEY(category_id) REFERENCES exercise_categories(id) ON UPDATE CASCADE ON DELETE RESTRICT);',
+      'CREATE TABLE exercises (id TEXT PRIMARY KEY, category_id TEXT NOT NULL, type TEXT NOT NULL, title TEXT NOT NULL, description TEXT NOT NULL, title_en TEXT NOT NULL DEFAULT \'\', description_en TEXT NOT NULL DEFAULT \'\', default_duration_sec INTEGER NOT NULL, FOREIGN KEY(category_id) REFERENCES exercise_categories(id) ON UPDATE CASCADE ON DELETE RESTRICT);',
     );
     await d.execute(
       'CREATE INDEX idx_exercises_category ON exercises(category_id);',

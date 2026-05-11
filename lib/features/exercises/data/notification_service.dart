@@ -181,7 +181,7 @@ class NotificationService {
 
     await _plugin.zonedSchedule(
       id,
-      '2 минуты',
+      '2mins',
       _randomMessage(),
       scheduled,
       details,

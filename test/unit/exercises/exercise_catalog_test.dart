@@ -3,23 +3,41 @@ import 'package:two_mins/features/exercises/domain/exercise_models.dart';
 import 'package:two_mins/features/exercises/data/exercise_catalog.dart';
 
 void main() {
+  const physicalCategoryIds = {
+    'neck',
+    'shoulders_arms',
+    'back_lower',
+    'eyes',
+    'wrists_hands',
+    'legs_feet',
+    'posture_alignment',
+  };
+
+  const mentalCategoryIds = {
+    'relaxation',
+    'attention_switch',
+    'emotional_balance',
+    'breathing',
+    'cognitive_unload',
+  };
+
   group('exerciseCategories (каталог)', () {
-    test('содержит 7 категорий', () {
-      expect(exerciseCategories.length, 7);
+    test('содержит ожидаемые physical категории', () {
+      final physicalIds = exerciseCategories
+          .where((c) => c.type == HealthType.physical)
+          .map((c) => c.id)
+          .toSet();
+
+      expect(physicalIds, physicalCategoryIds);
     });
 
-    test('4 physical категории', () {
-      final physical = exerciseCategories.where(
-        (c) => c.type == HealthType.physical,
-      );
-      expect(physical.length, 4);
-    });
+    test('содержит ожидаемые mental категории', () {
+      final mentalIds = exerciseCategories
+          .where((c) => c.type == HealthType.mental)
+          .map((c) => c.id)
+          .toSet();
 
-    test('3 mental категории', () {
-      final mental = exerciseCategories.where(
-        (c) => c.type == HealthType.mental,
-      );
-      expect(mental.length, 3);
+      expect(mentalIds, mentalCategoryIds);
     });
 
     test('все ID уникальны', () {
@@ -32,13 +50,20 @@ void main() {
         expect(cat.order, greaterThan(0), reason: '${cat.id} order = 0');
       }
     });
+
+    test('order уникален внутри каждого типа', () {
+      for (final type in HealthType.values) {
+        final orders = exerciseCategories
+            .where((c) => c.type == type)
+            .map((c) => c.order)
+            .toList();
+
+        expect(orders.toSet().length, orders.length, reason: '$type');
+      }
+    });
   });
 
   group('exercises (каталог)', () {
-    test('содержит 24 упражнения', () {
-      expect(exercises.length, 24);
-    });
-
     test('все ID уникальны', () {
       final ids = exercises.map((e) => e.id).toSet();
       expect(ids.length, exercises.length);
@@ -51,6 +76,16 @@ void main() {
           catIds,
           contains(ex.categoryId),
           reason: '${ex.id} → ${ex.categoryId} не существует',
+        );
+      }
+    });
+
+    test('каждая категория содержит хотя бы одно упражнение', () {
+      for (final category in exerciseCategories) {
+        expect(
+          exercises.where((e) => e.categoryId == category.id),
+          isNotEmpty,
+          reason: '${category.id} не содержит упражнений',
         );
       }
     });

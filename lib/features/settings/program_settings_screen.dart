@@ -17,6 +17,7 @@ class ProgramSettingsScreen extends StatefulWidget {
 
 class _ProgramSettingsScreenState extends State<ProgramSettingsScreen> {
   late Set<String> _selected;
+  late int _exerciseCount;
   bool _changed = false;
 
   List<_P> _problems(Tr t) => [
@@ -35,6 +36,7 @@ class _ProgramSettingsScreenState extends State<ProgramSettingsScreen> {
     super.didChangeDependencies();
     final userData = AppScope.of(context).userData;
     _selected = userData.selectedCategories.toSet();
+    _exerciseCount = userData.exerciseCount;
   }
 
   void _toggle(String id) {
@@ -58,6 +60,7 @@ class _ProgramSettingsScreenState extends State<ProgramSettingsScreen> {
 
     final userData = AppScope.of(context).userData;
     await userData.setSelectedCategories(_selected.toList());
+    userData.setExerciseCount(_exerciseCount);
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -107,6 +110,70 @@ class _ProgramSettingsScreenState extends State<ProgramSettingsScreen> {
                 ),
               ),
               const SizedBox(height: 24),
+
+              // Количество упражнений
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                decoration: BoxDecoration(
+                  color: c.surface,
+                  borderRadius: BorderRadius.circular(AppRadius.medium),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        t.exerciseCountLabel,
+                        style: AppTextStyles.bodyLarge.copyWith(color: c.textPrimary),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: _exerciseCount > 1
+                          ? () => setState(() { _exerciseCount--; _changed = true; })
+                          : null,
+                      child: Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: _exerciseCount > 1 ? c.accentSurface : c.border,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Icon(
+                          Icons.remove,
+                          color: _exerciseCount > 1 ? c.accentLight : c.textHint,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        '$_exerciseCount',
+                        style: AppTextStyles.heading3.copyWith(color: c.accentLight),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: _exerciseCount < 6
+                          ? () => setState(() { _exerciseCount++; _changed = true; })
+                          : null,
+                      child: Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: _exerciseCount < 6 ? c.accentSurface : c.border,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Icon(
+                          Icons.add,
+                          color: _exerciseCount < 6 ? c.accentLight : c.textHint,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 16),
 
               Expanded(
                 child: ListView.builder(

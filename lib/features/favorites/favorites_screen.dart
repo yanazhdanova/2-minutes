@@ -4,7 +4,7 @@ import '../../app/app_theme.dart';
 import '../../app/l10n/app_localizations.dart';
 import '../../shared/widgets.dart';
 import '../exercises/domain/exercise_models.dart';
-import '../workout/exercise_screen.dart';
+
 
 /// Экран избранных упражнений. Загружает ID из PrefsService.favoriteIds,
 /// затем получает полные Exercise через exerciseRepo.exerciseById.
@@ -100,10 +100,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
       );
     }
 
-    return Column(
-      children: [
-        Expanded(
-          child: ListView.separated(
+    return ListView.separated(
             padding: const EdgeInsets.symmetric(
               horizontal: AppSpacing.screenHorizontal,
             ),
@@ -136,7 +133,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  e.title,
+                                  e.localizedTitle(t.locale.languageCode),
                                   style: AppTextStyles.bodyLarge.copyWith(
                                     color: exp ? c.accentLight : c.textPrimary,
                                   ),
@@ -196,7 +193,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                e.description,
+                                e.localizedDescription(t.locale.languageCode),
                                 style: AppTextStyles.body.copyWith(
                                   color: c.textPrimary,
                                 ),
@@ -222,22 +219,6 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 ),
               );
             },
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
-          child: PrimaryButton(
-            label: t.startWorkout,
-            width: double.infinity,
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => ExerciseScreen(exercises: _favorites),
-              ),
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

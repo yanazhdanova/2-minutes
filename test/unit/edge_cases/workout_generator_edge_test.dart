@@ -110,5 +110,51 @@ void main() {
       final ids = result.map((e) => e.id).toSet();
       expect(ids, containsAll(['neck_01', 'eyes_01']));
     });
+
+    test('exerciseCount: 0 → пустой список', () async {
+      when(
+        () => mockRepo.exercisesByCategory('neck'),
+      ).thenAnswer((_) async => [
+        const Exercise(
+          id: 'neck_01',
+          categoryId: 'neck',
+          type: HealthType.physical,
+          title: 'Наклоны',
+          description: 'Описание',
+          defaultDurationSec: 30,
+        ),
+      ]);
+
+      final gen = WorkoutGenerator(mockRepo);
+      final result = await gen.generate(['neck'], exerciseCount: 0);
+      expect(result, isEmpty);
+    });
+
+    test('exerciseCount больше пула → возвращает всё что есть', () async {
+      when(
+        () => mockRepo.exercisesByCategory('neck'),
+      ).thenAnswer((_) async => [
+        const Exercise(
+          id: 'neck_01',
+          categoryId: 'neck',
+          type: HealthType.physical,
+          title: 'Наклоны',
+          description: 'Описание',
+          defaultDurationSec: 30,
+        ),
+        const Exercise(
+          id: 'neck_02',
+          categoryId: 'neck',
+          type: HealthType.physical,
+          title: 'Повороты',
+          description: 'Описание',
+          defaultDurationSec: 30,
+        ),
+      ]);
+
+      final gen = WorkoutGenerator(mockRepo);
+      final result = await gen.generate(['neck'], exerciseCount: 10);
+      expect(result.length, 2);
+    });
   });
 }

@@ -42,6 +42,8 @@ Map<String, Object?> exerciseToMap(Exercise e) => {
   'type': healthTypeToDb(e.type),
   'title': e.title,
   'description': e.description,
+  'title_en': e.titleEn,
+  'description_en': e.descriptionEn,
   'default_duration_sec': e.defaultDurationSec,
 };
 
@@ -55,5 +57,7 @@ Exercise exerciseFromMap(Map<String, Object?> m) => Exercise(
   type: healthTypeFromDb(m['type'] as String),
   title: m['title'] as String,
   description: m['description'] as String,
+  titleEn: (m['title_en'] as String?) ?? '',
+  descriptionEn: (m['description_en'] as String?) ?? '',
   defaultDurationSec: (m['default_duration_sec'] as int),
 );

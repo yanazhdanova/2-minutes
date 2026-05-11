@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../app/app_icon_service.dart';
 import '../../app/app_theme.dart';
 import '../../app/app_scope.dart';
 import '../../app/theme_controller.dart';
@@ -11,8 +12,52 @@ import '../../shared/widgets.dart';
 /// 2. Акцент - два цветных круга (_AccentCircle): зелёный и розовый.
 /// При тапе вызывает ctrl.setAccentColor(), что меняет палитру ResolvedColors.
 /// Текущие значения считываются из ThemeController.of(context).
-class AppearanceSettingsScreen extends StatelessWidget {
+class AppearanceSettingsScreen extends StatefulWidget {
   const AppearanceSettingsScreen({super.key});
+
+  @override
+  State<AppearanceSettingsScreen> createState() =>
+      _AppearanceSettingsScreenState();
+}
+
+class _AppearanceSettingsScreenState extends State<AppearanceSettingsScreen> {
+  late AppIconVariant _appIcon;
+  var _isChangingIcon = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _appIcon = AppScope.of(context).prefs.appIcon == 'alt'
+        ? AppIconVariant.alt
+        : AppIconVariant.main;
+  }
+
+  Future<void> _setAppIcon(AppIconVariant variant) async {
+    if (_appIcon == variant || _isChangingIcon) return;
+
+    final t = Tr.of(context);
+    final scope = AppScope.of(context);
+    setState(() => _isChangingIcon = true);
+
+    try {
+      await AppIconService.setIcon(variant);
+      await scope.prefs.setAppIcon(
+        variant == AppIconVariant.alt ? 'alt' : 'main',
+      );
+      if (!mounted) return;
+      setState(() => _appIcon = variant);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(t.appIconChanged)));
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(t.appIconChangeFailed)));
+    } finally {
+      if (mounted) setState(() => _isChangingIcon = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +68,7 @@ class AppearanceSettingsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: c.background,
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.screenHorizontal,
           ),
@@ -48,7 +93,10 @@ class AppearanceSettingsScreen extends StatelessWidget {
                 label: t.themeSystem,
                 icon: Icons.brightness_auto_outlined,
                 isSelected: ctrl.themeMode == ThemeMode.system,
-                onTap: () { ctrl.setThemeMode(ThemeMode.system); AppScope.of(context).userData.setThemeMode('system'); },
+                onTap: () {
+                  ctrl.setThemeMode(ThemeMode.system);
+                  AppScope.of(context).userData.setThemeMode('system');
+                },
               ),
 
               const SizedBox(height: 8),
@@ -56,7 +104,10 @@ class AppearanceSettingsScreen extends StatelessWidget {
                 label: t.themeLight,
                 icon: Icons.light_mode_outlined,
                 isSelected: ctrl.themeMode == ThemeMode.light,
-                onTap: () { ctrl.setThemeMode(ThemeMode.light); AppScope.of(context).userData.setThemeMode('light'); },
+                onTap: () {
+                  ctrl.setThemeMode(ThemeMode.light);
+                  AppScope.of(context).userData.setThemeMode('light');
+                },
               ),
 
               const SizedBox(height: 8),
@@ -64,7 +115,10 @@ class AppearanceSettingsScreen extends StatelessWidget {
                 label: t.themeDark,
                 icon: Icons.dark_mode_outlined,
                 isSelected: ctrl.themeMode == ThemeMode.dark,
-                onTap: () { ctrl.setThemeMode(ThemeMode.dark); AppScope.of(context).userData.setThemeMode('dark'); },
+                onTap: () {
+                  ctrl.setThemeMode(ThemeMode.dark);
+                  AppScope.of(context).userData.setThemeMode('dark');
+                },
               ),
 
               const SizedBox(height: 32),
@@ -80,7 +134,10 @@ class AppearanceSettingsScreen extends StatelessWidget {
                     color: const Color(0xFF2D5A45),
                     label: t.accentGreen,
                     isSelected: ctrl.accentColor == AccentColor.green,
-                    onTap: () { ctrl.setAccentColor(AccentColor.green); AppScope.of(context).userData.setAccentColor('green'); },
+                    onTap: () {
+                      ctrl.setAccentColor(AccentColor.green);
+                      AppScope.of(context).userData.setAccentColor('green');
+                    },
                   ),
 
                   const SizedBox(width: 16),
@@ -88,12 +145,118 @@ class AppearanceSettingsScreen extends StatelessWidget {
                     color: const Color(0xFFC9707F),
                     label: t.accentPink,
                     isSelected: ctrl.accentColor == AccentColor.pink,
-                    onTap: () { ctrl.setAccentColor(AccentColor.pink); AppScope.of(context).userData.setAccentColor('pink'); },
+                    onTap: () {
+                      ctrl.setAccentColor(AccentColor.pink);
+                      AppScope.of(context).userData.setAccentColor('pink');
+                    },
                   ),
                 ],
               ),
+
+              const SizedBox(height: 32),
+
+              Text(
+                t.appIconSection,
+                style: AppTextStyles.label.copyWith(color: c.textSecondary),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: _IconOption(
+                      label: t.appIconMain,
+                      assetPath: 'assets/app_icons/icon_main.jpg',
+                      isSelected: _appIcon == AppIconVariant.main,
+                      isDisabled: _isChangingIcon,
+                      onTap: () => _setAppIcon(AppIconVariant.main),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _IconOption(
+                      label: t.appIconAlt,
+                      assetPath: 'assets/app_icons/icon_alt.jpg',
+                      isSelected: _appIcon == AppIconVariant.alt,
+                      isDisabled: _isChangingIcon,
+                      onTap: () => _setAppIcon(AppIconVariant.alt),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _IconOption extends StatelessWidget {
+  final String label;
+  final String assetPath;
+  final bool isSelected;
+  final bool isDisabled;
+  final VoidCallback onTap;
+
+  const _IconOption({
+    required this.label,
+    required this.assetPath,
+    required this.isSelected,
+    required this.isDisabled,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final c = C(context);
+    return InkWell(
+      onTap: isDisabled ? null : onTap,
+      borderRadius: BorderRadius.circular(AppRadius.medium),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: isSelected ? c.accentSurface : c.surface,
+          borderRadius: BorderRadius.circular(AppRadius.medium),
+          border: Border.all(
+            color: isSelected ? c.accentLight : c.border,
+            width: isSelected ? 1.5 : 1,
+          ),
+        ),
+        child: Column(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(18),
+              child: Image.asset(
+                assetPath,
+                width: 72,
+                height: 72,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Flexible(
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: isSelected ? c.accentLight : c.textPrimary,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Icon(
+                  isSelected ? Icons.check_circle : Icons.circle_outlined,
+                  size: 18,
+                  color: isSelected ? c.accentLight : c.border,
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

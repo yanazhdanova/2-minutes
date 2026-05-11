@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../app/app_theme.dart';
 
 /// Универсальный хедер приложения, используемый на всех экранах.
-/// По центру отображает логотип «2 минуты» стилем AppTextStyles.logo.
+/// По центру отображает логотип «2mins» стилем AppTextStyles.logo.
 /// Левая и правая зоны шириной 48 px обеспечивают симметрию:
 /// - Если задан [onBack] - слева отображается IconButton со стрелкой назад.
 /// - Иначе, если задан [leading] - слева показывается произвольный виджет.
@@ -11,7 +11,7 @@ import '../app/app_theme.dart';
 /// Сверху добавляется отступ 18 px (Padding.top) для визуального отделения от SafeArea.
 /// @param onBack коллбэк кнопки «назад»; при null кнопка не показывается.
 /// @param leading виджет слева вместо кнопки назад (игнорируется, если onBack != null).
-/// @param trailing виджет справа (например, PremiumIcon).
+/// @param trailing виджет справа.
 class AppHeader extends StatelessWidget {
   final VoidCallback? onBack;
   final Widget? leading;
@@ -36,7 +36,7 @@ class AppHeader extends StatelessWidget {
             const SizedBox(width: 48),
           Expanded(
             child: Text(
-              '2 минуты',
+              '2mins',
               textAlign: TextAlign.center,
               style: AppTextStyles.logo.copyWith(color: c.textPrimary),
             ),
@@ -215,6 +215,7 @@ class OutlineButton extends StatelessWidget {
 /// @param textAlign выравнивание текста, по умолчанию TextAlign.start.
 /// @param textCapitalization режим капитализации, по умолчанию none.
 /// @param autofocus автоматический фокус при появлении виджета, по умолчанию false.
+/// @param scrollPadding отступ для автоскролла при фокусе и клавиатуре.
 /// @param onChanged коллбэк при изменении текста.
 class AppTextField extends StatelessWidget {
   final TextEditingController? controller;
@@ -224,6 +225,7 @@ class AppTextField extends StatelessWidget {
   final TextAlign textAlign;
   final TextCapitalization textCapitalization;
   final bool autofocus;
+  final EdgeInsets scrollPadding;
   final ValueChanged<String>? onChanged;
 
   const AppTextField({
@@ -235,6 +237,7 @@ class AppTextField extends StatelessWidget {
     this.textAlign = TextAlign.start,
     this.textCapitalization = TextCapitalization.none,
     this.autofocus = false,
+    this.scrollPadding = const EdgeInsets.all(20),
     this.onChanged,
   });
 
@@ -248,8 +251,12 @@ class AppTextField extends StatelessWidget {
       textAlign: textAlign,
       textCapitalization: textCapitalization,
       autofocus: autofocus,
+      scrollPadding: scrollPadding,
       onChanged: onChanged,
-      style: AppTextStyles.body.copyWith(color: c.textPrimary),
+      style: AppTextStyles.body.copyWith(
+        color: c.textPrimary,
+        fontWeight: FontWeight.w900,
+      ),
 
       decoration: InputDecoration(
         hintText: hintText,
@@ -269,34 +276,6 @@ class AppTextField extends StatelessWidget {
           horizontal: 20,
           vertical: 16,
         ),
-      ),
-    );
-  }
-}
-
-/// Иконка премиум-подписки для размещения в trailing-зоне AppHeader.
-/// Представляет собой контейнер 48×48 px с заливкой c.accentSurface и скруглением 14 px,
-/// внутри - иконка Icons.workspace_premium (26 px) цвета c.accentLight.
-/// При тапе вызывает [onTap], обычно - навигация на BuyPremiumScreen.
-/// Используется на HomeMainScreen для быстрого доступа к экрану покупки.
-/// @param onTap коллбэк нажатия; при null иконка не реагирует на тапы.
-class PremiumIcon extends StatelessWidget {
-  final VoidCallback? onTap;
-  const PremiumIcon({super.key, this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final c = C(context);
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 48,
-        height: 48,
-        decoration: BoxDecoration(
-          color: c.accentSurface,
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: Icon(Icons.workspace_premium, color: c.accentLight, size: 26),
       ),
     );
   }

@@ -4,7 +4,7 @@ import '../../app/app_theme.dart';
 import '../../app/navigation.dart';
 import '../../app/l10n/app_localizations.dart';
 import '../../shared/widgets.dart';
-import 'notif_time_screen.dart';
+import 'exercise_count_screen.dart';
 
 /// Второй экран онбординга - выбор проблемных зон. Отображает 8 проблем (posture, back,
 /// neck, eyes, stress, focus, energy, sleep) в виде тоглящихся карточек с чекбоксами.
@@ -47,7 +47,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       return;
     }
     await AppScope.of(context).userData.setSelectedCategories(_selected.toList());
-    if (mounted) goTo(context, const NotifTimeScreen());
+    if (mounted) goTo(context, const ExerciseCountScreen());
   }
 
   @override
@@ -136,6 +136,12 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                   },
                 ),
               ),
+              Text(
+                t.canChangeLater,
+                textAlign: TextAlign.center,
+                style: AppTextStyles.bodySmall.copyWith(color: c.textHint),
+              ),
+              const SizedBox(height: 8),
               OutlineButton(label: t.next, width: 260, onPressed: _next),
               const SizedBox(height: 24),
             ],

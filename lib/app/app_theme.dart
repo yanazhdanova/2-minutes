@@ -158,65 +158,65 @@ ResolvedColors C(BuildContext context) => AppColorsProvider.of(context);
 /// button (16px) - текст обычных кнопок,
 /// buttonLarge (18px) - текст крупных CTA-кнопок,
 /// label (14px) - метки полей и секций,
-/// logo (20px) - текст логотипа «2 минуты».
+/// logo (20px) - текст логотипа «2mins».
 /// Цвет не задан - применяется через copyWith(color:) на месте использования.
 class AppTextStyles {
   AppTextStyles._();
   static const heading1 = TextStyle(
     fontSize: 44,
-    fontWeight: FontWeight.w600,
+    fontWeight: FontWeight.w900,
     height: 1.1,
   );
 
   static const heading2 = TextStyle(
     fontSize: 32,
-    fontWeight: FontWeight.w600,
+    fontWeight: FontWeight.w900,
     height: 1.15,
   );
 
   static const heading3 = TextStyle(
     fontSize: 26,
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.w900,
     height: 1.2,
   );
 
   static const body = TextStyle(
     fontSize: 16,
-    fontWeight: FontWeight.w400,
+    fontWeight: FontWeight.w700,
     height: 1.4,
   );
 
   static const bodyLarge = TextStyle(
     fontSize: 18,
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.w700,
     height: 1.3,
   );
 
   static const bodySmall = TextStyle(
     fontSize: 14,
-    fontWeight: FontWeight.w400,
+    fontWeight: FontWeight.w700,
     height: 1.4,
   );
 
   static const button = TextStyle(
     fontSize: 16,
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.w700,
     height: 1.2,
   );
 
   static const buttonLarge = TextStyle(
     fontSize: 18,
-    fontWeight: FontWeight.w600,
+    fontWeight: FontWeight.w900,
     height: 1.2,
   );
 
   static const label = TextStyle(
     fontSize: 14,
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.w700,
     height: 1.3,
   );
 
-  static const logo = TextStyle(fontSize: 20, fontWeight: FontWeight.w400);
+  static const logo = TextStyle(fontSize: 20, fontWeight: FontWeight.w900);
 }
 
 /// Стандартные радиусы скругления элементов:
@@ -265,6 +265,7 @@ ThemeData buildAppTheme({
 
   return ThemeData(
     useMaterial3: true,
+    fontFamily: 'TTDaysSans',
     brightness: isDark ? Brightness.dark : Brightness.light,
     scaffoldBackgroundColor: c.background,
     colorScheme: ColorScheme(
@@ -347,7 +348,7 @@ ThemeData buildAppTheme({
       ),
 
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      hintStyle: TextStyle(color: c.textHint, fontSize: 16),
+      hintStyle: TextStyle(color: c.textHint, fontSize: 16, fontWeight: FontWeight.w900),
     ),
 
     cardTheme: CardThemeData(

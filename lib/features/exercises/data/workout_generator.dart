@@ -20,28 +20,29 @@ const _problemToCategories = <String, List<String>>{
 
 const _keyLastWorkout = 'last_workout_ids';
 
-/// Генератор тренировки. Подбирает до 3 упражнений на основе выбранных проблемных зон
+/// Генератор тренировки. Подбирает до exerciseCount упражнений на основе выбранных проблемных зон
 /// пользователя. Алгоритм: маппит проблемы - категории, собирает пул упражнений,
 /// приоритизирует те, которых не было в прошлой тренировке (хранятся в SharedPreferences),
-/// перемешивает случайным образом и берёт первые 3. Сохраняет ID выбранных упражнений
-/// для дедупликации в следующий раз.
+/// перемешивает случайным образом и берёт первые exerciseCount. Сохраняет ID выбранных
+/// упражнений для дедупликации в следующий раз.
 class WorkoutGenerator {
   final ExerciseSqliteRepository _repo;
   final Random _rng = Random();
 
   WorkoutGenerator(this._repo);
 
-  /// Генерирует тренировку из до 3 упражнений.
+  /// Генерирует тренировку из до [exerciseCount] упражнений.
   /// Алгоритм:
   /// 1. Маппит selectedProblems - множество ID категорий через _problemToCategories.
   /// 2. Загружает все упражнения из этих категорий через репозиторий.
   /// 3. Разделяет пул на «свежие» (не использовались в прошлой тренировке) и «использованные».
   /// 4. Перемешивает оба списка случайным образом и заполняет результат:
-  /// сначала из свежих, затем из использованных - до 3 штук.
+  /// сначала из свежих, затем из использованных - до exerciseCount штук.
   /// 5. Сохраняет ID выбранных упражнений в SharedPreferences для дедупликации.
   /// @param selectedProblems Список выбранных проблем (ключи из _problemToCategories, например ['neck', 'stress']).
-  /// @return Список из 0–3 упражнений. Пустой, если проблемы не маппятся на категории или пул пуст.
-  Future<List<Exercise>> generate(List<String> selectedProblems) async {
+  /// @param exerciseCount Максимальное количество упражнений в тренировке (по умолчанию 3).
+  /// @return Список из 0–exerciseCount упражнений. Пустой, если проблемы не маппятся на категории или пул пуст.
+  Future<List<Exercise>> generate(List<String> selectedProblems, {int exerciseCount = 3}) async {
     final categoryIds = <String>{};
     for (final problem in selectedProblems) {
       final cats = _problemToCategories[problem];
@@ -66,11 +67,11 @@ class WorkoutGenerator {
     used.shuffle(_rng);
 
     for (final e in fresh) {
-      if (result.length >= 3) break;
+      if (result.length >= exerciseCount) break;
       result.add(e);
     }
     for (final e in used) {
-      if (result.length >= 3) break;
+      if (result.length >= exerciseCount) break;
       result.add(e);
     }
 

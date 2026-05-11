@@ -29,3 +29,40 @@ void goToAndClear(BuildContext context, Widget screen) {
     (_) => false,
   );
 }
+
+/// Очищает стек и открывает экран с коротким fade-переходом.
+/// Используется после фоновой подготовки данных, чтобы новый экран появлялся
+/// уже в финальной теме/локали без слайда и промежуточных скачков.
+void goToAndClearFade(BuildContext context, Widget screen) {
+  Navigator.pushAndRemoveUntil(
+    context,
+    PageRouteBuilder(
+      transitionDuration: const Duration(milliseconds: 220),
+      reverseTransitionDuration: const Duration(milliseconds: 160),
+      pageBuilder: (_, _, _) => screen,
+      transitionsBuilder: (_, animation, _, child) {
+        return FadeTransition(
+          opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
+          child: child,
+        );
+      },
+    ),
+    (_) => false,
+  );
+}
+
+/// Очищает весь стек навигации и открывает экран без анимации.
+/// Используется там, где переходы между завершёнными сценариями не должны
+/// выглядеть как движение вперёд или назад.
+void goToAndClearNoAnimation(BuildContext context, Widget screen) {
+  Navigator.pushAndRemoveUntil(
+    context,
+    PageRouteBuilder(
+      transitionDuration: Duration.zero,
+      reverseTransitionDuration: Duration.zero,
+      pageBuilder: (_, _, _) => screen,
+      transitionsBuilder: (_, _, _, child) => child,
+    ),
+    (_) => false,
+  );
+}
