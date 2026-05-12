@@ -36,7 +36,16 @@ class _PostAuthScreenState extends State<PostAuthScreen> {
     await _syncSettings(scope);
     if (!mounted) return;
 
-    final next = scope.userData.isOnboardingDone
+    // Основная проверка — флаг в Firestore.
+    // Фоллбэк: если имя заполнено — пользователь точно прошёл онбординг,
+    // даже если флаг не записался (fire-and-forget мог не сработать).
+    final isOnboardingDone = scope.userData.isOnboardingDone
+        || scope.userData.userName.isNotEmpty;
+    if (isOnboardingDone && !scope.userData.isOnboardingDone) {
+      // Починим рассинхрон: выставим флаг чтобы больше не попадать сюда
+      scope.userData.setOnboardingDone(true);
+    }
+    final next = isOnboardingDone
         ? const MainTabScreen()
         : const NameScreen();
     goToAndClearFade(context, next);
@@ -48,6 +57,14 @@ class _PostAuthScreenState extends State<PostAuthScreen> {
     final themeCtrl = ThemeController.of(context);
     final localeCtrl = LocaleController.of(context);
 
+    // Профиль и онбординг
+    await prefs.setOnboardingDone(userData.isOnboardingDone);
+    await prefs.setUserName(userData.userName);
+    await prefs.setGender(userData.gender);
+    await prefs.setSelectedCategories(userData.selectedCategories);
+    await prefs.setExerciseCount(userData.exerciseCount);
+
+    // Тема и язык
     final themeMode = switch (userData.themeMode) {
       'dark' => ThemeMode.dark,
       'light' => ThemeMode.light,
@@ -63,6 +80,7 @@ class _PostAuthScreenState extends State<PostAuthScreen> {
       await localeCtrl.setLocale(Locale(languageCode));
     }
 
+    // Уведомления
     await prefs.setNotifFrom(userData.notifFrom);
     await prefs.setNotifTo(userData.notifTo);
     await prefs.setNotifFreq(userData.notifFreq);

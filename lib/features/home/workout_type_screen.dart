@@ -4,6 +4,7 @@ import '../../app/app_theme.dart';
 import '../../app/navigation.dart';
 import '../../app/l10n/app_localizations.dart';
 import '../../shared/widgets.dart';
+import '../../shared/tutorial_overlay.dart';
 import '../exercises/data/workout_generator.dart';
 import '../workout/exercise_screen.dart';
 import 'exercises_choice.dart';
@@ -13,10 +14,32 @@ import 'exercises_choice.dart';
 /// на основе проблемных зон из настроек пользователя и переходит на ExerciseScreen.
 /// Если упражнений нет - показывает SnackBar с ошибкой.
 /// 2. «Своя тренировка» - переходит на ExercisesChoiceScreen для ручного выбора 3 упражнений.
-class WorkoutTypeScreen extends StatelessWidget {
+class WorkoutTypeScreen extends StatefulWidget {
   const WorkoutTypeScreen({super.key});
+  @override
+  State<WorkoutTypeScreen> createState() => _WorkoutTypeScreenState();
+}
 
-  Future<void> _quickStart(BuildContext context) async {
+class _WorkoutTypeScreenState extends State<WorkoutTypeScreen> {
+  bool _showTutorial = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final prefs = AppScope.of(context).prefs;
+      if (!prefs.tutorialWorkoutTypeSeen) {
+        setState(() => _showTutorial = true);
+      }
+    });
+  }
+
+  void _dismissTutorial() {
+    AppScope.of(context).prefs.setTutorialWorkoutTypeSeen();
+    setState(() => _showTutorial = false);
+  }
+
+  Future<void> _quickStart() async {
     final scope = AppScope.of(context);
     final generator = WorkoutGenerator(scope.exerciseRepo);
     final problems =
@@ -48,44 +71,55 @@ class WorkoutTypeScreen extends StatelessWidget {
     final t = Tr.of(context);
     return Scaffold(
       backgroundColor: c.background,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.screenHorizontal,
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.screenHorizontal,
+              ),
+              child: Column(
+                children: [
+                  AppHeader(onBack: () => Navigator.pop(context)),
+                  const Spacer(flex: 2),
+                  Text(
+                    t.workoutTypeTitle,
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.heading2.copyWith(color: c.textPrimary),
+                  ),
+                  const SizedBox(height: 40),
+
+                  _TypeCard(
+                    icon: Icons.bolt,
+                    title: t.quickStartTitle,
+                    subtitle: t.quickStartSub,
+                    isAccent: true,
+                    onTap: _quickStart,
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  _TypeCard(
+                    icon: Icons.tune,
+                    title: t.customWorkoutTitle,
+                    subtitle: t.customWorkoutSubCount(AppScope.of(context).userData.exerciseCount),
+                    isAccent: false,
+                    onTap: () => goTo(context, const ExercisesChoiceScreen()),
+                  ),
+
+                  const Spacer(flex: 3),
+                ],
+              ),
+            ),
           ),
-          child: Column(
-            children: [
-              AppHeader(onBack: () => Navigator.pop(context)),
-              const Spacer(flex: 2),
-              Text(
-                t.workoutTypeTitle,
-                textAlign: TextAlign.center,
-                style: AppTextStyles.heading2.copyWith(color: c.textPrimary),
-              ),
-              const SizedBox(height: 40),
-
-              _TypeCard(
-                icon: Icons.bolt,
-                title: t.quickStartTitle,
-                subtitle: t.quickStartSub,
-                isAccent: true,
-                onTap: () => _quickStart(context),
-              ),
-
-              const SizedBox(height: 16),
-
-              _TypeCard(
-                icon: Icons.tune,
-                title: t.customWorkoutTitle,
-                subtitle: t.customWorkoutSubCount(AppScope.of(context).userData.exerciseCount),
-                isAccent: false,
-                onTap: () => goTo(context, const ExercisesChoiceScreen()),
-              ),
-
-              const Spacer(flex: 3),
-            ],
-          ),
-        ),
+          if (_showTutorial)
+            TutorialOverlay(
+              icon: Icons.bolt,
+              title: t.tutorialWorkoutTypeTitle,
+              body: t.tutorialWorkoutTypeBody,
+              onDismiss: _dismissTutorial,
+            ),
+        ],
       ),
     );
   }

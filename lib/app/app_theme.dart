@@ -85,7 +85,7 @@ class ResolvedColors {
       switch (accentColor) {
         case AccentColor.green:
           return const ResolvedColors(
-            background: Color(0xFFFAF3E8),
+            background: Color(0xFFFBF3F0),
             surface: Color(0xFFEDE5D8),
             surfaceLight: Color(0xFFF5EEE3),
             border: Color(0xFFD9CFBF),
@@ -348,7 +348,11 @@ ThemeData buildAppTheme({
       ),
 
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      hintStyle: TextStyle(color: c.textHint, fontSize: 16, fontWeight: FontWeight.w900),
+      hintStyle: TextStyle(
+        color: c.textHint,
+        fontSize: 16,
+        fontWeight: FontWeight.w900,
+      ),
     ),
 
     cardTheme: CardThemeData(

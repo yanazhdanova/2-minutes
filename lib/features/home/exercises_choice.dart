@@ -5,6 +5,7 @@ import '../../app/navigation.dart';
 import '../../app/main_tab_screen.dart';
 import '../../app/l10n/app_localizations.dart';
 import '../../shared/widgets.dart';
+import '../../shared/tutorial_overlay.dart';
 import '../exercises/domain/exercise_models.dart';
 import '../workout/exercise_screen.dart';
 import 'home_phys_mental_screen.dart';
@@ -22,6 +23,23 @@ class ExercisesChoiceScreen extends StatefulWidget {
 class _ExercisesChoiceScreenState extends State<ExercisesChoiceScreen> {
   late List<Exercise?> _slots;
   bool get _allSelected => _slots.every((e) => e != null);
+  bool _showTutorial = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final prefs = AppScope.of(context).prefs;
+      if (!prefs.tutorialCustomSeen) {
+        setState(() => _showTutorial = true);
+      }
+    });
+  }
+
+  void _dismissTutorial() {
+    AppScope.of(context).prefs.setTutorialCustomSeen();
+    setState(() => _showTutorial = false);
+  }
 
   @override
   void didChangeDependencies() {
@@ -49,53 +67,64 @@ class _ExercisesChoiceScreenState extends State<ExercisesChoiceScreen> {
     final t = Tr.of(context);
     return Scaffold(
       backgroundColor: c.background,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.screenHorizontal,
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.screenHorizontal,
+              ),
+
+              child: Column(
+                children: [
+                  AppHeader(
+                    onBack: () => goToAndClear(context, const MainTabScreen()),
+                  ),
+
+                  const SizedBox(height: 24),
+                  Text(
+                    t.chooseExercisesTitle,
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.heading2.copyWith(color: c.textPrimary),
+                  ),
+
+                  const SizedBox(height: 32),
+                  for (int i = 0; i < _slots.length; i++) ...[
+                    _Slot(
+                      index: i + 1,
+                      exercise: _slots[i],
+                      placeholder: t.chooseExerciseSlot,
+                      onTap: () => _pick(i),
+                    ),
+
+                    const SizedBox(height: 16),
+                  ],
+                  const Spacer(),
+                  PrimaryButton(
+                    label: t.startButton,
+                    width: double.infinity,
+                    onPressed: _allSelected
+                        ? () => goToAndClear(
+                            context,
+                            ExerciseScreen(
+                              exercises: _slots.whereType<Exercise>().toList(),
+                            ),
+                          )
+                        : null,
+                  ),
+                  const SizedBox(height: 32),
+                ],
+              ),
+            ),
           ),
-
-          child: Column(
-            children: [
-              AppHeader(
-                onBack: () => goToAndClear(context, const MainTabScreen()),
-              ),
-
-              const SizedBox(height: 24),
-              Text(
-                t.chooseExercisesTitle,
-                textAlign: TextAlign.center,
-                style: AppTextStyles.heading2.copyWith(color: c.textPrimary),
-              ),
-
-              const SizedBox(height: 32),
-              for (int i = 0; i < _slots.length; i++) ...[
-                _Slot(
-                  index: i + 1,
-                  exercise: _slots[i],
-                  placeholder: t.chooseExerciseSlot,
-                  onTap: () => _pick(i),
-                ),
-
-                const SizedBox(height: 16),
-              ],
-              const Spacer(),
-              PrimaryButton(
-                label: t.startButton,
-                width: double.infinity,
-                onPressed: _allSelected
-                    ? () => goToAndClear(
-                        context,
-                        ExerciseScreen(
-                          exercises: _slots.whereType<Exercise>().toList(),
-                        ),
-                      )
-                    : null,
-              ),
-              const SizedBox(height: 32),
-            ],
-          ),
-        ),
+          if (_showTutorial)
+            TutorialOverlay(
+              icon: Icons.touch_app,
+              title: t.tutorialCustomTitle,
+              body: t.tutorialCustomBody,
+              onDismiss: _dismissTutorial,
+            ),
+        ],
       ),
     );
   }

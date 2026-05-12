@@ -16,6 +16,7 @@ void main() {
   Future<void> pumpScreen(WidgetTester tester) async {
     final prefs = await createTestPrefsService({
       'selected_categories': ['neck', 'eyes'],
+      'tutorial_workout_type_seen': true,
     });
     await tester.pumpWidget(
       wrapWithApp(

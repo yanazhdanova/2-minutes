@@ -62,22 +62,38 @@ class UserDataService {
 
   /// Загружает документ пользователя из Firestore в кэш.
   /// Если документа нет - создаёт с дефолтными значениями.
-  /// При отсутствии сети использует локальный кэш Firestore SDK.
+  /// При сбое сети пробует локальный кэш Firestore SDK.
   /// Должен вызываться после успешной аутентификации.
   Future<void> init() async {
+    // 1. Пробуем загрузить с сервера
     try {
-      final snap = await _doc.get().timeout(const Duration(seconds: 5));
+      final snap = await _doc.get(const GetOptions(source: Source.server))
+          .timeout(const Duration(seconds: 10));
       if (snap.exists && snap.data() != null) {
         _cache = Map<String, dynamic>.from(snap.data()! as Map);
-      } else {
-        _cache = _defaults;
-        _doc.set(_cache).ignore();
+        return;
+      }
+      // Документа нет на сервере — новый пользователь
+      _cache = _defaults;
+      _doc.set(_cache).ignore();
+      return;
+    } catch (_) {
+      // Сервер недоступен — пробуем кэш
+    }
+
+    // 2. Фоллбэк: локальный кэш Firestore SDK
+    try {
+      final snap = await _doc.get(const GetOptions(source: Source.cache));
+      if (snap.exists && snap.data() != null) {
+        _cache = Map<String, dynamic>.from(snap.data()! as Map);
+        return;
       }
     } catch (_) {
-      // Оффлайн - Firestore SDK отдаст данные из локального кэша,
-      // если документ уже был загружен ранее. Иначе используем дефолты.
-      if (_cache.isEmpty) _cache = _defaults;
+      // Кэш пуст
     }
+
+    // 3. Ничего не удалось — дефолты (без записи в Firestore)
+    if (_cache.isEmpty) _cache = _defaults;
   }
 
   /// Записывает поля в Firestore через merge, не перезаписывая документ целиком.

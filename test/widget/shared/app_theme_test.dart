@@ -11,7 +11,7 @@ void main() {
         accentColor: AccentColor.green,
       );
 
-      expect(colors.background, const Color(0xFFFAF3E8));
+      expect(colors.background, const Color(0xFFFBF3F0));
       expect(colors.accent, const Color(0xFF2D5A45));
       expect(colors.error, const Color(0xFFB54A4A));
     });
@@ -199,7 +199,7 @@ void main() {
       );
       final dark = buildAppTheme(isDark: true, accentColor: AccentColor.green);
 
-      expect(light.scaffoldBackgroundColor, const Color(0xFFFAF3E8));
+      expect(light.scaffoldBackgroundColor, const Color(0xFFFBF3F0));
       expect(dark.scaffoldBackgroundColor, const Color(0xFF1A1A1E));
     });
   });

@@ -5,6 +5,7 @@ import '../../app/app_scope.dart';
 import '../../app/app_theme.dart';
 import '../../app/navigation.dart';
 import '../../app/l10n/app_localizations.dart';
+import '../../shared/tutorial_overlay.dart';
 import '../exercises/domain/exercise_models.dart';
 import 'end_of_the_workout_screen.dart';
 
@@ -27,6 +28,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
   int _currentIndex = 0;
   bool _isPaused = false;
   bool _isFavorite = false;
+  bool _showTutorial = false;
 
   Exercise get _exercise => widget.exercises[_currentIndex];
 
@@ -35,6 +37,19 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     super.initState();
     _totalSeconds = _exercise.defaultDurationSec;
     _initTimer();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final prefs = AppScope.of(context).prefs;
+      if (!prefs.tutorialExerciseSeen) {
+        _controller.stop();
+        setState(() => _showTutorial = true);
+      }
+    });
+  }
+
+  void _dismissTutorial() {
+    AppScope.of(context).prefs.setTutorialExerciseSeen();
+    setState(() => _showTutorial = false);
+    _controller.forward();
   }
 
   @override
@@ -159,139 +174,150 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     final t = Tr.of(context);
     return Scaffold(
       backgroundColor: c.background,
-      body: SafeArea(
-        child: AnimatedBuilder(
-          animation: _controller,
-          builder: (context, _) => Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.screenHorizontal,
-            ),
-
-            child: Column(
-              children: [
-                const SizedBox(height: 18),
-                Text(
-                  t.appName,
-                  style: AppTextStyles.logo.copyWith(color: c.textPrimary),
-                ),
-                const Spacer(flex: 2),
-                Text(
-                  _timeStr,
-                  style: TextStyle(
-                    fontSize: 72,
-                    fontWeight: FontWeight.w700,
-                    color: c.textPrimary,
-                    fontFeatures: const [FontFeature.tabularFigures()],
-                  ),
+      body: Stack(
+        children: [
+          SafeArea(
+            child: AnimatedBuilder(
+              animation: _controller,
+              builder: (context, _) => Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.screenHorizontal,
                 ),
 
-                const SizedBox(height: 32),
-                SizedBox(
-                  width: 200,
-                  height: 200,
-                  child: CustomPaint(
-                    painter: _TimerPainter(
-                      progress: _controller.value,
-                      trackColor: c.surface,
-                      progressColor: c.accentLight,
+                child: Column(
+                  children: [
+                    const SizedBox(height: 18),
+                    Text(
+                      t.appName,
+                      style: AppTextStyles.logo.copyWith(color: c.textPrimary),
                     ),
-                    child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Text(
-                          _exercise.localizedTitle(t.locale.languageCode),
-                          textAlign: TextAlign.center,
-                          style: AppTextStyles.bodyLarge.copyWith(
-                            color: c.textPrimary,
+                    const Spacer(flex: 2),
+                    Text(
+                      _timeStr,
+                      style: TextStyle(
+                        fontSize: 72,
+                        fontWeight: FontWeight.w700,
+                        color: c.textPrimary,
+                        fontFeatures: const [FontFeature.tabularFigures()],
+                      ),
+                    ),
+
+                    const SizedBox(height: 32),
+                    SizedBox(
+                      width: 200,
+                      height: 200,
+                      child: CustomPaint(
+                        painter: _TimerPainter(
+                          progress: _controller.value,
+                          trackColor: c.surface,
+                          progressColor: c.accentLight,
+                        ),
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(24),
+                            child: Text(
+                              _exercise.localizedTitle(t.locale.languageCode),
+                              textAlign: TextAlign.center,
+                              style: AppTextStyles.bodyLarge.copyWith(
+                                color: c.textPrimary,
+                              ),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ),
 
-                const Spacer(flex: 1),
-                if (!_isPaused)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Text(
-                      _exercise.localizedDescription(t.locale.languageCode),
-                      textAlign: TextAlign.center,
-                      style: AppTextStyles.bodySmall.copyWith(
-                        color: c.textSecondary,
-                      ),
-                      maxLines: 5,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-
-                const Spacer(flex: 1),
-                if (!_isPaused) ...[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _Round(
-                        label: '-15',
-                        onTap: () => _adjustTime(15),
-                        bg: c.surface,
-                        fg: c.textPrimary,
+                    const Spacer(flex: 1),
+                    if (!_isPaused)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Text(
+                          _exercise.localizedDescription(t.locale.languageCode),
+                          textAlign: TextAlign.center,
+                          style: AppTextStyles.bodySmall.copyWith(
+                            color: c.textSecondary,
+                          ),
+                          maxLines: 5,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
 
+                    const Spacer(flex: 1),
+                    if (!_isPaused) ...[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _Round(
+                            label: '-15',
+                            onTap: () => _adjustTime(15),
+                            bg: c.surface,
+                            fg: c.textPrimary,
+                          ),
+
+                          _Round(
+                            label: t.pause,
+                            onTap: _togglePause,
+                            bg: c.accent,
+                            fg: c.white,
+                          ),
+
+                          _Round(
+                            label: '+15',
+                            onTap: () => _adjustTime(-15),
+                            bg: c.surface,
+                            fg: c.textPrimary,
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 20),
                       _Round(
-                        label: t.pause,
+                        label: '♡',
+                        onTap: _toggleFav,
+                        bg: _isFavorite ? c.accent : c.surface,
+                        fg: _isFavorite ? c.white : c.textPrimary,
+                        small: true,
+                      ),
+                    ],
+
+                    if (_isPaused) ...[
+                      _PauseBtn(
+                        label: t.continueWorkout,
                         onTap: _togglePause,
                         bg: c.accent,
                         fg: c.white,
                       ),
 
-                      _Round(
-                        label: '+15',
-                        onTap: () => _adjustTime(-15),
-                        bg: c.surface,
+                      const SizedBox(height: 12),
+                      _PauseBtn(
+                        label: t.skipExercise,
+                        onTap: _skip,
+                        borderColor: c.border,
                         fg: c.textPrimary,
                       ),
+
+                      const SizedBox(height: 12),
+                      _PauseBtn(
+                        label: t.endWorkout,
+                        onTap: _end,
+                        borderColor: c.error,
+                        fg: c.error,
+                      ),
                     ],
-                  ),
-
-                  const SizedBox(height: 20),
-                  _Round(
-                    label: '♡',
-                    onTap: _toggleFav,
-                    bg: _isFavorite ? c.accent : c.surface,
-                    fg: _isFavorite ? c.white : c.textPrimary,
-                    small: true,
-                  ),
-                ],
-
-                if (_isPaused) ...[
-                  _PauseBtn(
-                    label: t.continueWorkout,
-                    onTap: _togglePause,
-                    bg: c.accent,
-                    fg: c.white,
-                  ),
-
-                  const SizedBox(height: 12),
-                  _PauseBtn(
-                    label: t.skipExercise,
-                    onTap: _skip,
-                    borderColor: c.border,
-                    fg: c.textPrimary,
-                  ),
-
-                  const SizedBox(height: 12),
-                  _PauseBtn(
-                    label: t.endWorkout,
-                    onTap: _end,
-                    borderColor: c.error,
-                    fg: c.error,
-                  ),
-                ],
-                const SizedBox(height: 32),
-              ],
+                    const SizedBox(height: 32),
+                  ],
+                ),
+              ),
             ),
           ),
-        ),
+          if (_showTutorial)
+            TutorialOverlay(
+              icon: Icons.gamepad_outlined,
+              title: t.tutorialExerciseTitle,
+              body: t.tutorialExerciseBody,
+              onDismiss: _dismissTutorial,
+            ),
+        ],
       ),
     );
   }

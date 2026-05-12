@@ -129,6 +129,25 @@ class PrefsService {
     }
   }
 
+  // ── Tutorial ──
+
+  static const _keyTutorialHomeSeen = 'tutorial_home_seen';
+  static const _keyTutorialWorkoutTypeSeen = 'tutorial_workout_type_seen';
+  static const _keyTutorialExerciseSeen = 'tutorial_exercise_seen';
+  static const _keyTutorialCustomSeen = 'tutorial_custom_seen';
+
+  bool get tutorialHomeSeen => _prefs.getBool(_keyTutorialHomeSeen) ?? false;
+  Future<void> setTutorialHomeSeen() => _prefs.setBool(_keyTutorialHomeSeen, true);
+
+  bool get tutorialWorkoutTypeSeen => _prefs.getBool(_keyTutorialWorkoutTypeSeen) ?? false;
+  Future<void> setTutorialWorkoutTypeSeen() => _prefs.setBool(_keyTutorialWorkoutTypeSeen, true);
+
+  bool get tutorialExerciseSeen => _prefs.getBool(_keyTutorialExerciseSeen) ?? false;
+  Future<void> setTutorialExerciseSeen() => _prefs.setBool(_keyTutorialExerciseSeen, true);
+
+  bool get tutorialCustomSeen => _prefs.getBool(_keyTutorialCustomSeen) ?? false;
+  Future<void> setTutorialCustomSeen() => _prefs.setBool(_keyTutorialCustomSeen, true);
+
   /// Удаляет все ключи из SharedPreferences. Используется для сброса настроек.
   Future<void> clearAll() => _prefs.clear();
 

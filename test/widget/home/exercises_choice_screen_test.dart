@@ -14,7 +14,9 @@ void main() {
   });
 
   Future<void> pumpScreen(WidgetTester tester) async {
-    final prefs = await createTestPrefsService();
+    final prefs = await createTestPrefsService({
+      'tutorial_custom_seen': true,
+    });
     await tester.pumpWidget(
       wrapWithApp(
         const ExercisesChoiceScreen(),

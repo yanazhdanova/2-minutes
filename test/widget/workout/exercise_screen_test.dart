@@ -52,7 +52,9 @@ void main() {
       tester.view.resetDevicePixelRatio();
     });
 
-    final prefs = await createTestPrefsService();
+    final prefs = await createTestPrefsService({
+      'tutorial_exercise_seen': true,
+    });
     await tester.pumpWidget(
       wrapWithApp(
         ExerciseScreen(exercises: exercises),

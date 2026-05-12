@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'app_scope.dart';
 import 'app_theme.dart';
 import 'l10n/app_localizations.dart';
 import '../features/home/home_main_screen.dart';
 import '../features/catalog/catalog_main_screen.dart';
 import '../features/settings/settings_main_screen.dart';
+import '../shared/tutorial_overlay.dart';
 
 /// Главный экран приложения с нижней навигацией из трёх вкладок:
 /// Главная (HomeMainScreen), Каталог (CatalogMainScreen), Настройки (SettingsMainScreen).
@@ -17,6 +19,7 @@ class MainTabScreen extends StatefulWidget {
 
 class _MainTabScreenState extends State<MainTabScreen> {
   int _currentIndex = 0;
+  bool _showTutorial = false;
   final _tabs = [
     const HomeMainScreen(),
     const CatalogMainScreen(),
@@ -24,11 +27,38 @@ class _MainTabScreenState extends State<MainTabScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final prefs = AppScope.of(context).prefs;
+      if (!prefs.tutorialHomeSeen) {
+        setState(() => _showTutorial = true);
+      }
+    });
+  }
+
+  void _dismissTutorial() {
+    AppScope.of(context).prefs.setTutorialHomeSeen();
+    setState(() => _showTutorial = false);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final c = C(context);
     final t = Tr.of(context);
     return Scaffold(
-      body: IndexedStack(index: _currentIndex, children: _tabs),
+      body: Stack(
+        children: [
+          IndexedStack(index: _currentIndex, children: _tabs),
+          if (_showTutorial)
+            TutorialOverlay(
+              icon: Icons.rocket_launch,
+              title: t.tutorialHomeTitle,
+              body: t.tutorialHomeBody,
+              onDismiss: _dismissTutorial,
+            ),
+        ],
+      ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           border: Border(top: BorderSide(color: c.border, width: 1)),
