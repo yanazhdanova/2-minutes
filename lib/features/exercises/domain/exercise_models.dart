@@ -8,13 +8,10 @@ enum HealthType { physical, mental }
 /// Каждая категория принадлежит одному типу здоровья и имеет порядок отображения.
 /// Используется для группировки упражнений в каталоге и при генерации тренировки.
 class ExerciseCategory {
-  /// Уникальный идентификатор категории (neck, eyes, relaxation и др.).
+
   final String id;
-  /// Название категории на русском (для БД; для UI используется Tr.categoryTitle).
   final String title;
-  /// Тип здоровья, к которому относится категория.
   final HealthType type;
-  /// Порядок отображения в списке (по возрастанию).
   final int order;
   const ExerciseCategory({
     required this.id,

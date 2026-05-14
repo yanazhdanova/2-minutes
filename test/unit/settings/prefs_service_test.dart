@@ -109,8 +109,8 @@ void main() {
   });
 
   group('language', () {
-    test('по умолчанию "ru"', () {
-      expect(prefs.languageCode, 'ru');
+    test('по умолчанию пустой код языка', () {
+      expect(prefs.languageCode, '');
     });
 
     test('сохранение/загрузка языка en', () async {
@@ -209,6 +209,25 @@ void main() {
     });
   });
 
+  group('tutorials', () {
+    test(
+      'resetTutorials возвращает подсказки в состояние не просмотрены',
+      () async {
+        await prefs.setTutorialHomeSeen();
+        await prefs.setTutorialWorkoutTypeSeen();
+        await prefs.setTutorialExerciseSeen();
+        await prefs.setTutorialCustomSeen();
+
+        await prefs.resetTutorials();
+
+        expect(prefs.tutorialHomeSeen, false);
+        expect(prefs.tutorialWorkoutTypeSeen, false);
+        expect(prefs.tutorialExerciseSeen, false);
+        expect(prefs.tutorialCustomSeen, false);
+      },
+    );
+  });
+
   group('clearAll', () {
     test('очищает все данные', () async {
       await prefs.setUserName('Тест');
@@ -223,7 +242,7 @@ void main() {
       expect(prefs.userName, '');
       expect(prefs.selectedCategories, isEmpty);
       expect(prefs.isOnboardingDone, false);
-      expect(prefs.languageCode, 'ru');
+      expect(prefs.languageCode, '');
       expect(prefs.themeMode, 'system');
       expect(prefs.accentColor, 'green');
     });
@@ -238,7 +257,7 @@ void main() {
       expect(prefs.notifTo, '21:00');
       expect(prefs.notifFreq, 'daily');
       expect(prefs.notifDays, [1, 2, 3, 4, 5, 6, 7]);
-      expect(prefs.languageCode, 'ru');
+      expect(prefs.languageCode, '');
       expect(prefs.themeMode, 'system');
       expect(prefs.accentColor, 'green');
     });

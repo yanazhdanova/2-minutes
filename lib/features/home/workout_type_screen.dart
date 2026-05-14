@@ -46,23 +46,32 @@ class _WorkoutTypeScreenState extends State<WorkoutTypeScreen> {
         scope.userData.selectedCategories; // список проблем из онбординга
 
     final exerciseCount = scope.userData.exerciseCount;
-    final exercises = await generator.generate(problems, exerciseCount: exerciseCount);
+    final defaultDuration = scope.userData.defaultExerciseDurationSec;
+    final exercises = await generator.generate(
+      problems,
+      exerciseCount: exerciseCount,
+    );
+    if (!mounted) return;
 
     if (exercises.isEmpty) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(Tr.of(context).noExercises),
-            backgroundColor: C(context).error,
-          ),
-        );
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(Tr.of(context).noExercises),
+          backgroundColor: C(context).error,
+        ),
+      );
       return;
     }
 
-    if (context.mounted) {
-      goToAndClear(context, ExerciseScreen(exercises: exercises));
-    }
+    goToAndClear(
+      context,
+      ExerciseScreen(
+        exercises: exercises,
+        sessionDurations: {
+          for (final exercise in exercises) exercise.id: defaultDuration,
+        },
+      ),
+    );
   }
 
   @override
@@ -85,7 +94,9 @@ class _WorkoutTypeScreenState extends State<WorkoutTypeScreen> {
                   Text(
                     t.workoutTypeTitle,
                     textAlign: TextAlign.center,
-                    style: AppTextStyles.heading2.copyWith(color: c.textPrimary),
+                    style: AppTextStyles.heading2.copyWith(
+                      color: c.textPrimary,
+                    ),
                   ),
                   const SizedBox(height: 40),
 
@@ -102,7 +113,9 @@ class _WorkoutTypeScreenState extends State<WorkoutTypeScreen> {
                   _TypeCard(
                     icon: Icons.tune,
                     title: t.customWorkoutTitle,
-                    subtitle: t.customWorkoutSubCount(AppScope.of(context).userData.exerciseCount),
+                    subtitle: t.customWorkoutSubCount(
+                      AppScope.of(context).userData.exerciseCount,
+                    ),
                     isAccent: false,
                     onTap: () => goTo(context, const ExercisesChoiceScreen()),
                   ),

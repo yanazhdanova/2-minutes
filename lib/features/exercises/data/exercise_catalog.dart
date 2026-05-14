@@ -1,7 +1,7 @@
 import '../domain/exercise_models.dart';
 import 'exercise_repository.dart';
 
-/// Каталог категорий упражнений - 7 категорий (4 физические + 3 ментальные).
+/// Каталог категорий упражнений.
 const exerciseCategories = <ExerciseCategory>[
   ExerciseCategory(
     id: 'neck',
@@ -78,13 +78,6 @@ const exerciseCategories = <ExerciseCategory>[
     title: 'Дыхание',
     type: HealthType.mental,
     order: 4,
-  ),
-
-  ExerciseCategory(
-    id: 'cognitive_unload',
-    title: 'Когнитивная разгрузка',
-    type: HealthType.mental,
-    order: 5,
   ),
 ];
 
@@ -172,10 +165,10 @@ const exercises = <Exercise>[
     type: HealthType.physical,
     title: 'Лоб в ладонь',
     description:
-        'Упритесь лбом в ладонь и давите 5 секунд, не двигая шеей. Расслабьтесь и повторите.',
+        'Положите ладонь на лоб. Мягко давите лбом в ладонь, удерживая голову на месте 5 секунд.',
     titleEn: 'Forehead into palm',
     descriptionEn:
-        'Press your forehead into your palm for 5 seconds without moving your neck. Relax and repeat.',
+        'Place your palm on your forehead. Gently press into it, keeping your head still for 5 seconds.',
     defaultDurationSec: 40,
   ),
 
@@ -185,10 +178,10 @@ const exercises = <Exercise>[
     type: HealthType.physical,
     title: 'Висок в ладонь',
     description:
-        'Упритесь виском в ладонь и давите 5 секунд. Повторите и смените сторону.',
+        'Положите ладонь на висок. Мягко давите головой в ладонь 5 секунд, затем смените сторону.',
     titleEn: 'Temple into palm',
     descriptionEn:
-        'Press your temple into your palm for 5 seconds. Repeat and switch sides.',
+        'Place your palm on your temple. Gently press your head into it for 5 seconds, then switch sides.',
     defaultDurationSec: 40,
   ),
 
@@ -212,10 +205,10 @@ const exercises = <Exercise>[
     type: HealthType.physical,
     title: 'Сведение лопаток сидя',
     description:
-        'Сидя на стуле, медленно сведите лопатки вместе, затем расслабьтесь.',
+        'Сядьте прямо, плечи опущены. Мягко отведите локти назад, сведите лопатки и расслабьтесь.',
     titleEn: 'Seated shoulder blade squeeze',
     descriptionEn:
-        'While seated, slowly squeeze your shoulder blades together, then relax.',
+        'Sit tall with shoulders down. Gently move your elbows back, squeeze your shoulder blades, and relax.',
     defaultDurationSec: 40,
   ),
 
@@ -225,10 +218,10 @@ const exercises = <Exercise>[
     type: HealthType.physical,
     title: 'Растяжка предплечий',
     description:
-        'Вытяните руку вперёд и мягко тяните ладонь на себя, затем от себя.',
+        'Вытяните руку вперёд. Другой рукой мягко потяните пальцы на себя, затем ладонь вниз.',
     titleEn: 'Forearm stretch',
     descriptionEn:
-        'Extend your arm forward and gently pull your palm toward you, then away.',
+        'Extend one arm. With the other hand, gently pull your fingers toward you, then press the palm down.',
     defaultDurationSec: 40,
   ),
 
@@ -238,10 +231,10 @@ const exercises = <Exercise>[
     type: HealthType.physical,
     title: 'Наружный разворот плеч',
     description:
-        'Прижмите локти к корпусу и медленно разведите предплечья в стороны, затем верните обратно.',
+        'Согните локти под 90 градусов и прижмите к бокам. Разведите предплечья наружу и верните обратно.',
     titleEn: 'External shoulder rotation',
     descriptionEn:
-        'Keep your elbows at your sides and slowly rotate your forearms outward, then bring them back.',
+        'Bend your elbows to 90 degrees and keep them at your sides. Rotate your forearms outward and back.',
     defaultDurationSec: 40,
   ),
 
@@ -251,10 +244,10 @@ const exercises = <Exercise>[
     type: HealthType.physical,
     title: 'Растяжка трицепса сидя',
     description:
-        'Согните руку за головой, другой рукой мягко тяните локоть. Держите 15–20 секунд и смените сторону.',
+        'Поднимите руку и согните её за головой. Другой рукой мягко потяните локоть и смените сторону.',
     titleEn: 'Seated triceps stretch',
     descriptionEn:
-        'Bend your arm behind your head and gently pull the elbow with the other hand. Hold for 15–20 seconds and switch.',
+        'Raise one arm and bend it behind your head. Gently pull the elbow with the other hand, then switch.',
     defaultDurationSec: 40,
   ),
 
@@ -264,10 +257,10 @@ const exercises = <Exercise>[
     type: HealthType.physical,
     title: 'Рука через грудь',
     description:
-        'Проведите руку перед грудью и другой рукой мягко прижмите к себе. Держите 15–20 секунд и смените сторону.',
+        'Вытяните руку перед грудью в сторону. Другой рукой мягко прижмите её к себе и смените сторону.',
     titleEn: 'Cross-body arm stretch',
     descriptionEn:
-        'Bring your arm across your chest and gently press it with the other hand. Hold for 15–20 seconds and switch.',
+        'Bring one arm across your chest. Gently press it closer with the other hand, then switch sides.',
     defaultDurationSec: 40,
   ),
 
@@ -277,10 +270,10 @@ const exercises = <Exercise>[
     type: HealthType.physical,
     title: 'Кисти за спиной',
     description:
-        'Сведите кисти за спиной и мягко отведите локти назад, раскрывая грудную клетку.',
+        'Соедините руки за спиной в замок. Мягко отведите плечи назад и раскройте грудную клетку.',
     titleEn: 'Hands behind back',
     descriptionEn:
-        'Clasp your hands behind your back and gently pull your elbows back, opening your chest.',
+        'Clasp your hands behind your back. Gently move your shoulders back and open your chest.',
     defaultDurationSec: 40,
   ),
 
@@ -290,10 +283,10 @@ const exercises = <Exercise>[
     type: HealthType.physical,
     title: 'Сгибание локтей вперёд',
     description:
-        'Вытяните руки вперёд и медленно сгибайте локти, приближая кисти к плечам, затем выпрямляйте.',
+        'Вытяните руки перед собой ладонями вверх. Медленно сгибайте локти к плечам и выпрямляйте.',
     titleEn: 'Elbow curls',
     descriptionEn:
-        'Extend your arms forward and slowly bend your elbows, bringing your hands to your shoulders, then straighten.',
+        'Extend your arms forward, palms up. Slowly bend your elbows toward your shoulders, then straighten.',
     defaultDurationSec: 40,
   ),
 
@@ -317,10 +310,10 @@ const exercises = <Exercise>[
     type: HealthType.physical,
     title: 'Наклон корпуса вперёд',
     description:
-        'С прямой спиной выполните лёгкий наклон корпуса вперёд, затем вернитесь назад.',
+        'Сядьте на край стула, стопы на полу. С прямой спиной мягко наклонитесь вперёд и вернитесь.',
     titleEn: 'Forward body lean',
     descriptionEn:
-        'With a straight back, gently lean your torso forward, then return to upright.',
+        'Sit on the edge of the chair with feet on the floor. Keep your back straight, lean forward gently, then return.',
     defaultDurationSec: 40,
   ),
 
@@ -343,10 +336,10 @@ const exercises = <Exercise>[
     type: HealthType.physical,
     title: 'Наклон таза сидя',
     description:
-        'Сидя на краю стула, мягко перекатывайте таз вперёд и назад, меняя прогиб поясницы.',
+        'Сядьте на край стула. Слегка прогните поясницу и подайте таз вперёд, затем округлите назад.',
     titleEn: 'Seated pelvic tilt',
     descriptionEn:
-        'Sitting on the edge of the chair, gently rock your pelvis forward and back, changing the curve of your lower back.',
+        'Sit on the edge of the chair. Slightly arch your lower back and tilt your pelvis forward, then round back.',
     defaultDurationSec: 40,
   ),
 
@@ -377,28 +370,15 @@ const exercises = <Exercise>[
   ),
 
   Exercise(
-    id: 'back_07',
-    categoryId: 'back_lower',
-    type: HealthType.physical,
-    title: 'Мягкая опора живота',
-    description:
-        'Ладони на рёбра и живот. Слегка напрягите мышцы корпуса на 3–4 секунды и расслабьтесь.',
-    titleEn: 'Gentle core brace',
-    descriptionEn:
-        'Hands on your ribs and belly. Lightly brace your core for 3–4 seconds and relax.',
-    defaultDurationSec: 40,
-  ),
-
-  Exercise(
     id: 'back_08',
     categoryId: 'back_lower',
     type: HealthType.physical,
     title: 'Колено к груди сидя',
     description:
-        'Подтяните колено к груди руками под бедром. Держите 15–20 секунд и смените ногу.',
+        'Сядьте прямо. Возьмитесь руками под бедром и мягко подтяните колено к груди, затем смените ногу.',
     titleEn: 'Seated knee to chest',
     descriptionEn:
-        'Pull your knee to your chest with your hands under the thigh. Hold for 15–20 seconds and switch legs.',
+        'Sit tall. Hold under your thigh and gently pull one knee toward your chest, then switch legs.',
     defaultDurationSec: 40,
   ),
 
@@ -410,18 +390,8 @@ const exercises = <Exercise>[
     title: 'Осознанное моргание',
     description: 'Часто и мягко моргайте, полностью закрывая и открывая глаза.',
     titleEn: 'Mindful blinking',
-    descriptionEn: 'Blink frequently and gently, fully closing and opening your eyes.',
-    defaultDurationSec: 40,
-  ),
-
-  Exercise(
-    id: 'eyes_02',
-    categoryId: 'eyes',
-    type: HealthType.physical,
-    title: 'Мягкое закрытие глаз',
-    description: 'Закройте глаза и расслабьте веки, не сжимая их.',
-    titleEn: 'Gentle eye closing',
-    descriptionEn: 'Close your eyes and relax your eyelids without squeezing them.',
+    descriptionEn:
+        'Blink frequently and gently, fully closing and opening your eyes.',
     defaultDurationSec: 40,
   ),
 
@@ -465,7 +435,8 @@ const exercises = <Exercise>[
     title: 'Круговые движения глазами',
     description: 'Опишите взглядом круг по часовой стрелке и против неё.',
     titleEn: 'Eye circles',
-    descriptionEn: 'Trace a circle with your gaze clockwise and then counterclockwise.',
+    descriptionEn:
+        'Trace a circle with your gaze clockwise and then counterclockwise.',
     defaultDurationSec: 40,
   ),
 
@@ -486,12 +457,12 @@ const exercises = <Exercise>[
     id: 'eyes_08',
     categoryId: 'eyes',
     type: HealthType.physical,
-    title: 'Диагональные саккады',
+    title: 'Взгляд по диагонали',
     description:
-        'Быстро переводите взгляд между двумя точками по диагонали, не двигая головой.',
-    titleEn: 'Diagonal saccades',
+        'Переводите взгляд из верхнего правого угла в нижний левый, затем наоборот. Голова неподвижна.',
+    titleEn: 'Diagonal eye movements',
     descriptionEn:
-        'Quickly shift your gaze between two diagonal points without moving your head.',
+        'Move your gaze from upper right to lower left, then the other way. Keep your head still.',
     defaultDurationSec: 30,
   ),
 
@@ -521,19 +492,6 @@ const exercises = <Exercise>[
     defaultDurationSec: 40,
   ),
 
-  Exercise(
-    id: 'eyes_11',
-    categoryId: 'eyes',
-    type: HealthType.physical,
-    title: 'Расширение периферии',
-    description:
-        'Смотрите в одну точку и замечайте предметы по краям поля зрения, не двигая глазами.',
-    titleEn: 'Peripheral awareness',
-    descriptionEn:
-        'Stare at one point and notice objects at the edges of your vision without moving your eyes.',
-    defaultDurationSec: 40,
-  ),
-
   // ── Кисти и запястья ───────────────────────────────────────────────────
   Exercise(
     id: 'wrist_01',
@@ -552,12 +510,12 @@ const exercises = <Exercise>[
     id: 'wrist_02',
     categoryId: 'wrists_hands',
     type: HealthType.physical,
-    title: 'Скольжение сухожилий',
+    title: 'Ладонь, крючок, кулак',
     description:
-        'Чередуйте прямую ладонь, крючок пальцами и полный кулак медленно и плавно.',
-    titleEn: 'Tendon glides',
+        'Распрямите ладонь, согните пальцы крючком, затем сожмите кулак. Повторяйте плавно.',
+    titleEn: 'Palm, hook, fist',
     descriptionEn:
-        'Alternate between a flat hand, hook fist, and full fist slowly and smoothly.',
+        'Open your palm, bend your fingers into a hook, then make a fist. Repeat smoothly.',
     defaultDurationSec: 45,
   ),
 
@@ -597,6 +555,44 @@ const exercises = <Exercise>[
     titleEn: 'Side wrist bends',
     descriptionEn:
         'Slowly tilt your wrists to the right and left with small movements.',
+    defaultDurationSec: 40,
+  ),
+
+  Exercise(
+    id: 'wrist_06',
+    categoryId: 'wrists_hands',
+    type: HealthType.physical,
+    title: 'Стряхивание кистей',
+    description:
+        'Опустите руки вниз и мягко встряхните кистями, будто снимаете лишнее напряжение.',
+    titleEn: 'Hand shakeout',
+    descriptionEn:
+        'Lower your arms and gently shake your hands, as if releasing extra tension.',
+    defaultDurationSec: 40,
+  ),
+
+  Exercise(
+    id: 'wrist_07',
+    categoryId: 'wrists_hands',
+    type: HealthType.physical,
+    title: 'Кулак и раскрытие',
+    description:
+        'Сожмите кисти в мягкий кулак, затем широко раскройте ладони и пальцы.',
+    titleEn: 'Fist and open hand',
+    descriptionEn: 'Make a soft fist, then open your palms and fingers wide.',
+    defaultDurationSec: 40,
+  ),
+
+  Exercise(
+    id: 'wrist_08',
+    categoryId: 'wrists_hands',
+    type: HealthType.physical,
+    title: 'Растяжка большого пальца',
+    description:
+        'Мягко отведите большой палец в сторону другой рукой, задержитесь и смените руку.',
+    titleEn: 'Thumb stretch',
+    descriptionEn:
+        'Gently pull your thumb to the side with the other hand, hold, then switch hands.',
     defaultDurationSec: 40,
   ),
 
@@ -657,12 +653,38 @@ const exercises = <Exercise>[
     id: 'feet_05',
     categoryId: 'legs_feet',
     type: HealthType.physical,
-    title: 'Сжатие ягодиц сидя',
+    title: 'Пятка-носок',
     description:
-        'Напрягите ягодицы на 3 секунды и полностью расслабьте. Повторяйте.',
-    titleEn: 'Seated glute squeeze',
+        'Поочерёдно ставьте стопу на пятку, затем на носок. Повторяйте спокойно каждой ногой.',
+    titleEn: 'Heel-to-toe',
     descriptionEn:
-        'Squeeze your glutes for 3 seconds, then fully relax. Repeat.',
+        'Alternate placing your foot on the heel, then on the toes. Repeat calmly with each foot.',
+    defaultDurationSec: 40,
+  ),
+
+  Exercise(
+    id: 'feet_06',
+    categoryId: 'legs_feet',
+    type: HealthType.physical,
+    title: 'Сжимание пальцев стоп',
+    description:
+        'Поставьте стопы на пол. Мягко сожмите пальцы стоп, затем полностью расслабьте.',
+    titleEn: 'Toe curls',
+    descriptionEn:
+        'Place your feet on the floor. Gently curl your toes, then fully relax them.',
+    defaultDurationSec: 40,
+  ),
+
+  Exercise(
+    id: 'feet_07',
+    categoryId: 'legs_feet',
+    type: HealthType.physical,
+    title: 'Перекат стопы',
+    description:
+        'Перекатывайте стопу с пятки на носок и обратно, не отрывая ногу далеко от пола.',
+    titleEn: 'Foot roll',
+    descriptionEn:
+        'Roll your foot from heel to toes and back, keeping it close to the floor.',
     defaultDurationSec: 40,
   ),
 
@@ -671,12 +693,12 @@ const exercises = <Exercise>[
     id: 'posture_01',
     categoryId: 'posture_alignment',
     type: HealthType.physical,
-    title: 'Нейтральная посадка',
+    title: 'Положение за столом',
     description:
-        'Сядьте на седалищные кости, стопы на полу, рёбра над тазом. Проверьте поясницу.',
-    titleEn: 'Neutral sitting position',
+        'Сядьте прямо: стопы на полу, спина вытянута, экран перед глазами. Сделайте 3 спокойных вдоха.',
+    titleEn: 'Desk position check',
     descriptionEn:
-        'Sit on your sit bones, feet flat on the floor, ribs over your pelvis. Check your lower back.',
+        'Sit upright: feet on the floor, back tall, screen in front of your eyes. Take 3 calm breaths.',
     defaultDurationSec: 40,
   ),
 
@@ -684,12 +706,12 @@ const exercises = <Exercise>[
     id: 'posture_02',
     categoryId: 'posture_alignment',
     type: HealthType.physical,
-    title: 'Локти под плечами',
+    title: 'Опора за столом',
     description:
-        'Предплечья на стол, локти под плечами. Расслабьте кисти и опустите плечи.',
-    titleEn: 'Elbows under shoulders',
+        'Поставьте стопы на пол, предплечья положите на стол. Опустите плечи и выровняйте спину.',
+    titleEn: 'Desk support',
     descriptionEn:
-        'Forearms on the desk, elbows under your shoulders. Relax your hands and lower your shoulders.',
+        'Place your feet on the floor and forearms on the desk. Lower your shoulders and straighten your back.',
     defaultDurationSec: 40,
   ),
 
@@ -697,38 +719,12 @@ const exercises = <Exercise>[
     id: 'posture_03',
     categoryId: 'posture_alignment',
     type: HealthType.physical,
-    title: 'Рёбра над тазом',
+    title: 'Плечи назад и вниз',
     description:
-        'Ладонь на рёбра, другую на таз. Выровняйте корпус так, чтобы рёбра не уходили вперёд.',
-    titleEn: 'Ribs over pelvis',
+        'Мягко отведите плечи назад, затем опустите их вниз. Не прогибайтесь в пояснице.',
+    titleEn: 'Shoulders back and down',
     descriptionEn:
-        'Place one hand on your ribs, the other on your pelvis. Align so your ribs don\'t jut forward.',
-    defaultDurationSec: 40,
-  ),
-
-  Exercise(
-    id: 'posture_04',
-    categoryId: 'posture_alignment',
-    type: HealthType.physical,
-    title: 'Вес на седалищных костях',
-    description:
-        'Перенесите вес на правую седалищную кость, затем на левую. Найдите равновесие.',
-    titleEn: 'Weight on sit bones',
-    descriptionEn:
-        'Shift your weight to the right sit bone, then to the left. Find your balance.',
-    defaultDurationSec: 40,
-  ),
-
-  Exercise(
-    id: 'posture_05',
-    categoryId: 'posture_alignment',
-    type: HealthType.physical,
-    title: 'Дистанция до стола',
-    description:
-        'Сядьте так, чтобы локти лежали на столе без вытягивания плеч вперёд.',
-    titleEn: 'Desk distance check',
-    descriptionEn:
-        'Sit so your elbows rest on the desk without reaching your shoulders forward.',
+        'Gently move your shoulders back, then lower them down. Do not arch your lower back.',
     defaultDurationSec: 40,
   ),
 
@@ -780,19 +776,6 @@ const exercises = <Exercise>[
     titleEn: 'Hand scan',
     descriptionEn:
         'Bring your attention to your palms and forearms. Release tension on each exhale.',
-    defaultDurationSec: 40,
-  ),
-
-  Exercise(
-    id: 'relax_05',
-    categoryId: 'relaxation',
-    type: HealthType.mental,
-    title: 'Тёплые ладони',
-    description:
-        'Положите ладони на бёдра и сосредоточьтесь на ощущении тепла и контакта.',
-    titleEn: 'Warm palms',
-    descriptionEn:
-        'Place your palms on your thighs and focus on the sensation of warmth and contact.',
     defaultDurationSec: 40,
   ),
 
@@ -888,10 +871,10 @@ const exercises = <Exercise>[
     type: HealthType.mental,
     title: 'Обратный счёт тройками',
     description:
-        'Начните с числа от 40 до 60 и считайте назад по три.',
+        'Выберите число от 40 до 60 и отнимайте по 3, пока не закончится время.',
     titleEn: 'Counting back by threes',
     descriptionEn:
-        'Start from a number between 40 and 60 and count backward by three.',
+        'Choose a number from 40 to 60 and subtract 3 until the time is over.',
     defaultDurationSec: 40,
   ),
 
@@ -903,8 +886,7 @@ const exercises = <Exercise>[
     description:
         'Найдите глазами три вертикальные и три горизонтальные линии вокруг.',
     titleEn: 'Lines in the room',
-    descriptionEn:
-        'Find three vertical and three horizontal lines around you.',
+    descriptionEn: 'Find three vertical and three horizontal lines around you.',
     defaultDurationSec: 40,
   ),
 
@@ -927,10 +909,10 @@ const exercises = <Exercise>[
     type: HealthType.mental,
     title: 'Три формы вокруг',
     description:
-        'Найдите вокруг один круглый, один прямоугольный и один неправильный предмет.',
+        'Найдите вокруг три предмета разной формы: круглый, прямоугольный и любой другой.',
     titleEn: 'Three shapes around you',
     descriptionEn:
-        'Find one round, one rectangular, and one irregular-shaped object around you.',
+        'Find three objects of different shapes around you: round, rectangular, and any other shape.',
     defaultDurationSec: 40,
   ),
 
@@ -950,9 +932,9 @@ const exercises = <Exercise>[
     id: 'emotion_02',
     categoryId: 'emotional_balance',
     type: HealthType.mental,
-    title: 'Нейтральная опорная мысль',
+    title: 'Я здесь и сейчас',
     description: 'Произнесите про себя короткую мысль: «Я здесь и сейчас».',
-    titleEn: 'Neutral anchor thought',
+    titleEn: 'Here and now',
     descriptionEn: 'Silently say to yourself: "I am here and now."',
     defaultDurationSec: 40,
   ),
@@ -961,10 +943,12 @@ const exercises = <Exercise>[
     id: 'emotion_03',
     categoryId: 'emotional_balance',
     type: HealthType.mental,
-    title: 'Визуализация завершённой задачи',
-    description: 'Представьте, что текущая задача уже успешно завершена.',
-    titleEn: 'Visualizing a completed task',
-    descriptionEn: 'Imagine that your current task has already been successfully completed.',
+    title: 'Назвать чувство',
+    description:
+        'Назовите про себя одно чувство, которое есть сейчас: усталость, тревога, злость, спокойствие или другое.',
+    titleEn: 'Name the feeling',
+    descriptionEn:
+        'Silently name one feeling that is present now: tiredness, anxiety, anger, calm, or another.',
     defaultDurationSec: 40,
   ),
 
@@ -972,12 +956,12 @@ const exercises = <Exercise>[
     id: 'emotion_04',
     categoryId: 'emotional_balance',
     type: HealthType.mental,
-    title: 'Факт и оценка',
+    title: 'Одно действие для себя',
     description:
-        'Назовите факт ситуации, затем отдельно — свою оценку или мысль о нём.',
-    titleEn: 'Fact vs. judgment',
+        'Выберите одно простое действие, чтобы улучшить состояние: выдохнуть, встать или выпить воды.',
+    titleEn: 'One helpful action',
     descriptionEn:
-        'Name a fact about the situation, then separately state your opinion or thought about it.',
+        'Choose one simple action to feel better: exhale, stand up, or drink water.',
     defaultDurationSec: 40,
   ),
 
@@ -985,12 +969,12 @@ const exercises = <Exercise>[
     id: 'emotion_05',
     categoryId: 'emotional_balance',
     type: HealthType.mental,
-    title: 'Шкала интенсивности',
+    title: 'Оценка напряжения',
     description:
-        'Оцените эмоцию от 0 до 10 и назовите действие, чтобы снизить её на пункт.',
-    titleEn: 'Intensity scale',
+        'Оцените своё напряжение от 0 до 10. Сделайте один спокойный выдох и снизьте оценку на пункт.',
+    titleEn: 'Tension check',
     descriptionEn:
-        'Rate your emotion from 0 to 10 and name one action to lower it by one point.',
+        'Rate your tension from 0 to 10. Take one calm exhale and lower the score by one point.',
     defaultDurationSec: 40,
   ),
 
@@ -998,38 +982,12 @@ const exercises = <Exercise>[
     id: 'emotion_06',
     categoryId: 'emotional_balance',
     type: HealthType.mental,
-    title: 'Потребность за эмоцией',
+    title: 'Три спокойных факта',
     description:
-        'Спросите себя, о чём сигнализирует эмоция: отдых, ясность, помощь или время.',
-    titleEn: 'Need behind the emotion',
+        'Назовите три нейтральных факта вокруг: где вы сидите, какой сейчас свет, что лежит рядом.',
+    titleEn: 'Three calm facts',
     descriptionEn:
-        'Ask yourself what the emotion signals: rest, clarity, help, or time.',
-    defaultDurationSec: 40,
-  ),
-
-  Exercise(
-    id: 'emotion_07',
-    categoryId: 'emotional_balance',
-    type: HealthType.mental,
-    title: 'Пауза перед ответом',
-    description:
-        'Перед ответом сделайте спокойный вдох и выдох. Сформулируйте ответ про себя.',
-    titleEn: 'Pause before responding',
-    descriptionEn:
-        'Before responding, take a calm inhale and exhale. Formulate your answer silently.',
-    defaultDurationSec: 40,
-  ),
-
-  Exercise(
-    id: 'emotion_08',
-    categoryId: 'emotional_balance',
-    type: HealthType.mental,
-    title: 'Две версии объяснения',
-    description:
-        'Назовите первую мысль о ситуации, затем придумайте более нейтральное объяснение.',
-    titleEn: 'Two explanations',
-    descriptionEn:
-        'Name your first thought about the situation, then come up with a more neutral explanation.',
+        'Name three neutral facts around you: where you are sitting, what the light is like, what is nearby.',
     defaultDurationSec: 40,
   ),
 
@@ -1090,78 +1048,25 @@ const exercises = <Exercise>[
     id: 'breath_05',
     categoryId: 'breathing',
     type: HealthType.mental,
-    title: 'Физиологический вздох',
+    title: 'Двойной вдох и длинный выдох',
     description:
         'Короткий вдох, затем второй довдох и длинный расслабленный выдох. Повторите 3–5 раз.',
-    titleEn: 'Physiological sigh',
+    titleEn: 'Double inhale and long exhale',
     descriptionEn:
         'A short inhale, then a second top-up inhale, followed by a long relaxed exhale. Repeat 3–5 times.',
     defaultDurationSec: 40,
   ),
 
-  // ── Когнитивная разгрузка ──────────────────────────────────────────────
   Exercise(
-    id: 'unload_01',
-    categoryId: 'cognitive_unload',
+    id: 'breath_06',
+    categoryId: 'breathing',
     type: HealthType.mental,
-    title: 'Три открытые задачи',
+    title: 'Выдох через рот',
     description:
-        'Назовите три задачи в голове и пометьте каждую: срочно, позже или не сейчас.',
-    titleEn: 'Three open tasks',
+        'Вдохните через нос, затем медленно выдохните через рот, как будто дуете на горячий чай.',
+    titleEn: 'Exhale through the mouth',
     descriptionEn:
-        'Name three tasks on your mind and label each: urgent, later, or not now.',
-    defaultDurationSec: 40,
-  ),
-
-  Exercise(
-    id: 'unload_02',
-    categoryId: 'cognitive_unload',
-    type: HealthType.mental,
-    title: 'Следующее малое действие',
-    description:
-        'Выберите одну задачу и назовите один конкретный ближайший шаг.',
-    titleEn: 'Next small action',
-    descriptionEn:
-        'Pick one task and name one specific next step.',
-    defaultDurationSec: 40,
-  ),
-
-  Exercise(
-    id: 'unload_03',
-    categoryId: 'cognitive_unload',
-    type: HealthType.mental,
-    title: 'Закрытие петли',
-    description:
-        'Вспомните повторяющуюся мысль и решите: выполнить, записать, делегировать или отпустить.',
-    titleEn: 'Closing the loop',
-    descriptionEn:
-        'Recall a recurring thought and decide: do it, write it down, delegate, or let it go.',
-    defaultDurationSec: 40,
-  ),
-
-  Exercise(
-    id: 'unload_04',
-    categoryId: 'cognitive_unload',
-    type: HealthType.mental,
-    title: 'Ментальная полка',
-    description:
-        'Мысленно отложите задачу на полку и назовите время, когда вернётесь к ней.',
-    titleEn: 'Mental shelf',
-    descriptionEn:
-        'Mentally place the task on a shelf and name the time you\'ll come back to it.',
-    defaultDurationSec: 40,
-  ),
-
-  Exercise(
-    id: 'unload_05',
-    categoryId: 'cognitive_unload',
-    type: HealthType.mental,
-    title: 'Один фокус',
-    description:
-        'Выберите одно дело на ближайшие минуты и скажите себе: «Сейчас только это».',
-    titleEn: 'Single focus',
-    descriptionEn:
-        'Choose one thing for the next few minutes and tell yourself: "Only this, right now."',
+        'Inhale through your nose, then slowly exhale through your mouth as if cooling hot tea.',
     defaultDurationSec: 40,
   ),
 ];

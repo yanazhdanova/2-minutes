@@ -1,4 +1,3 @@
-import 'dart:ui' as ui;
 import 'package:flutter/widgets.dart';
 import '../features/exercises/data/prefs_service.dart';
 
@@ -9,19 +8,33 @@ import '../features/exercises/data/prefs_service.dart';
 /// что приводит к пересборке MaterialApp с новой локалью через LocaleProvider.
 class LocaleController extends ChangeNotifier {
   final PrefsService _prefs;
+  static const _fallbackLocale = Locale('en');
+  static const _supportedLanguageCodes = {'ru', 'en'};
   late Locale _locale;
 
   /// Создаёт контроллер, считывая текущий languageCode из [prefs].
   /// Если languageCode пуст - используется язык устройства.
   LocaleController(this._prefs) {
     final code = _prefs.languageCode;
-    _locale = code.isEmpty ? deviceLocale() : Locale(code);
+    _locale = code.isEmpty
+        ? deviceLocale()
+        : _supportedLocale(Locale(code)) ?? deviceLocale();
   }
 
-  /// Определяет локаль по языку устройства: русский если устройство на русском, иначе английский.
+  /// Определяет локаль по языкам устройства: первый поддерживаемый язык из списка
+  /// системных предпочтений, иначе английский.
   static Locale deviceLocale() {
-    final code = ui.PlatformDispatcher.instance.locale.languageCode;
-    return Locale(code == 'ru' ? 'ru' : 'en');
+    final dispatcher = WidgetsBinding.instance.platformDispatcher;
+    for (final locale in dispatcher.locales) {
+      final supported = _supportedLocale(locale);
+      if (supported != null) return supported;
+    }
+    return _supportedLocale(dispatcher.locale) ?? _fallbackLocale;
+  }
+
+  static Locale? _supportedLocale(Locale locale) {
+    final code = locale.languageCode.toLowerCase();
+    return _supportedLanguageCodes.contains(code) ? Locale(code) : null;
   }
 
   /// Текущая локаль приложения (Locale('ru') или Locale('en')).
@@ -32,9 +45,15 @@ class LocaleController extends ChangeNotifier {
   /// что пересобирает MaterialApp с новыми локализованными строками.
   /// @param locale Новая локаль (например, Locale('en')).
   Future<void> setLocale(Locale locale) async {
-    if (_locale == locale) return;
-    _locale = locale;
-    await _prefs.setLanguageCode(locale.languageCode);
+    final next = _supportedLocale(locale) ?? _fallbackLocale;
+    if (_locale == next) {
+      if (_prefs.languageCode != next.languageCode) {
+        await _prefs.setLanguageCode(next.languageCode);
+      }
+      return;
+    }
+    _locale = next;
+    await _prefs.setLanguageCode(next.languageCode);
     notifyListeners();
   }
 

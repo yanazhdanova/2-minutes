@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../app/app_scope.dart';
@@ -13,7 +14,9 @@ import '../onboarding/name_screen.dart';
 /// Загружает профиль, применяет настройки пользователя и только после этого
 /// открывает главный экран или онбординг, чтобы UI не перестраивался на глазах.
 class PostAuthScreen extends StatefulWidget {
-  const PostAuthScreen({super.key});
+  final bool isNewAuthUser;
+
+  const PostAuthScreen({super.key, this.isNewAuthUser = false});
 
   @override
   State<PostAuthScreen> createState() => _PostAuthScreenState();
@@ -36,18 +39,26 @@ class _PostAuthScreenState extends State<PostAuthScreen> {
     await _syncSettings(scope);
     if (!mounted) return;
 
-    // Основная проверка — флаг в Firestore.
-    // Фоллбэк: если имя заполнено — пользователь точно прошёл онбординг,
-    // даже если флаг не записался (fire-and-forget мог не сработать).
-    final isOnboardingDone = scope.userData.isOnboardingDone
-        || scope.userData.userName.isNotEmpty;
-    if (isOnboardingDone && !scope.userData.isOnboardingDone) {
-      // Починим рассинхрон: выставим флаг чтобы больше не попадать сюда
+    // Онбординг показываем новым пользователям по результату Firebase Auth
+    // или по отсутствию документа Firestore. Auth-флаг нужен для случаев,
+    // когда Firestore read/create не успел подтвердить новый профиль.
+    final shouldShowOnboarding =
+        widget.isNewAuthUser || scope.userData.isNewUser;
+    debugPrint(
+      '[PostAuth] authNew=${widget.isNewAuthUser}, '
+      'dataNew=${scope.userData.isNewUser}, '
+      'onboardingDone=${scope.userData.isOnboardingDone}, '
+      'userName="${scope.userData.userName}"',
+    );
+    if (shouldShowOnboarding) {
+      await scope.prefs.resetTutorials();
+    }
+    final next = shouldShowOnboarding
+        ? const NameScreen()
+        : const MainTabScreen();
+    if (!shouldShowOnboarding && !scope.userData.isOnboardingDone) {
       scope.userData.setOnboardingDone(true);
     }
-    final next = isOnboardingDone
-        ? const MainTabScreen()
-        : const NameScreen();
     goToAndClearFade(context, next);
   }
 

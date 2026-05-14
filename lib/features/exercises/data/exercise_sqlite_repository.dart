@@ -65,7 +65,7 @@ class ExerciseSqliteRepository {
 
   /// Заполняет БД начальными данными из каталога. Все вставки выполняются
   /// в одной транзакции для атомарности. При конфликте ID обновляет существующую
-  /// запись без удаления, чтобы не нарушать внешние ключи у упражнений.
+  /// запись, а записи, удалённые из каталога, чистит из БД.
   /// @param categories Список категорий для вставки.
   /// @param exercises Список упражнений для вставки.
   Future<void> seed({
@@ -95,13 +95,69 @@ class ExerciseSqliteRepository {
           values,
           conflictAlgorithm: ConflictAlgorithm.ignore,
         );
+        // На апдейте не перезаписываем default_duration_sec, чтобы
+        // сохранить значение, которое пользователь изменил в каталоге.
+        final updateValues = Map<String, Object?>.from(values)
+          ..remove('default_duration_sec');
         await txn.update(
           'exercises',
-          values,
+          updateValues,
           where: 'id = ?',
           whereArgs: [e.id],
         );
       }
+
+      await _deleteStaleCatalogRows(
+        txn: txn,
+        categoryIds: categories.map((c) => c.id).toSet(),
+        exerciseIds: exercises.map((e) => e.id).toSet(),
+      );
     });
+  }
+
+  Future<void> _deleteStaleCatalogRows({
+    required Transaction txn,
+    required Set<String> categoryIds,
+    required Set<String> exerciseIds,
+  }) async {
+    await _deleteRowsNotIn(
+      txn: txn,
+      table: 'exercises',
+      column: 'id',
+      ids: exerciseIds,
+    );
+    await _deleteRowsNotIn(
+      txn: txn,
+      table: 'exercise_categories',
+      column: 'id',
+      ids: categoryIds,
+    );
+  }
+
+  Future<void> _deleteRowsNotIn({
+    required Transaction txn,
+    required String table,
+    required String column,
+    required Set<String> ids,
+  }) {
+    if (ids.isEmpty) return txn.delete(table);
+    final placeholders = List.filled(ids.length, '?').join(', ');
+    return txn.delete(
+      table,
+      where: '$column NOT IN ($placeholders)',
+      whereArgs: ids.toList(),
+    );
+  }
+
+  /// Обновляет длительность упражнения в БД (перманентно).
+  /// Используется при изменении длительности из каталога/избранного.
+  Future<void> updateDuration(String id, int durationSec) async {
+    final Database d = await _db.db;
+    await d.update(
+      'exercises',
+      {'default_duration_sec': durationSec},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 }

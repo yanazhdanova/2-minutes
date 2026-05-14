@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'app/app_theme.dart';
 import 'app/app_scope.dart';
 import 'app/locale_controller.dart';
@@ -12,6 +13,7 @@ import 'features/exercises/data/exercise_sqlite_repository.dart';
 import 'features/exercises/data/prefs_service.dart';
 import 'features/user/user_data_service.dart';
 import 'features/auth/login_screen.dart';
+import 'features/auth/post_auth_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'features/exercises/data/notification_service.dart';
@@ -48,6 +50,7 @@ void main() async {
       userData: userData,
       localeCtrl: LocaleController(prefs),
       themeCtrl: ThemeController(prefs),
+      initialUser: FirebaseAuth.instance.currentUser,
     ),
   );
 }
@@ -58,13 +61,14 @@ void main() async {
 /// одновременно и пересобирает MaterialApp при смене темы, акцента или языка.
 /// AppColorsProvider оборачивает child MaterialApp через builder, чтобы
 /// ResolvedColors учитывала реальную яркость (Brightness) после применения themeMode.
-/// Стартовый экран - LoginScreen.
+/// Стартовый экран - LoginScreen или PostAuthScreen, если Firebase восстановил сессию.
 class MyApp extends StatelessWidget {
   final ExerciseSqliteRepository exerciseRepo;
   final PrefsService prefs;
   final UserDataService userData;
   final LocaleController localeCtrl;
   final ThemeController themeCtrl;
+  final User? initialUser;
 
   const MyApp({
     super.key,
@@ -73,6 +77,7 @@ class MyApp extends StatelessWidget {
     required this.userData,
     required this.localeCtrl,
     required this.themeCtrl,
+    this.initialUser,
   });
 
   @override
@@ -132,7 +137,7 @@ class MyApp extends StatelessWidget {
                     ),
                   );
                 },
-                home: const LoginScreen(),
+                home: initialScreenForUser(initialUser),
               );
             },
           ),
@@ -141,3 +146,6 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+Widget initialScreenForUser(User? user) =>
+    user == null ? const LoginScreen() : const PostAuthScreen();

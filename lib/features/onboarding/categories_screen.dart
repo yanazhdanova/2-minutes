@@ -3,6 +3,7 @@ import '../../app/app_scope.dart';
 import '../../app/app_theme.dart';
 import '../../app/navigation.dart';
 import '../../app/l10n/app_localizations.dart';
+import '../../shared/language_picker_button.dart';
 import '../../shared/widgets.dart';
 import 'exercise_count_screen.dart';
 
@@ -46,7 +47,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       );
       return;
     }
-    await AppScope.of(context).userData.setSelectedCategories(_selected.toList());
+    await AppScope.of(
+      context,
+    ).userData.setSelectedCategories(_selected.toList());
     if (mounted) goTo(context, const ExerciseCountScreen());
   }
 
@@ -64,7 +67,10 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           ),
           child: Column(
             children: [
-              AppHeader(onBack: () => Navigator.pop(context)),
+              AppHeader(
+                onBack: () => Navigator.pop(context),
+                trailing: const LanguagePickerButton(),
+              ),
               const SizedBox(height: 20),
               Align(
                 alignment: Alignment.centerLeft,

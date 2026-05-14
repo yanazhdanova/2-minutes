@@ -18,6 +18,7 @@ class ProgramSettingsScreen extends StatefulWidget {
 class _ProgramSettingsScreenState extends State<ProgramSettingsScreen> {
   late Set<String> _selected;
   late int _exerciseCount;
+  late int _defaultDurationSec;
   bool _changed = false;
 
   List<_P> _problems(Tr t) => [
@@ -37,6 +38,7 @@ class _ProgramSettingsScreenState extends State<ProgramSettingsScreen> {
     final userData = AppScope.of(context).userData;
     _selected = userData.selectedCategories.toSet();
     _exerciseCount = userData.exerciseCount;
+    _defaultDurationSec = userData.defaultExerciseDurationSec;
   }
 
   void _toggle(String id) {
@@ -61,6 +63,7 @@ class _ProgramSettingsScreenState extends State<ProgramSettingsScreen> {
     final userData = AppScope.of(context).userData;
     await userData.setSelectedCategories(_selected.toList());
     userData.setExerciseCount(_exerciseCount);
+    userData.setDefaultExerciseDurationSec(_defaultDurationSec);
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -99,6 +102,38 @@ class _ProgramSettingsScreenState extends State<ProgramSettingsScreen> {
                 ),
               ),
 
+              const SizedBox(height: 24),
+
+              _ProgramControls(
+                exerciseCount: _exerciseCount,
+                durationSec: _defaultDurationSec,
+                onExerciseCountChanged: (value) => setState(() {
+                  _exerciseCount = value;
+                  _changed = true;
+                }),
+                onDurationChanged: (value) => setState(() {
+                  _defaultDurationSec = value;
+                  _changed = true;
+                }),
+              ),
+
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(child: Divider(color: c.border, thickness: 1)),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text(
+                      t.programCategoriesSection,
+                      style: AppTextStyles.bodyLarge.copyWith(
+                        color: c.textPrimary,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                  Expanded(child: Divider(color: c.border, thickness: 1)),
+                ],
+              ),
               const SizedBox(height: 8),
               Align(
                 alignment: Alignment.centerLeft,
@@ -109,71 +144,7 @@ class _ProgramSettingsScreenState extends State<ProgramSettingsScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
-
-              // Количество упражнений
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                decoration: BoxDecoration(
-                  color: c.surface,
-                  borderRadius: BorderRadius.circular(AppRadius.medium),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        t.exerciseCountLabel,
-                        style: AppTextStyles.bodyLarge.copyWith(color: c.textPrimary),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: _exerciseCount > 1
-                          ? () => setState(() { _exerciseCount--; _changed = true; })
-                          : null,
-                      child: Container(
-                        width: 36,
-                        height: 36,
-                        decoration: BoxDecoration(
-                          color: _exerciseCount > 1 ? c.accentSurface : c.border,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Icon(
-                          Icons.remove,
-                          color: _exerciseCount > 1 ? c.accentLight : c.textHint,
-                          size: 20,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        '$_exerciseCount',
-                        style: AppTextStyles.heading3.copyWith(color: c.accentLight),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: _exerciseCount < 6
-                          ? () => setState(() { _exerciseCount++; _changed = true; })
-                          : null,
-                      child: Container(
-                        width: 36,
-                        height: 36,
-                        decoration: BoxDecoration(
-                          color: _exerciseCount < 6 ? c.accentSurface : c.border,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Icon(
-                          Icons.add,
-                          color: _exerciseCount < 6 ? c.accentLight : c.textHint,
-                          size: 20,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
 
               Expanded(
                 child: ListView.builder(
@@ -251,6 +222,157 @@ class _ProgramSettingsScreenState extends State<ProgramSettingsScreen> {
                 ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ProgramControls extends StatelessWidget {
+  final int exerciseCount;
+  final int durationSec;
+  final ValueChanged<int> onExerciseCountChanged;
+  final ValueChanged<int> onDurationChanged;
+
+  const _ProgramControls({
+    required this.exerciseCount,
+    required this.durationSec,
+    required this.onExerciseCountChanged,
+    required this.onDurationChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final c = C(context);
+    final t = Tr.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
+      decoration: BoxDecoration(
+        color: c.surface,
+        borderRadius: BorderRadius.circular(AppRadius.medium),
+      ),
+      child: Column(
+        children: [
+          _StepperRow(
+            label: t.exerciseCountLabel,
+            subLabel: t.exerciseCountSub,
+            value: '$exerciseCount',
+            canDecrease: exerciseCount > 1,
+            canIncrease: exerciseCount < 6,
+            onDecrease: () => onExerciseCountChanged(exerciseCount - 1),
+            onIncrease: () => onExerciseCountChanged(exerciseCount + 1),
+          ),
+          Divider(color: c.border, height: 1),
+          _StepperRow(
+            label: t.defaultExerciseDurationLabel,
+            subLabel: t.defaultExerciseDurationSub,
+            value: t.durationShort(durationSec),
+            canDecrease: durationSec > 20,
+            canIncrease: durationSec < 180,
+            onDecrease: () => onDurationChanged(durationSec - 10),
+            onIncrease: () => onDurationChanged(durationSec + 10),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StepperRow extends StatelessWidget {
+  final String label;
+  final String subLabel;
+  final String value;
+  final bool canDecrease;
+  final bool canIncrease;
+  final VoidCallback onDecrease;
+  final VoidCallback onIncrease;
+
+  const _StepperRow({
+    required this.label,
+    required this.subLabel,
+    required this.value,
+    required this.canDecrease,
+    required this.canIncrease,
+    required this.onDecrease,
+    required this.onIncrease,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final c = C(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: AppTextStyles.bodyLarge.copyWith(color: c.textPrimary),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subLabel,
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: c.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          _CounterButton(
+            icon: Icons.remove,
+            enabled: canDecrease,
+            onTap: onDecrease,
+          ),
+          SizedBox(
+            width: 76,
+            child: Text(
+              value,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.heading3.copyWith(color: c.accentLight),
+            ),
+          ),
+          _CounterButton(
+            icon: Icons.add,
+            enabled: canIncrease,
+            onTap: onIncrease,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CounterButton extends StatelessWidget {
+  final IconData icon;
+  final bool enabled;
+  final VoidCallback onTap;
+
+  const _CounterButton({
+    required this.icon,
+    required this.enabled,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final c = C(context);
+    return GestureDetector(
+      onTap: enabled ? onTap : null,
+      child: Container(
+        width: 32,
+        height: 32,
+        decoration: BoxDecoration(
+          color: enabled ? c.accentSurface : c.border,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Icon(
+          icon,
+          color: enabled ? c.accentLight : c.textHint,
+          size: 20,
         ),
       ),
     );

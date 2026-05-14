@@ -4,6 +4,7 @@ import '../../app/app_theme.dart';
 import '../../app/navigation.dart';
 import '../../app/app_scope.dart';
 import '../../app/l10n/app_localizations.dart';
+import '../../shared/language_picker_button.dart';
 import '../../shared/widgets.dart';
 import 'notif_freq_screen.dart';
 
@@ -130,7 +131,10 @@ class _NotifTimeScreenState extends State<NotifTimeScreen> {
 
           child: Column(
             children: [
-              AppHeader(onBack: () => Navigator.pop(context)),
+              AppHeader(
+                onBack: () => Navigator.pop(context),
+                trailing: const LanguagePickerButton(),
+              ),
               const Spacer(flex: 2),
               Text(
                 t.notifTimeTitle,

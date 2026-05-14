@@ -16,7 +16,7 @@ class Tr {
   /// @return Экземпляр Tr для текущей локали.
   static Tr of(BuildContext context) => Localizations.of<Tr>(context, Tr)!;
   static const LocalizationsDelegate<Tr> delegate = _TrDelegate();
-  static const supportedLocales = [Locale('ru'), Locale('en')];
+  static const supportedLocales = [Locale('en'), Locale('ru')];
 
   bool get _isRu => locale.languageCode == 'ru';
 
@@ -58,7 +58,6 @@ class Tr {
   String get cancel => _isRu ? 'Отмена' : 'Cancel';
   String get done => _isRu ? 'Готово' : 'Done';
   String get save => _isRu ? 'Сохранить' : 'Save';
-  String get video => _isRu ? 'Видео' : 'Video';
 
   // Nav
   String get navHome => _isRu ? 'Главная' : 'Home';
@@ -198,6 +197,14 @@ class Tr {
       : 'No exercises in this category';
   String durationSec(int sec) =>
       _isRu ? 'Длительность: $sec сек' : 'Duration: ${sec}s';
+  String get durationPickerTitle =>
+      _isRu ? 'Длительность упражнения' : 'Exercise duration';
+  String get defaultExerciseDurationLabel =>
+      _isRu ? 'Длительность упражнения' : 'Exercise duration';
+  String get defaultExerciseDurationSub =>
+      _isRu ? 'По умолчанию для тренировок' : 'Default for workouts';
+  String get programCategoriesSection => _isRu ? 'Категории' : 'Categories';
+  String durationShort(int sec) => _isRu ? '$sec сек' : '${sec}s';
 
   // Workout
   String get pause => _isRu ? 'пауза' : 'pause';
@@ -285,8 +292,6 @@ class Tr {
   String get catLegsFeet => _isRu ? 'Ноги и стопы' : 'Legs & feet';
   String get catPostureAlignment => _isRu ? 'Осанка' : 'Posture';
   String get catBreathing => _isRu ? 'Дыхание' : 'Breathing';
-  String get catCognitiveUnload =>
-      _isRu ? 'Когнитивная разгрузка' : 'Cognitive unload';
 
   // Workout type
   String get workoutTypeTitle =>
@@ -306,33 +311,29 @@ class Tr {
   // Tutorial
   String get tutorialGotIt => _isRu ? 'Понятно' : 'Got it';
 
-  String get tutorialHomeTitle => _isRu
-      ? 'Программа готова!'
-      : 'Your program is ready!';
+  String get tutorialHomeTitle =>
+      _isRu ? 'Программа готова!' : 'Your program is ready!';
   String get tutorialHomeBody => _isRu
       ? 'Мы подобрали упражнения под ваши цели.\nНажмите «Начать тренировку», чтобы попробовать.'
       : 'We picked exercises based on your goals.\nTap "Start workout" to try it out.';
 
-  String get tutorialWorkoutTypeTitle => _isRu
-      ? 'Два режима тренировки'
-      : 'Two workout modes';
+  String get tutorialWorkoutTypeTitle =>
+      _isRu ? 'Два режима тренировки' : 'Two workout modes';
   String get tutorialWorkoutTypeBody => _isRu
       ? '«Быстрый старт» автоматически подбирает упражнения на основе ваших проблемных зон.\n\n«Своя тренировка» — выбирайте упражнения вручную из каталога.'
       : '"Quick start" automatically picks exercises based on your problem areas.\n\n"Custom workout" — choose exercises manually from the catalog.';
 
-  String get tutorialExerciseTitle => _isRu
-      ? 'Управление тренировкой'
-      : 'Workout controls';
+  String get tutorialExerciseTitle =>
+      _isRu ? 'Управление тренировкой' : 'Workout controls';
   String get tutorialExerciseBody => _isRu
-      ? '−15 / +15 — перемотка таймера на 15 секунд.\n\nПауза — откроет меню с опциями: пропустить упражнение или завершить тренировку.\n\n♡ — добавить упражнение в избранное.'
-      : '−15 / +15 — rewind the timer by 15 seconds.\n\nPause — opens a menu: skip exercise or end workout.\n\n♡ — add exercise to favorites.';
+      ? '−15 / +15 — перемотка таймера на 15 секунд.\n\nПауза — откроет меню с опциями: пропустить упражнение или завершить тренировку.\n\n♡ — добавить упражнение в избранное.\n\nНажмите на таймер, чтобы изменить длительность.'
+      : '−15 / +15 — rewind the timer by 15 seconds.\n\nPause — opens a menu: skip exercise or end workout.\n\n♡ — add exercise to favorites.\n\nTap the timer to change duration.';
 
-  String get tutorialCustomTitle => _isRu
-      ? 'Выберите упражнения'
-      : 'Pick your exercises';
+  String get tutorialCustomTitle =>
+      _isRu ? 'Выберите упражнения' : 'Pick your exercises';
   String get tutorialCustomBody => _isRu
-      ? 'Нажмите на пустой слот, чтобы открыть каталог и выбрать упражнение.\n\nЗаполните все слоты, чтобы начать тренировку.'
-      : 'Tap an empty slot to open the catalog and pick an exercise.\n\nFill all slots to start the workout.';
+      ? 'Нажмите на пустой слот, чтобы открыть каталог и выбрать упражнение.\n\nЗаполните все слоты, чтобы начать тренировку.\n\nНажмите на длительность, чтобы изменить её для этой тренировки.'
+      : 'Tap an empty slot to open the catalog and pick an exercise.\n\nFill all slots to start the workout.\n\nTap the duration to change it for this workout.';
 
   // Logout
   String get logoutButton => _isRu ? 'Выйти' : 'Log out';
@@ -397,7 +398,6 @@ class Tr {
     'legs_feet' => catLegsFeet,
     'posture_alignment' => catPostureAlignment,
     'breathing' => catBreathing,
-    'cognitive_unload' => catCognitiveUnload,
     _ => id,
   };
 }

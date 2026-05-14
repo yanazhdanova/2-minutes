@@ -59,8 +59,12 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _handleGoogle() async {
     setState(() => _isGoogleLoading = true);
     try {
-      await _auth.signInWithGoogle();
-      if (mounted) _navigateAfterAuth();
+      final credential = await _auth.signInWithGoogle();
+      if (mounted) {
+        _navigateAfterAuth(
+          isNewAuthUser: credential.additionalUserInfo?.isNewUser ?? false,
+        );
+      }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'google-cancelled') return;
       if (mounted) _showError(_mapError(e.code));
@@ -71,8 +75,11 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void _navigateAfterAuth() {
-    goToAndClearNoAnimation(context, const PostAuthScreen());
+  void _navigateAfterAuth({bool isNewAuthUser = false}) {
+    goToAndClearNoAnimation(
+      context,
+      PostAuthScreen(isNewAuthUser: isNewAuthUser),
+    );
   }
 
   void _showError(String msg) {

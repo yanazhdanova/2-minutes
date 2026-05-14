@@ -30,7 +30,7 @@ class TutorialOverlay extends StatelessWidget {
         color: Colors.black54,
         child: Center(
           child: GestureDetector(
-            onTap: () {}, // блокируем проброс тапа
+            onTap: () {},
             child: Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.screenHorizontal,
@@ -54,6 +54,7 @@ class TutorialOverlay extends StatelessWidget {
                       ),
                       child: Icon(icon, color: c.accentLight, size: 36),
                     ),
+
                     const SizedBox(height: 24),
                     Text(
                       title,
@@ -62,6 +63,7 @@ class TutorialOverlay extends StatelessWidget {
                         color: c.textPrimary,
                       ),
                     ),
+
                     const SizedBox(height: 16),
                     Text(
                       body,
@@ -71,6 +73,7 @@ class TutorialOverlay extends StatelessWidget {
                         height: 1.6,
                       ),
                     ),
+
                     const SizedBox(height: 28),
                     PrimaryButton(
                       label: t.tutorialGotIt,

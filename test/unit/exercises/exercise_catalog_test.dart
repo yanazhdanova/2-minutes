@@ -18,7 +18,6 @@ void main() {
     'attention_switch',
     'emotional_balance',
     'breathing',
-    'cognitive_unload',
   };
 
   group('exerciseCategories (каталог)', () {

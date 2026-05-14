@@ -56,8 +56,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     setState(() => _isLoading = true);
     try {
-      await _auth.register(email: email, password: password);
-      if (mounted) goToAndClearNoAnimation(context, const PostAuthScreen());
+      final credential = await _auth.register(email: email, password: password);
+      if (mounted) {
+        goToAndClearNoAnimation(
+          context,
+          PostAuthScreen(
+            isNewAuthUser: credential.additionalUserInfo?.isNewUser ?? true,
+          ),
+        );
+      }
     } on FirebaseAuthException catch (e) {
       if (mounted) _showError(_mapError(e.code));
     } catch (_) {
@@ -70,8 +77,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> _handleGoogle() async {
     setState(() => _isGoogleLoading = true);
     try {
-      await _auth.signInWithGoogle();
-      if (mounted) goToAndClearNoAnimation(context, const PostAuthScreen());
+      final credential = await _auth.signInWithGoogle();
+      if (mounted) {
+        goToAndClearNoAnimation(
+          context,
+          PostAuthScreen(
+            isNewAuthUser: credential.additionalUserInfo?.isNewUser ?? false,
+          ),
+        );
+      }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'google-cancelled') return;
       if (mounted) _showError(_mapError(e.code));

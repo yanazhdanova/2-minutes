@@ -6,6 +6,7 @@ import '../../app/main_tab_screen.dart';
 import '../../app/l10n/app_localizations.dart';
 import '../../shared/widgets.dart';
 import '../../shared/tutorial_overlay.dart';
+import '../../shared/duration_picker_sheet.dart';
 import '../exercises/domain/exercise_models.dart';
 import '../workout/exercise_screen.dart';
 import 'home_phys_mental_screen.dart';
@@ -22,6 +23,7 @@ class ExercisesChoiceScreen extends StatefulWidget {
 
 class _ExercisesChoiceScreenState extends State<ExercisesChoiceScreen> {
   late List<Exercise?> _slots;
+  final Map<String, int> _sessionDurations = {};
   bool get _allSelected => _slots.every((e) => e != null);
   bool _showTutorial = false;
 
@@ -58,13 +60,34 @@ class _ExercisesChoiceScreenState extends State<ExercisesChoiceScreen> {
       context,
       MaterialPageRoute(builder: (_) => const HomePhysMentalScreen()),
     );
-    if (r != null && mounted) setState(() => _slots[i] = r);
+    if (r != null && mounted) {
+      setState(() {
+        _slots[i] = r;
+        _sessionDurations.putIfAbsent(
+          r.id,
+          () => AppScope.of(context).userData.defaultExerciseDurationSec,
+        );
+      });
+    }
+  }
+
+  Future<void> _editDuration(Exercise ex) async {
+    final current =
+        _sessionDurations[ex.id] ??
+        AppScope.of(context).userData.defaultExerciseDurationSec;
+    final result = await showDurationPickerSheet(context, initial: current);
+    if (result != null && mounted) {
+      setState(() => _sessionDurations[ex.id] = result);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final c = C(context);
     final t = Tr.of(context);
+    final defaultDuration = AppScope.of(
+      context,
+    ).userData.defaultExerciseDurationSec;
     return Scaffold(
       backgroundColor: c.background,
       body: Stack(
@@ -85,7 +108,9 @@ class _ExercisesChoiceScreenState extends State<ExercisesChoiceScreen> {
                   Text(
                     t.chooseExercisesTitle,
                     textAlign: TextAlign.center,
-                    style: AppTextStyles.heading2.copyWith(color: c.textPrimary),
+                    style: AppTextStyles.heading2.copyWith(
+                      color: c.textPrimary,
+                    ),
                   ),
 
                   const SizedBox(height: 32),
@@ -94,7 +119,14 @@ class _ExercisesChoiceScreenState extends State<ExercisesChoiceScreen> {
                       index: i + 1,
                       exercise: _slots[i],
                       placeholder: t.chooseExerciseSlot,
+                      durationSec: _slots[i] == null
+                          ? null
+                          : (_sessionDurations[_slots[i]!.id] ??
+                                defaultDuration),
                       onTap: () => _pick(i),
+                      onDurationTap: _slots[i] == null
+                          ? null
+                          : () => _editDuration(_slots[i]!),
                     ),
 
                     const SizedBox(height: 16),
@@ -108,6 +140,7 @@ class _ExercisesChoiceScreenState extends State<ExercisesChoiceScreen> {
                             context,
                             ExerciseScreen(
                               exercises: _slots.whereType<Exercise>().toList(),
+                              sessionDurations: Map.of(_sessionDurations),
                             ),
                           )
                         : null,
@@ -135,17 +168,22 @@ class _Slot extends StatelessWidget {
   final int index;
   final Exercise? exercise;
   final String placeholder;
+  final int? durationSec;
   final VoidCallback onTap;
+  final VoidCallback? onDurationTap;
   const _Slot({
     required this.index,
     required this.exercise,
     required this.placeholder,
+    required this.durationSec,
     required this.onTap,
+    required this.onDurationTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final c = C(context);
+    final t = Tr.of(context);
     final sel = exercise != null;
     return InkWell(
       onTap: onTap,
@@ -182,12 +220,35 @@ class _Slot extends StatelessWidget {
             const SizedBox(width: 16),
             Expanded(
               child: Text(
-                sel ? exercise!.title : placeholder,
+                sel
+                    ? exercise!.localizedTitle(t.locale.languageCode)
+                    : placeholder,
                 style: AppTextStyles.bodyLarge.copyWith(
                   color: sel ? c.accentLight : c.textSecondary,
                 ),
               ),
             ),
+
+            if (sel && durationSec != null) ...[
+              InkWell(
+                onTap: onDurationTap,
+                borderRadius: BorderRadius.circular(AppRadius.small),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  child: Text(
+                    '${durationSec}s',
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: c.accentLight,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 4),
+            ],
 
             Icon(
               sel ? Icons.check_circle : Icons.add_circle_outline,

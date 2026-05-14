@@ -6,6 +6,7 @@ import '../../app/app_theme.dart';
 import '../../app/navigation.dart';
 import '../../app/l10n/app_localizations.dart';
 import '../../shared/tutorial_overlay.dart';
+import '../../shared/duration_picker_sheet.dart';
 import '../exercises/domain/exercise_models.dart';
 import 'end_of_the_workout_screen.dart';
 
@@ -16,7 +17,15 @@ import 'end_of_the_workout_screen.dart';
 /// Хэптик-обратная связь при завершении таймера. Описание упражнения скрывается на паузе.
 class ExerciseScreen extends StatefulWidget {
   final List<Exercise> exercises;
-  const ExerciseScreen({super.key, required this.exercises});
+
+  /// Переопределения длительности по id упражнения для текущей тренировки.
+  /// При изменении во время выполнения значение также сохраняется в БД.
+  final Map<String, int> sessionDurations;
+  ExerciseScreen({
+    super.key,
+    required this.exercises,
+    Map<String, int>? sessionDurations,
+  }) : sessionDurations = sessionDurations ?? <String, int>{};
   @override
   State<ExerciseScreen> createState() => _ExerciseScreenState();
 }
@@ -32,10 +41,13 @@ class _ExerciseScreenState extends State<ExerciseScreen>
 
   Exercise get _exercise => widget.exercises[_currentIndex];
 
+  int _durationFor(Exercise e) =>
+      widget.sessionDurations[e.id] ?? e.defaultDurationSec;
+
   @override
   void initState() {
     super.initState();
-    _totalSeconds = _exercise.defaultDurationSec;
+    _totalSeconds = _durationFor(_exercise);
     _initTimer();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final prefs = AppScope.of(context).prefs;
@@ -85,6 +97,31 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     _isPaused = false;
   }
 
+  Future<void> _editDuration() async {
+    final scope = AppScope.of(context);
+    final wasPaused = _isPaused;
+    _controller.stop();
+    final result = await showDurationPickerSheet(
+      context,
+      initial: _totalSeconds,
+    );
+    if (!mounted) return;
+    if (result != null) {
+      await scope.exerciseRepo.updateDuration(_exercise.id, result);
+      if (!mounted) return;
+      widget.sessionDurations[_exercise.id] = result;
+      _controller.dispose();
+      _totalSeconds = result;
+      _initTimer();
+      if (wasPaused) {
+        _controller.stop();
+      }
+      setState(() => _isPaused = wasPaused);
+    } else if (!wasPaused) {
+      _controller.forward();
+    }
+  }
+
   void _togglePause() {
     setState(() {
       _isPaused ? _controller.forward() : _controller.stop();
@@ -118,7 +155,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     final scope = AppScope.of(context);
     final totalSec = widget.exercises
         .take(completedCount)
-        .fold(0, (sum, e) => sum + e.defaultDurationSec);
+        .fold(0, (sum, e) => sum + _durationFor(e));
     scope.userData.recordWorkout(
       exerciseCount: completedCount,
       durationSeconds: totalSec,
@@ -129,15 +166,18 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     if (_currentIndex >= widget.exercises.length - 1) {
       final count = widget.exercises.length;
       _recordWorkout(count);
-      final totalSec = widget.exercises.fold(0, (sum, e) => sum + e.defaultDurationSec);
-      goToAndClearNoAnimation(context, EndOfTheWorkoutScreen(
-        exerciseCount: count,
-        durationSeconds: totalSec,
-      ));
+      final totalSec = widget.exercises.fold(
+        0,
+        (sum, e) => sum + _durationFor(e),
+      );
+      goToAndClearNoAnimation(
+        context,
+        EndOfTheWorkoutScreen(exerciseCount: count, durationSeconds: totalSec),
+      );
     } else {
       _controller.dispose();
       _currentIndex++;
-      _totalSeconds = _exercise.defaultDurationSec;
+      _totalSeconds = _durationFor(_exercise);
       _initTimer();
       _loadFavorite();
       setState(() {});
@@ -155,11 +195,11 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     _recordWorkout(count);
     final totalSec = widget.exercises
         .take(count.clamp(0, widget.exercises.length))
-        .fold(0, (sum, e) => sum + e.defaultDurationSec);
-    goToAndClearNoAnimation(context, EndOfTheWorkoutScreen(
-      exerciseCount: count,
-      durationSeconds: totalSec,
-    ));
+        .fold(0, (sum, e) => sum + _durationFor(e));
+    goToAndClearNoAnimation(
+      context,
+      EndOfTheWorkoutScreen(exerciseCount: count, durationSeconds: totalSec),
+    );
   }
 
   @override
@@ -192,13 +232,17 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                       style: AppTextStyles.logo.copyWith(color: c.textPrimary),
                     ),
                     const Spacer(flex: 2),
-                    Text(
-                      _timeStr,
-                      style: TextStyle(
-                        fontSize: 72,
-                        fontWeight: FontWeight.w700,
-                        color: c.textPrimary,
-                        fontFeatures: const [FontFeature.tabularFigures()],
+                    GestureDetector(
+                      onTap: _editDuration,
+                      behavior: HitTestBehavior.opaque,
+                      child: Text(
+                        _timeStr,
+                        style: TextStyle(
+                          fontSize: 72,
+                          fontWeight: FontWeight.w700,
+                          color: c.textPrimary,
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                        ),
                       ),
                     ),
 
@@ -249,7 +293,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                         children: [
                           _Round(
                             label: '-15',
-                            onTap: () => _adjustTime(15),
+                            onTap: () => _adjustTime(-15),
                             bg: c.surface,
                             fg: c.textPrimary,
                           ),
@@ -263,7 +307,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
 
                           _Round(
                             label: '+15',
-                            onTap: () => _adjustTime(-15),
+                            onTap: () => _adjustTime(15),
                             bg: c.surface,
                             fg: c.textPrimary,
                           ),

@@ -129,7 +129,6 @@ class PrefsService {
     }
   }
 
-  // ── Tutorial ──
 
   static const _keyTutorialHomeSeen = 'tutorial_home_seen';
   static const _keyTutorialWorkoutTypeSeen = 'tutorial_workout_type_seen';
@@ -137,16 +136,31 @@ class PrefsService {
   static const _keyTutorialCustomSeen = 'tutorial_custom_seen';
 
   bool get tutorialHomeSeen => _prefs.getBool(_keyTutorialHomeSeen) ?? false;
-  Future<void> setTutorialHomeSeen() => _prefs.setBool(_keyTutorialHomeSeen, true);
+  Future<void> setTutorialHomeSeen() =>
+      _prefs.setBool(_keyTutorialHomeSeen, true);
 
-  bool get tutorialWorkoutTypeSeen => _prefs.getBool(_keyTutorialWorkoutTypeSeen) ?? false;
-  Future<void> setTutorialWorkoutTypeSeen() => _prefs.setBool(_keyTutorialWorkoutTypeSeen, true);
+  bool get tutorialWorkoutTypeSeen =>
+      _prefs.getBool(_keyTutorialWorkoutTypeSeen) ?? false;
+  Future<void> setTutorialWorkoutTypeSeen() =>
+      _prefs.setBool(_keyTutorialWorkoutTypeSeen, true);
 
-  bool get tutorialExerciseSeen => _prefs.getBool(_keyTutorialExerciseSeen) ?? false;
-  Future<void> setTutorialExerciseSeen() => _prefs.setBool(_keyTutorialExerciseSeen, true);
+  bool get tutorialExerciseSeen =>
+      _prefs.getBool(_keyTutorialExerciseSeen) ?? false;
+  Future<void> setTutorialExerciseSeen() =>
+      _prefs.setBool(_keyTutorialExerciseSeen, true);
 
-  bool get tutorialCustomSeen => _prefs.getBool(_keyTutorialCustomSeen) ?? false;
-  Future<void> setTutorialCustomSeen() => _prefs.setBool(_keyTutorialCustomSeen, true);
+  bool get tutorialCustomSeen =>
+      _prefs.getBool(_keyTutorialCustomSeen) ?? false;
+  Future<void> setTutorialCustomSeen() =>
+      _prefs.setBool(_keyTutorialCustomSeen, true);
+
+  /// Сбрасывает локальные подсказки для нового аккаунта на этом устройстве.
+  Future<void> resetTutorials() async {
+    await _prefs.remove(_keyTutorialHomeSeen);
+    await _prefs.remove(_keyTutorialWorkoutTypeSeen);
+    await _prefs.remove(_keyTutorialExerciseSeen);
+    await _prefs.remove(_keyTutorialCustomSeen);
+  }
 
   /// Удаляет все ключи из SharedPreferences. Используется для сброса настроек.
   Future<void> clearAll() => _prefs.clear();

@@ -21,20 +21,18 @@ class HomeCatalogPhysScreen extends StatelessWidget {
     final list = <Exercise>[];
     for (final id in ids) {
       final ex = await scope.exerciseRepo.exerciseById(id);
-      if (ex != null) list.add(ex);
+      if (ex != null && ex.type == HealthType.physical) list.add(ex);
     }
     if (!ctx.mounted) return;
     if (list.isEmpty) {
-      ScaffoldMessenger.of(ctx).showSnackBar(
-        SnackBar(content: Text(Tr.of(ctx).favoritesEmpty)),
-      );
+      ScaffoldMessenger.of(
+        ctx,
+      ).showSnackBar(SnackBar(content: Text(Tr.of(ctx).favoritesEmpty)));
       return;
     }
     final r = await Navigator.push<Exercise>(
       ctx,
-      MaterialPageRoute(
-        builder: (_) => HomeFavoritesScreen(exercises: list),
-      ),
+      MaterialPageRoute(builder: (_) => HomeFavoritesScreen(exercises: list)),
     );
     if (r != null && ctx.mounted) Navigator.pop(ctx, r);
   }
@@ -135,7 +133,11 @@ class _RandomTile extends StatelessWidget {
   final String label;
   final IconData icon;
   final VoidCallback onTap;
-  const _RandomTile({required this.label, required this.icon, required this.onTap});
+  const _RandomTile({
+    required this.label,
+    required this.icon,
+    required this.onTap,
+  });
   @override
   Widget build(BuildContext context) {
     final c = C(context);
@@ -268,7 +270,9 @@ class _CatTile extends StatelessWidget {
 
                                       const SizedBox(height: 4),
                                       Text(
-                                        e.localizedDescription(t.locale.languageCode),
+                                        e.localizedDescription(
+                                          t.locale.languageCode,
+                                        ),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                         style: AppTextStyles.bodySmall.copyWith(

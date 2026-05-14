@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
 /// Сервис пользовательских данных на базе Firestore. Хранит профиль, избранное и статистику
 /// в документе users/{uid}. Данные кэшируются в памяти (_cache) для синхронного доступа.
@@ -23,14 +24,22 @@ class UserDataService {
     FirebaseFirestore? firestore,
     String Function()? uidProvider,
     String Function()? emailProvider,
-  })  : _firestore = firestore ?? FirebaseFirestore.instance,
-        _uidProvider = uidProvider ?? (() => FirebaseAuth.instance.currentUser!.uid),
-        _emailProvider = emailProvider ?? (() => FirebaseAuth.instance.currentUser?.email ?? '');
+  }) : _firestore = firestore ?? FirebaseFirestore.instance,
+       _uidProvider =
+           uidProvider ?? (() => FirebaseAuth.instance.currentUser!.uid),
+       _emailProvider =
+           emailProvider ??
+           (() => FirebaseAuth.instance.currentUser?.email ?? '');
 
   final FirebaseFirestore _firestore;
   final String Function() _uidProvider;
   final String Function() _emailProvider;
   Map<String, dynamic> _cache = {};
+  bool _isNewUser = false;
+
+  /// True если при последнем init() документа пользователя не было в Firestore
+  /// (ни на сервере, ни в локальном кэше SDK) — значит, это первый вход.
+  bool get isNewUser => _isNewUser;
 
   /// Ссылка на документ текущего пользователя в коллекции users.
   DocumentReference get _doc =>
@@ -58,6 +67,7 @@ class UserDataService {
     'accentColor': 'green',
     'languageCode': '',
     'exerciseCount': 3,
+    'defaultExerciseDurationSec': 40,
   };
 
   /// Загружает документ пользователя из Firestore в кэш.
@@ -65,34 +75,54 @@ class UserDataService {
   /// При сбое сети пробует локальный кэш Firestore SDK.
   /// Должен вызываться после успешной аутентификации.
   Future<void> init() async {
+    debugPrint('[UserData] init() uid=${_uidProvider()}');
+
     // 1. Пробуем загрузить с сервера
     try {
-      final snap = await _doc.get(const GetOptions(source: Source.server))
+      final snap = await _doc
+          .get(const GetOptions(source: Source.server))
           .timeout(const Duration(seconds: 10));
+      debugPrint(
+        '[UserData] server: exists=${snap.exists}, data=${snap.data()}',
+      );
       if (snap.exists && snap.data() != null) {
         _cache = Map<String, dynamic>.from(snap.data()! as Map);
+        _isNewUser = false;
+        debugPrint(
+          '[UserData] loaded from server: onboardingDone=$isOnboardingDone, userName=$userName',
+        );
         return;
       }
       // Документа нет на сервере — новый пользователь
+      debugPrint('[UserData] no document on server, creating defaults');
       _cache = _defaults;
+      _isNewUser = true;
       _doc.set(_cache).ignore();
       return;
-    } catch (_) {
-      // Сервер недоступен — пробуем кэш
+    } catch (e) {
+      debugPrint('[UserData] server error: $e');
     }
 
     // 2. Фоллбэк: локальный кэш Firestore SDK
     try {
       final snap = await _doc.get(const GetOptions(source: Source.cache));
+      debugPrint(
+        '[UserData] cache: exists=${snap.exists}, data=${snap.data()}',
+      );
       if (snap.exists && snap.data() != null) {
         _cache = Map<String, dynamic>.from(snap.data()! as Map);
+        _isNewUser = false;
+        debugPrint(
+          '[UserData] loaded from cache: onboardingDone=$isOnboardingDone, userName=$userName',
+        );
         return;
       }
-    } catch (_) {
-      // Кэш пуст
+    } catch (e) {
+      debugPrint('[UserData] cache error: $e');
     }
 
     // 3. Ничего не удалось — дефолты (без записи в Firestore)
+    debugPrint('[UserData] using defaults');
     if (_cache.isEmpty) _cache = _defaults;
   }
 
@@ -124,7 +154,10 @@ class UserDataService {
 
   String get gender => (_cache['gender'] as String?) ?? '';
 
-  void setGender(String v) { _cache['gender'] = v; _write({'gender': v}); }
+  void setGender(String v) {
+    _cache['gender'] = v;
+    _write({'gender': v});
+  }
 
   // ── Онбординг ──
 
@@ -191,10 +224,25 @@ class UserDataService {
     return (list as List).map((e) => (e as num).toInt()).toList();
   }
 
-  void setNotifFrom(String v) { _cache['notifFrom'] = v; _write({'notifFrom': v}); }
-  void setNotifTo(String v) { _cache['notifTo'] = v; _write({'notifTo': v}); }
-  void setNotifFreq(String v) { _cache['notifFreq'] = v; _write({'notifFreq': v}); }
-  void setNotifDays(List<int> v) { _cache['notifDays'] = v; _write({'notifDays': v}); }
+  void setNotifFrom(String v) {
+    _cache['notifFrom'] = v;
+    _write({'notifFrom': v});
+  }
+
+  void setNotifTo(String v) {
+    _cache['notifTo'] = v;
+    _write({'notifTo': v});
+  }
+
+  void setNotifFreq(String v) {
+    _cache['notifFreq'] = v;
+    _write({'notifFreq': v});
+  }
+
+  void setNotifDays(List<int> v) {
+    _cache['notifDays'] = v;
+    _write({'notifDays': v});
+  }
 
   // ── Настройки оформления ──
 
@@ -202,9 +250,20 @@ class UserDataService {
   String get accentColor => (_cache['accentColor'] as String?) ?? 'green';
   String get languageCode => (_cache['languageCode'] as String?) ?? '';
 
-  void setThemeMode(String v) { _cache['themeMode'] = v; _write({'themeMode': v}); }
-  void setAccentColor(String v) { _cache['accentColor'] = v; _write({'accentColor': v}); }
-  void setLanguageCode(String v) { _cache['languageCode'] = v; _write({'languageCode': v}); }
+  void setThemeMode(String v) {
+    _cache['themeMode'] = v;
+    _write({'themeMode': v});
+  }
+
+  void setAccentColor(String v) {
+    _cache['accentColor'] = v;
+    _write({'accentColor': v});
+  }
+
+  void setLanguageCode(String v) {
+    _cache['languageCode'] = v;
+    _write({'languageCode': v});
+  }
 
   // ── Количество упражнений ──
 
@@ -212,12 +271,26 @@ class UserDataService {
   int get exerciseCount => (_cache['exerciseCount'] as int?) ?? 3;
 
   /// Обновляет количество упражнений в кэше и Firestore.
-  void setExerciseCount(int v) { _cache['exerciseCount'] = v; _write({'exerciseCount': v}); }
+  void setExerciseCount(int v) {
+    _cache['exerciseCount'] = v;
+    _write({'exerciseCount': v});
+  }
+
+  /// Длительность упражнения по умолчанию для запускаемых тренировок.
+  int get defaultExerciseDurationSec =>
+      (_cache['defaultExerciseDurationSec'] as int?) ?? 40;
+
+  /// Обновляет длительность упражнения по умолчанию в кэше и Firestore.
+  void setDefaultExerciseDurationSec(int v) {
+    _cache['defaultExerciseDurationSec'] = v;
+    _write({'defaultExerciseDurationSec': v});
+  }
 
   // ── Статистика ──
 
-  Map<String, dynamic> get _stats =>
-      Map<String, dynamic>.from((_cache['stats'] as Map?) ?? _defaults['stats']!);
+  Map<String, dynamic> get _stats => Map<String, dynamic>.from(
+    (_cache['stats'] as Map?) ?? _defaults['stats']!,
+  );
 
   /// Общее количество завершённых тренировок.
   int get totalWorkouts => (_stats['totalWorkouts'] as int?) ?? 0;
@@ -245,7 +318,8 @@ class UserDataService {
   }) async {
     final stats = _stats;
     final today = now ?? DateTime.now();
-    final todayStr = '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
+    final todayStr =
+        '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
     final lastDate = (stats['lastWorkoutDate'] as String?) ?? '';
 
     int streak = (stats['streakDays'] as int?) ?? 0;
@@ -255,8 +329,11 @@ class UserDataService {
         if (last != null) {
           final workingDays = notifDays;
           bool missedWorkingDay = false;
-          DateTime check = DateTime(last.year, last.month, last.day)
-              .add(const Duration(days: 1));
+          DateTime check = DateTime(
+            last.year,
+            last.month,
+            last.day,
+          ).add(const Duration(days: 1));
           final todayMidnight = DateTime(today.year, today.month, today.day);
           while (check.isBefore(todayMidnight)) {
             if (workingDays.contains(check.weekday)) {
@@ -279,8 +356,10 @@ class UserDataService {
     }
 
     stats['totalWorkouts'] = ((stats['totalWorkouts'] as int?) ?? 0) + 1;
-    stats['totalExercises'] = ((stats['totalExercises'] as int?) ?? 0) + exerciseCount;
-    stats['totalSeconds'] = ((stats['totalSeconds'] as int?) ?? 0) + durationSeconds;
+    stats['totalExercises'] =
+        ((stats['totalExercises'] as int?) ?? 0) + exerciseCount;
+    stats['totalSeconds'] =
+        ((stats['totalSeconds'] as int?) ?? 0) + durationSeconds;
     stats['streakDays'] = streak;
     stats['lastWorkoutDate'] = todayStr;
 

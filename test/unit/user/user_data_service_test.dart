@@ -9,10 +9,7 @@ void main() {
 
   setUp(() {
     fakeFirestore = FakeFirebaseFirestore();
-    service = UserDataService(
-      firestore: fakeFirestore,
-      uidProvider: () => uid,
-    );
+    service = UserDataService(firestore: fakeFirestore, uidProvider: () => uid);
   });
 
   /// Хелпер: читает документ пользователя из фейкового Firestore.
@@ -33,6 +30,8 @@ void main() {
       expect(data['favoriteIds'], <String>[]);
       expect(data['stats']['totalWorkouts'], 0);
       expect(data['stats']['streakDays'], 0);
+      expect(data['defaultExerciseDurationSec'], 40);
+      expect(service.isNewUser, true);
     });
 
     test('загружает существующий документ в кэш', () async {
@@ -60,6 +59,7 @@ void main() {
       expect(service.totalExercises, 15);
       expect(service.totalSeconds, 600);
       expect(service.streakDays, 3);
+      expect(service.isNewUser, false);
     });
 
     test('дефолтные значения до вызова init', () {
@@ -191,6 +191,24 @@ void main() {
     });
   });
 
+  group('defaultExerciseDurationSec', () {
+    test('по умолчанию 40 секунд', () async {
+      await service.init();
+
+      expect(service.defaultExerciseDurationSec, 40);
+    });
+
+    test('setDefaultExerciseDurationSec обновляет кэш и Firestore', () async {
+      await service.init();
+
+      service.setDefaultExerciseDurationSec(60);
+
+      expect(service.defaultExerciseDurationSec, 60);
+      final data = await readDoc();
+      expect(data!['defaultExerciseDurationSec'], 60);
+    });
+  });
+
   group('stats — recordWorkout', () {
     test('первая тренировка увеличивает счётчики', () async {
       await service.init();
@@ -268,13 +286,19 @@ void main() {
       await service.init();
 
       await service.recordWorkout(
-        exerciseCount: 1, durationSeconds: 40, now: DateTime(2026, 4, 25),
+        exerciseCount: 1,
+        durationSeconds: 40,
+        now: DateTime(2026, 4, 25),
       );
       await service.recordWorkout(
-        exerciseCount: 1, durationSeconds: 40, now: DateTime(2026, 4, 26),
+        exerciseCount: 1,
+        durationSeconds: 40,
+        now: DateTime(2026, 4, 26),
       );
       await service.recordWorkout(
-        exerciseCount: 1, durationSeconds: 40, now: DateTime(2026, 4, 27),
+        exerciseCount: 1,
+        durationSeconds: 40,
+        now: DateTime(2026, 4, 27),
       );
 
       expect(service.streakDays, 3);

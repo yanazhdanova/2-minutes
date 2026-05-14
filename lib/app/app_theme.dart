@@ -120,8 +120,7 @@ class ResolvedColors {
 
 /// InheritedWidget для передачи [ResolvedColors] вниз по дереву виджетов.
 /// Размещается в MaterialApp.builder, чтобы иметь доступ к реальной яркости
-/// после применения themeMode. Всегда уведомляет зависимых при обновлении,
-/// так как сравнение 12 полей дороже пересборки.
+/// после применения themeMode.
 class AppColorsProvider extends InheritedWidget {
   final ResolvedColors colors;
 

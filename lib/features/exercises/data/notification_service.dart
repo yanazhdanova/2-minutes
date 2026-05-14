@@ -28,9 +28,9 @@ class NotificationService {
       '@mipmap/ic_launcher',
     );
     const iosSettings = DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
+      requestAlertPermission: false,
+      requestBadgePermission: false,
+      requestSoundPermission: false,
     );
 
     const settings = InitializationSettings(
@@ -76,32 +76,54 @@ class NotificationService {
     return true;
   }
 
-  /// Планирует еженедельные уведомления на основе настроек пользователя.
+  /// Планирует уведомления на основе настроек пользователя.
   /// Алгоритм:
   /// 1. Отменяет все ранее запланированные уведомления.
   /// 2. Парсит notifFrom/notifTo в минуты от полуночи, notifFreq в интервал в минутах.
   /// 3. Если диапазон пересекает полночь (to <= from) - прибавляет 24ч к to.
   /// 4. Генерирует список моментов времени с шагом freqMinutes в пределах диапазона.
-  /// 5. Для каждого дня недели (notifDays) и каждого момента - планирует повторяющееся
-  /// еженедельное уведомление через zonedSchedule с matchDateTimeComponents.dayOfWeekAndTime.
+  /// 5. Если выбраны все 7 дней, планирует ежедневные повторы по времени.
+  /// Если выбрана часть дней - планирует еженедельные повторы для выбранных дней.
   /// Если freqMinutes < 5 или days пуст - ничего не планирует.
   /// @param prefs PrefsService с настройками уведомлений.
   Future<void> scheduleFromPrefs(PrefsService prefs) async {
+    if (!_initialized) await init();
     await cancelAll();
 
-    final fromStr = prefs.notifFrom;
-    final toStr = prefs.notifTo;
-    final freqStr = prefs.notifFreq;
-    final days = prefs.notifDays;
+    final plan = buildSchedulePlan(
+      notifFrom: prefs.notifFrom,
+      notifTo: prefs.notifTo,
+      notifFreq: prefs.notifFreq,
+      notifDays: prefs.notifDays,
+    );
 
-    final fromParts = fromStr.split(':');
-    final toParts = toStr.split(':');
-    final fromMinutes = int.parse(fromParts[0]) * 60 + int.parse(fromParts[1]);
-    var toMinutes = int.parse(toParts[0]) * 60 + int.parse(toParts[1]);
-    final freqMinutes = int.tryParse(freqStr) ?? 60;
+    for (final slot in plan) {
+      await _scheduleAt(slot);
+    }
 
-    if (freqMinutes < 5) return;
-    if (days.isEmpty) return;
+    debugPrint('NotificationService: scheduled ${plan.length} notifications');
+  }
+
+  @visibleForTesting
+  static List<NotificationScheduleSlot> buildSchedulePlan({
+    required String notifFrom,
+    required String notifTo,
+    required String notifFreq,
+    required List<int> notifDays,
+  }) {
+    final fromMinutes = _parseTimeToMinutes(notifFrom);
+    var toMinutes = _parseTimeToMinutes(notifTo);
+    final freqMinutes = int.tryParse(notifFreq) ?? 60;
+    final days =
+        notifDays
+            .where((day) => day >= DateTime.monday && day <= DateTime.sunday)
+            .toSet()
+            .toList()
+          ..sort();
+
+    if (fromMinutes == null || toMinutes == null) return const [];
+    if (freqMinutes < 5) return const [];
+    if (days.isEmpty) return const [];
     if (toMinutes <= fromMinutes) toMinutes += 24 * 60;
 
     final times = <_HourMin>[];
@@ -111,22 +133,41 @@ class NotificationService {
       current += freqMinutes;
     }
 
-    int id = 0;
-    for (final day in days) {
-      for (final time in times) {
-        await _scheduleWeeklyAt(
-          id: id,
-          weekday: day,
-          hour: time.hour,
-          minute: time.minute,
-        );
-        id++;
-      }
+    final allDaysSelected = days.length == 7;
+    var id = 0;
+    if (allDaysSelected) {
+      return [
+        for (final time in times)
+          NotificationScheduleSlot(
+            id: id++,
+            hour: time.hour,
+            minute: time.minute,
+            matchDateTimeComponents: DateTimeComponents.time,
+          ),
+      ];
     }
 
-    debugPrint(
-      'NotificationService: scheduled $id notifications for ${days.length} days',
-    );
+    return [
+      for (final day in days)
+        for (final time in times)
+          NotificationScheduleSlot(
+            id: id++,
+            weekday: day,
+            hour: time.hour,
+            minute: time.minute,
+            matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
+          ),
+    ];
+  }
+
+  static int? _parseTimeToMinutes(String value) {
+    final parts = value.split(':');
+    if (parts.length != 2) return null;
+    final hour = int.tryParse(parts[0]);
+    final minute = int.tryParse(parts[1]);
+    if (hour == null || minute == null) return null;
+    if (hour < 0 || hour > 23 || minute < 0 || minute > 59) return null;
+    return hour * 60 + minute;
   }
 
   /// Отменяет все ранее запланированные уведомления через плагин. Вызывается перед scheduleFromPrefs.
@@ -134,12 +175,7 @@ class NotificationService {
     await _plugin.cancelAll();
   }
 
-  Future<void> _scheduleWeeklyAt({
-    required int id,
-    required int weekday,
-    required int hour,
-    required int minute,
-  }) async {
+  Future<void> _scheduleAt(NotificationScheduleSlot slot) async {
     final now = tz.TZDateTime.now(tz.local);
 
     var scheduled = tz.TZDateTime(
@@ -147,16 +183,19 @@ class NotificationService {
       now.year,
       now.month,
       now.day,
-      hour,
-      minute,
+      slot.hour,
+      slot.minute,
     );
 
-    while (scheduled.weekday != weekday) {
-      scheduled = scheduled.add(const Duration(days: 1));
+    final weekday = slot.weekday;
+    if (weekday != null) {
+      while (scheduled.weekday != weekday) {
+        scheduled = scheduled.add(const Duration(days: 1));
+      }
     }
 
-    if (scheduled.isBefore(now)) {
-      scheduled = scheduled.add(const Duration(days: 7));
+    if (!scheduled.isAfter(now)) {
+      scheduled = scheduled.add(Duration(days: weekday == null ? 1 : 7));
     }
 
     const androidDetails = AndroidNotificationDetails(
@@ -180,13 +219,13 @@ class NotificationService {
     );
 
     await _plugin.zonedSchedule(
-      id,
+      slot.id,
       '2mins',
       _randomMessage(),
       scheduled,
       details,
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-      matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
+      matchDateTimeComponents: slot.matchDateTimeComponents,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
     );
@@ -223,4 +262,20 @@ class _HourMin {
   final int hour;
   final int minute;
   const _HourMin(this.hour, this.minute);
+}
+
+class NotificationScheduleSlot {
+  final int id;
+  final int? weekday;
+  final int hour;
+  final int minute;
+  final DateTimeComponents matchDateTimeComponents;
+
+  const NotificationScheduleSlot({
+    required this.id,
+    this.weekday,
+    required this.hour,
+    required this.minute,
+    required this.matchDateTimeComponents,
+  });
 }

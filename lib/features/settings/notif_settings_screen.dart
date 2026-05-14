@@ -296,7 +296,13 @@ class _NotifSettingsScreenState extends State<NotifSettingsScreen> {
     await prefs.setNotifFreq('$_freqMinutes');
     await prefs.setNotifDays(sortedDays);
 
-    await NotificationService.instance.scheduleFromPrefs(prefs);
+    final notificationsGranted = await NotificationService.instance
+        .requestPermission();
+    if (notificationsGranted) {
+      await NotificationService.instance.scheduleFromPrefs(prefs);
+    } else {
+      await NotificationService.instance.cancelAll();
+    }
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(

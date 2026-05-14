@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/app_theme.dart';
 import '../../app/navigation.dart';
 import '../../app/l10n/app_localizations.dart';
+import '../../shared/language_picker_button.dart';
 import '../../shared/widgets.dart';
 import '../../app/app_scope.dart';
 import 'final_screen.dart';
@@ -211,7 +212,10 @@ class _NotifFreqScreenState extends State<NotifFreqScreen> {
           ),
           child: Column(
             children: [
-              AppHeader(onBack: () => Navigator.pop(context)),
+              AppHeader(
+                onBack: () => Navigator.pop(context),
+                trailing: const LanguagePickerButton(),
+              ),
               const Spacer(flex: 2),
 
               Text(
